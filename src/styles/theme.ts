@@ -1,0 +1,39 @@
+import { extendTheme } from '@chakra-ui/react';
+
+const theme = extendTheme({
+  colors: {
+    gray: {
+      '50': '#F0F2F5',
+      '500': '#787880',
+    },
+    green: {
+      '500': '#36B336',
+    },
+    purple: {
+      '700': '#5A5A66',
+      '800': '#41414C',
+    },
+    orange: {
+      '300': '#F1972C',
+    },
+    red: {
+      '500': '#EB3B35',
+    },
+  },
+
+  fonts: {
+    heading: 'IBM Plex Sans',
+    body: 'IBM Plex Sans',
+  },
+
+  styles: {
+    global: {
+      body: {
+        bg: 'gray.50',
+        color: 'gray.500',
+      },
+    },
+  },
+});
+
+export { theme };
