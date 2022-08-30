@@ -19,6 +19,7 @@ export const Container = ({ children, title }: Props) => {
         maxW="1440px"
         mx="auto"
         px="12"
+        pt="16"
         position="relative"
         top="20"
       >
