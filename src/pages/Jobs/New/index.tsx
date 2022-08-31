@@ -1,3 +1,5 @@
+import React from 'react';
+
 import {
   Box,
   Flex,
@@ -14,7 +16,7 @@ import { Input } from '~/components/Form/Input';
 import { InputNumber } from '~/components/Form/InputNumber';
 import { Label } from '~/components/Form/Label';
 import { Select } from '~/components/Form/Select';
-import { Hour } from '~/components/Job/Hour';
+import { JobEstimate } from '~/components/Job/Estimate';
 import { Title } from '~/components/Title';
 
 const jobTypes = [
@@ -33,6 +35,12 @@ const jobTypes = [
 ];
 
 export const NewJobPage = () => {
+  const [hour, setHour] = React.useState('1');
+
+  const handleJobEstimate = React.useCallback((e: string) => {
+    setHour(e);
+  }, []);
+
   return (
     <Container title="Adicionar Novo Job">
       <Box as="section">
@@ -70,6 +78,8 @@ export const NewJobPage = () => {
                     max={100}
                     min={1}
                     stepper
+                    value={hour}
+                    onChange={handleJobEstimate}
                   />
                 </Grid>
 
@@ -93,7 +103,7 @@ export const NewJobPage = () => {
             </Box>
           </Box>
 
-          <Hour />
+          <JobEstimate estimate={hour} />
         </Flex>
       </Box>
     </Container>

@@ -3,7 +3,12 @@ import { Flex, Text } from '@chakra-ui/react';
 import { CancellButton } from '~/components/Form/CancellButton';
 import { SubmitButton } from '~/components/Form/SubmitButton';
 
-export const Hour = () => {
+type Props = {
+  estimate: string;
+};
+
+export const JobEstimate = ({ estimate }: Props) => {
+  const hour = estimate.padStart(2, '0');
   return (
     <Flex
       direction="column"
@@ -17,7 +22,7 @@ export const Hour = () => {
       maxW="352px"
     >
       <Text as="time" fontSize="5xl" color="purple.700">
-        01:00h
+        {`${hour}h:00m`}
       </Text>
 
       <Text
