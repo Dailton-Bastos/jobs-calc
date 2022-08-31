@@ -4,22 +4,33 @@ import {
   Grid,
   GridItem,
   FormControl,
-  FormLabel,
-  Input,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  Select,
   Textarea,
   VStack,
   Text,
 } from '@chakra-ui/react';
 
 import { Container } from '~/components/Container';
+import { Input } from '~/components/Form/Input';
+import { InputNumber } from '~/components/Form/InputNumber';
+import { Label } from '~/components/Form/Label';
+import { Select } from '~/components/Form/Select';
 import { Hour } from '~/components/Job/Hour';
 import { Title } from '~/components/Title';
+
+const jobTypes = [
+  {
+    name: 'Orçamento',
+    value: 'budget',
+  },
+  {
+    name: 'Desenvolvimento',
+    value: 'development',
+  },
+  {
+    name: 'Outros',
+    value: 'other',
+  },
+];
 
 export const NewJobPage = () => {
   return (
@@ -38,88 +49,38 @@ export const NewJobPage = () => {
               <VStack spacing="6" align="flex-start">
                 <Grid gap="6" templateColumns="140px 1fr" w="100%">
                   <GridItem w="100%">
-                    <FormControl>
-                      <FormLabel mb="4" fontWeight="500" lineHeight="6">
-                        ID no Jobber
-                      </FormLabel>
-                      <NumberInput>
-                        <NumberInputField
-                          bg="white"
-                          h="12"
-                          _focusVisible={{
-                            borderColor: 'gray.500',
-                          }}
-                        />
-                      </NumberInput>
-                    </FormControl>
+                    <InputNumber name="job_id" label="ID no Jobber" />
                   </GridItem>
 
                   <GridItem w="100%">
-                    <FormControl>
-                      <FormLabel mb="4" fontWeight="500" lineHeight="6">
-                        Nome do Job
-                      </FormLabel>
-                      <Input
-                        type="text"
-                        bg="white"
-                        h="12"
-                        _focusVisible={{
-                          borderColor: 'gray.500',
-                        }}
-                      />
-                    </FormControl>
+                    <Input name="job_title" label="Título do Job" />
                   </GridItem>
                 </Grid>
 
                 <Grid gap="6" templateColumns="repeat(2, 1fr)" w="100%">
-                  <FormControl>
-                    <FormLabel mb="4" fontWeight="500" lineHeight="6">
-                      Tipo do Job
-                    </FormLabel>
-                    <Select
-                      bg="white"
-                      h="12"
-                      defaultValue=""
-                      _focusVisible={{
-                        borderColor: 'gray.500',
-                      }}
-                    >
-                      <option value="" disabled>
-                        Selecione
-                      </option>
-                      <option>Orçamento</option>
-                      <option>Desenvolvimento</option>
-                      <option>Outro</option>
-                    </Select>
-                  </FormControl>
+                  <Select
+                    name="job_type"
+                    label="Tipo do Job"
+                    options={jobTypes}
+                  />
 
-                  <FormControl>
-                    <FormLabel mb="4" fontWeight="500" lineHeight="6">
-                      Estimativa de Horas
-                    </FormLabel>
-                    <NumberInput max={100} min={1}>
-                      <NumberInputField
-                        bg="white"
-                        h="12"
-                        _focusVisible={{
-                          borderColor: 'gray.500',
-                        }}
-                      />
-                      <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                      </NumberInputStepper>
-                    </NumberInput>
-                  </FormControl>
+                  <InputNumber
+                    name="job_estimate"
+                    label="Tempo Estimado"
+                    max={100}
+                    min={1}
+                    stepper
+                  />
                 </Grid>
 
                 <FormControl mb="4" fontWeight="500" lineHeight="6">
-                  <FormLabel>
-                    Descrição{' '}
+                  <Flex>
+                    <Label>Briefing</Label>
+
                     <Text as="span" fontSize="small">
                       (Opcional)
                     </Text>
-                  </FormLabel>
+                  </Flex>
                   <Textarea
                     bg="white"
                     resize="none"
