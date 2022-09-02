@@ -4,11 +4,14 @@ import { CancellButton } from '~/components/Form/CancellButton';
 import { SubmitButton } from '~/components/Form/SubmitButton';
 
 type Props = {
-  estimate: string;
+  estimateHour: number;
+  estimateMinutis: number;
 };
 
-export const JobEstimate = ({ estimate }: Props) => {
-  const hour = estimate.padStart(2, '0');
+export const JobEstimate = ({ estimateHour, estimateMinutis }: Props) => {
+  const hour = estimateHour.toString().padStart(2, '0');
+  const minutis = estimateMinutis.toString().padStart(2, '0');
+
   return (
     <Flex
       direction="column"
@@ -22,7 +25,7 @@ export const JobEstimate = ({ estimate }: Props) => {
       maxW="352px"
     >
       <Text as="time" fontSize="5xl" color="purple.700">
-        {`${hour}h:00m`}
+        {`${hour}h:${minutis}m`}
       </Text>
 
       <Text

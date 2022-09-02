@@ -13,20 +13,19 @@ import {
 import { Label } from '~/components/Form/Label';
 
 type Props = NumberInputProps & {
-  name: string;
   label?: string;
   stepper?: boolean;
 };
 
 const InputNumberBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
-  { name, label, stepper = false, ...rest },
+  { label, stepper = false, ...rest },
   ref,
 ) => {
   return (
     <FormControl>
       {!!label && <Label>{label}</Label>}
 
-      <NumberInput name={name} focusBorderColor="pink.500" ref={ref} {...rest}>
+      <NumberInput focusBorderColor="pink.500" ref={ref} {...rest}>
         <NumberInputField
           bg="white"
           h="12"

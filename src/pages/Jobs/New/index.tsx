@@ -1,4 +1,5 @@
 import React from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
 import {
   Box,
@@ -11,6 +12,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 
+import { CreateJobFormData } from '~/@types/job';
 import { Container } from '~/components/Container';
 import { Input } from '~/components/Form/Input';
 import { InputNumber } from '~/components/Form/InputNumber';
@@ -35,11 +37,73 @@ const jobTypes = [
 ];
 
 export const NewJobPage = () => {
-  const [hour, setHour] = React.useState('1');
+  const [jobEstimateHour, setJobEstimateHour] = React.useState(1);
+  const [jobEstimateMinutis, setJobEstimateMinutis] = React.useState(0);
+  const [jobId, setJobId] = React.useState('');
+  const [jobType, setJobType] = React.useState('');
+  const [isJobIdFieldDisabled, setIsJobIdFieldDisabled] = React.useState(false);
+  const [isJobEstimateFieldDisabled, setIsJobEstimateFieldDisabled] =
+    React.useState(false);
 
-  const handleJobEstimate = React.useCallback((e: string) => {
-    setHour(e);
+  const { register, handleSubmit, resetField } = useForm<CreateJobFormData>({
+    mode: 'onChange',
+    defaultValues: {
+      job_estimate_hour: 1,
+      job_estimate_minutis: 0,
+      job_id: '',
+    },
+  });
+
+  const handleJobEstimateHour = React.useCallback((e: string) => {
+    setJobEstimateHour(Number(e));
   }, []);
+
+  const handleJobEstimateMinutis = React.useCallback((e: string) => {
+    setJobEstimateMinutis(Number(e));
+  }, []);
+
+  const handleIdJobber = React.useCallback((e: string) => {
+    setJobId(e);
+  }, []);
+
+  const handleJobType = React.useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setJobType(e.target.value);
+    },
+    [],
+  );
+
+  const onSubmit: SubmitHandler<CreateJobFormData> = React.useCallback(
+    (data) => data,
+    [],
+  );
+
+  React.useEffect(() => {
+    switch (jobType) {
+      case 'budget':
+        setIsJobEstimateFieldDisabled(true);
+        setJobEstimateHour(1);
+        setJobEstimateMinutis(0);
+        resetField('job_estimate_hour');
+        resetField('job_estimate_minutis');
+        break;
+
+      case 'other':
+        setIsJobIdFieldDisabled(true);
+        setIsJobEstimateFieldDisabled(false);
+        setJobId('');
+        resetField('job_id');
+        break;
+
+      default:
+        setIsJobEstimateFieldDisabled(false);
+        setIsJobIdFieldDisabled(false);
+        setJobEstimateHour((prev) => prev);
+        setJobEstimateMinutis((prev) => prev);
+        setJobId((prev) => prev);
+        break;
+    }
+  }, [jobType, resetField]);
 
   return (
     <Container title="Adicionar Novo Job">
@@ -49,6 +113,7 @@ export const NewJobPage = () => {
           alignItems="center"
           justifyContent="space-between"
           gap="8"
+          onSubmit={handleSubmit(onSubmit)}
         >
           <Box w="100%" maxW="640px">
             <Title>Dados do Job</Title>
@@ -57,29 +122,50 @@ export const NewJobPage = () => {
               <VStack spacing="6" align="flex-start">
                 <Grid gap="6" templateColumns="140px 1fr" w="100%">
                   <GridItem w="100%">
-                    <InputNumber name="job_id" label="ID no Jobber" />
+                    <InputNumber
+                      {...register('job_id')}
+                      label="ID no Jobber"
+                      max={undefined}
+                      min={undefined}
+                      value={jobId}
+                      onChange={handleIdJobber}
+                      isDisabled={isJobIdFieldDisabled}
+                    />
                   </GridItem>
 
                   <GridItem w="100%">
-                    <Input name="job_title" label="Título do Job" />
+                    <Input {...register('job_title')} label="Título do Job" />
                   </GridItem>
                 </Grid>
 
+                <Select
+                  {...register('job_type')}
+                  label="Tipo do Job"
+                  options={jobTypes}
+                  onChange={handleJobType}
+                />
+
                 <Grid gap="6" templateColumns="repeat(2, 1fr)" w="100%">
-                  <Select
-                    name="job_type"
-                    label="Tipo do Job"
-                    options={jobTypes}
+                  <InputNumber
+                    {...register('job_estimate_hour')}
+                    label="Tempo Estimado (h)*"
+                    max={100}
+                    min={0}
+                    stepper
+                    value={jobEstimateHour}
+                    onChange={handleJobEstimateHour}
+                    isDisabled={isJobEstimateFieldDisabled}
                   />
 
                   <InputNumber
-                    name="job_estimate"
-                    label="Tempo Estimado"
-                    max={100}
-                    min={1}
+                    {...register('job_estimate_minutis')}
+                    label="Tempo Estimado (min)*"
+                    max={59}
+                    min={0}
                     stepper
-                    value={hour}
-                    onChange={handleJobEstimate}
+                    value={jobEstimateMinutis}
+                    onChange={handleJobEstimateMinutis}
+                    isDisabled={isJobEstimateFieldDisabled}
                   />
                 </Grid>
 
@@ -92,6 +178,7 @@ export const NewJobPage = () => {
                     </Text>
                   </Flex>
                   <Textarea
+                    {...register('job_briefing')}
                     bg="white"
                     resize="none"
                     _focusVisible={{
@@ -103,7 +190,10 @@ export const NewJobPage = () => {
             </Box>
           </Box>
 
-          <JobEstimate estimate={hour} />
+          <JobEstimate
+            estimateHour={jobEstimateHour}
+            estimateMinutis={jobEstimateMinutis}
+          />
         </Flex>
       </Box>
     </Container>

@@ -9,12 +9,11 @@ import {
 import { Label } from '~/components/Form/Label';
 
 type Props = InputProps & {
-  name: string;
   label?: string;
 };
 
 const InputBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
-  { name, label, ...rest },
+  { label, ...rest },
   ref,
 ) => {
   return (
@@ -22,7 +21,6 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
       {!!label && <Label>{label}</Label>}
 
       <ChackraInput
-        name={name}
         bg="white"
         h="12"
         _focusVisible={{

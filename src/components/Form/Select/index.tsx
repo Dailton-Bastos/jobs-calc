@@ -14,13 +14,12 @@ type Options = {
 };
 
 type Props = SelectProps & {
-  name: string;
   label?: string;
   options: Options[];
 };
 
 const SelectBase: ForwardRefRenderFunction<HTMLSelectElement, Props> = (
-  { name, label, options = [], ...rest },
+  { label, options = [], ...rest },
   ref,
 ) => {
   return (
@@ -35,7 +34,6 @@ const SelectBase: ForwardRefRenderFunction<HTMLSelectElement, Props> = (
           borderColor: 'gray.500',
         }}
         defaultValue=""
-        name={name}
         ref={ref}
         {...rest}
       >
