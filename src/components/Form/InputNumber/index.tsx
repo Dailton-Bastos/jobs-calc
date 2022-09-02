@@ -1,4 +1,5 @@
 import React, { ForwardRefRenderFunction } from 'react';
+import { FieldError } from 'react-hook-form';
 
 import {
   FormControl,
@@ -8,6 +9,7 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
+  FormErrorMessage,
 } from '@chakra-ui/react';
 
 import { Label } from '~/components/Form/Label';
@@ -15,14 +17,15 @@ import { Label } from '~/components/Form/Label';
 type Props = NumberInputProps & {
   label?: string;
   stepper?: boolean;
+  error?: FieldError;
 };
 
 const InputNumberBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
-  { label, stepper = false, ...rest },
+  { label, stepper = false, error = null, ...rest },
   ref,
 ) => {
   return (
-    <FormControl>
+    <FormControl isInvalid={!!error}>
       {!!label && <Label>{label}</Label>}
 
       <NumberInput focusBorderColor="pink.500" ref={ref} {...rest}>
@@ -41,6 +44,8 @@ const InputNumberBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
           </NumberInputStepper>
         )}
       </NumberInput>
+
+      {!!error && <FormErrorMessage>{error.message}</FormErrorMessage>}
     </FormControl>
   );
 };

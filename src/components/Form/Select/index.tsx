@@ -1,9 +1,11 @@
 import React, { ForwardRefRenderFunction } from 'react';
+import { FieldError } from 'react-hook-form';
 
 import {
   FormControl,
   Select as ChakraSelect,
   SelectProps,
+  FormErrorMessage,
 } from '@chakra-ui/react';
 
 import { Label } from '~/components/Form/Label';
@@ -16,20 +18,20 @@ type Options = {
 type Props = SelectProps & {
   label?: string;
   options: Options[];
+  error?: FieldError;
 };
 
 const SelectBase: ForwardRefRenderFunction<HTMLSelectElement, Props> = (
-  { label, options = [], ...rest },
+  { label, options = [], error = null, ...rest },
   ref,
 ) => {
   return (
-    <FormControl>
+    <FormControl isInvalid={!!error}>
       {!!label && <Label>{label}</Label>}
 
       <ChakraSelect
         bg="white"
         h="12"
-        focusBorderColor="pink.500"
         _focusVisible={{
           borderColor: 'gray.500',
         }}
@@ -46,6 +48,8 @@ const SelectBase: ForwardRefRenderFunction<HTMLSelectElement, Props> = (
           </option>
         ))}
       </ChakraSelect>
+
+      {!!error && <FormErrorMessage>{error.message}</FormErrorMessage>}
     </FormControl>
   );
 };
