@@ -21,6 +21,7 @@ import { Label } from '~/components/Form/Label';
 import { Select } from '~/components/Form/Select';
 import { JobEstimate } from '~/components/Job/Estimate';
 import { Title } from '~/components/Title';
+import { useJob } from '~/hooks/useJob';
 import { createJobFormSchema } from '~/schemas/createJobFormSchema';
 
 const jobTypes = [
@@ -58,7 +59,9 @@ export const NewJobPage = () => {
       resolver: yupResolver(createJobFormSchema),
     });
 
-  const { errors } = formState;
+  const { errors, isSubmitting } = formState;
+
+  const { handleCreateJobData } = useJob();
 
   const handleJobEstimateHour = React.useCallback((e: string) => {
     setJobEstimateHour(Number(e));
@@ -80,7 +83,7 @@ export const NewJobPage = () => {
   );
 
   const onSubmit: SubmitHandler<CreateJobFormData> = React.useCallback(
-    (data: CreateJobFormData) => {
+    async (data: CreateJobFormData) => {
       const values = {
         ...data,
         job_estimate_hour: jobType === 'budget' ? 1 : data?.job_estimate_hour,
@@ -88,10 +91,9 @@ export const NewJobPage = () => {
           jobType === 'budget' ? 0 : data?.job_estimate_minutis,
       };
 
-      return;
-      values;
+      await handleCreateJobData(values);
     },
-    [jobType],
+    [jobType, handleCreateJobData],
   );
 
   React.useEffect(() => {
@@ -217,6 +219,7 @@ export const NewJobPage = () => {
           <JobEstimate
             estimateHour={jobEstimateHour}
             estimateMinutis={jobEstimateMinutis}
+            isSubmitting={isSubmitting}
           />
         </Flex>
       </Box>

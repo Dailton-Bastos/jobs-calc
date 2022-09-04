@@ -1,14 +1,17 @@
-import firebase from 'firebase/app';
+import { initializeApp } from 'firebase/app';
+import { getDatabase, serverTimestamp } from 'firebase/database';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_APP_API_KEY,
   authDomain: import.meta.env.VITE_APP_AUTH_DOMAIN,
   projectId: import.meta.env.VITE_APP_PROJECT_ID,
   storageBucket: import.meta.env.VITE_APP_STORAGE_BUCKET,
+  databaseURL: import.meta.env.VITE_APP_DATABASE_URL,
   messagingSenderId: import.meta.env.VITE_APP_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_APP_APP_ID,
 };
 
-firebase.initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-export { firebase };
+export { app, db, serverTimestamp };

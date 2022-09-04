@@ -6,9 +6,14 @@ import { SubmitButton } from '~/components/Form/SubmitButton';
 type Props = {
   estimateHour: number;
   estimateMinutis: number;
+  isSubmitting?: boolean;
 };
 
-export const JobEstimate = ({ estimateHour, estimateMinutis }: Props) => {
+export const JobEstimate = ({
+  estimateHour,
+  estimateMinutis,
+  isSubmitting,
+}: Props) => {
   const hour = estimateHour.toString().padStart(2, '0');
   const minutis = estimateMinutis.toString().padStart(2, '0');
 
@@ -45,7 +50,7 @@ export const JobEstimate = ({ estimateHour, estimateMinutis }: Props) => {
         justifyContent="space-between"
         width="100%"
       >
-        <SubmitButton>Salvar</SubmitButton>
+        <SubmitButton isLoading={isSubmitting}>Salvar</SubmitButton>
 
         <CancellButton linkTo="/jobs" />
       </Flex>
