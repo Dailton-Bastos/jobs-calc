@@ -1,5 +1,5 @@
-import { NewJobPage } from '~/pages/Jobs/New';
+import { SignIn } from '~/pages/SignIn';
 
 export const App = () => {
-  return <NewJobPage />;
+  return <SignIn />;
 };
