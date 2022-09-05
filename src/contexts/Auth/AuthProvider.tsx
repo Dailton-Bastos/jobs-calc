@@ -3,7 +3,8 @@ import React from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
 import { SignInFormData } from '~/@types/signIn';
-import { auth } from '~/config/firebase';
+import { User } from '~/@types/user';
+import { auth, onAuthStateChanged } from '~/config/firebase';
 import { AuthContext } from '~/contexts/Auth/AuthContext';
 
 type AuthProviderProps = {
@@ -11,6 +12,10 @@ type AuthProviderProps = {
 };
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const [user, setUser] = React.useState<User | null>(null);
+
+  const isAuthenticated = !!user;
+
   const signIn = React.useCallback(
     async ({ email, password }: SignInFormData) => {
       try {
@@ -20,8 +25,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           password,
         );
 
-        return;
-        userCredential;
+        if (userCredential) {
+          setUser(userCredential?.user);
+        }
       } catch (error) {
         throw new Error('Failed to sign in user');
       }
@@ -32,9 +38,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const contextValue = React.useMemo(
     () => ({
       signIn,
+      user,
+      isAuthenticated,
     }),
-    [signIn],
+    [signIn, user, isAuthenticated],
   );
+
+  React.useEffect(() => {
+    onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+      }
+    });
+  }, []);
 
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
