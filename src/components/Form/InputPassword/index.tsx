@@ -19,10 +19,11 @@ import { Label } from '~/components/Form/Label';
 type Props = InputProps & {
   label?: string;
   error?: FieldError;
+  isValidPassword: boolean;
 };
 
 const InputPasswordBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
-  { label, error = null, ...rest },
+  { label, error = null, isValidPassword = false, ...rest },
   ref,
 ) => {
   const [showPassword, setShowPassword] = React.useState(false);
@@ -33,7 +34,7 @@ const InputPasswordBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
 
       <InputGroup>
         <InputLeftElement pointerEvents="none" height="12">
-          <RiLock2Line />
+          <RiLock2Line color={`${isValidPassword ? '#F1972C' : '#787880'}`} />
         </InputLeftElement>
 
         <Input

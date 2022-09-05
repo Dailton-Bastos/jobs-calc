@@ -1,11 +1,32 @@
-import { Box, Image, Flex, Heading, Text, Stack, Link } from '@chakra-ui/react';
+import React from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
+import { Box, Image, Flex, Heading, Text, Stack, Link } from '@chakra-ui/react';
+import { yupResolver } from '@hookform/resolvers/yup';
+
+import { SignInFormData } from '~/@types/signIn';
 import flagsImg from '~/assets/flags.png';
 import { InputEmail } from '~/components/Form/InputEmail';
 import { InputPassword } from '~/components/Form/InputPassword';
 import { SubmitButton } from '~/components/Form/SubmitButton';
+import { signInFormSchema } from '~/schemas/signInFormSchema';
 
 export const SignIn = () => {
+  const { register, handleSubmit, formState } = useForm<SignInFormData>({
+    mode: 'all',
+    resolver: yupResolver(signInFormSchema),
+  });
+
+  const { errors, isSubmitting, dirtyFields } = formState;
+
+  const onSubmit: SubmitHandler<SignInFormData> = React.useCallback(
+    async (data: SignInFormData) => {
+      return;
+      data;
+    },
+    [],
+  );
+
   return (
     <Flex
       direction="column"
@@ -42,11 +63,24 @@ export const SignIn = () => {
             justifyContent="center"
             width="390px"
             mt="10"
+            onSubmit={handleSubmit(onSubmit)}
           >
             <Stack spacing="6" w="100%">
-              <InputEmail placeholder="E-mail" />
+              <InputEmail
+                {...register('email')}
+                placeholder="E-mail"
+                error={errors?.email}
+                isValidEmail={!!dirtyFields?.email && !errors.email?.message}
+              />
 
-              <InputPassword placeholder="Senha" />
+              <InputPassword
+                {...register('password')}
+                placeholder="Senha"
+                error={errors?.password}
+                isValidPassword={
+                  !!dirtyFields?.password && !errors.password?.message
+                }
+              />
 
               <Box textAlign="right">
                 <Link>Esqueci minha senha</Link>
@@ -64,6 +98,7 @@ export const SignIn = () => {
               _active={{
                 bg: 'orange.300',
               }}
+              isLoading={isSubmitting}
             >
               Acessar plataforma
             </SubmitButton>

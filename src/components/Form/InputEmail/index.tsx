@@ -1,6 +1,6 @@
 import React, { ForwardRefRenderFunction } from 'react';
 import { FieldError } from 'react-hook-form';
-import { RiMailLine } from 'react-icons/ri';
+import { RiMailLine, RiCheckLine } from 'react-icons/ri';
 
 import {
   FormControl,
@@ -8,6 +8,7 @@ import {
   InputProps,
   InputGroup,
   InputLeftElement,
+  InputRightElement,
   FormErrorMessage,
 } from '@chakra-ui/react';
 
@@ -16,10 +17,11 @@ import { Label } from '~/components/Form/Label';
 type Props = InputProps & {
   label?: string;
   error?: FieldError;
+  isValidEmail: boolean;
 };
 
 const InputEmailBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
-  { label, error = null, ...rest },
+  { label, error = null, isValidEmail = false, ...rest },
   ref,
 ) => {
   return (
@@ -28,7 +30,7 @@ const InputEmailBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
 
       <InputGroup>
         <InputLeftElement pointerEvents="none" height="12">
-          <RiMailLine />
+          <RiMailLine color={`${isValidEmail ? '#F1972C' : '#787880'}`} />
         </InputLeftElement>
 
         <Input
@@ -47,6 +49,12 @@ const InputEmailBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
           ref={ref}
           {...rest}
         />
+
+        {isValidEmail && (
+          <InputRightElement pointerEvents="none" height="12">
+            <RiCheckLine color="#F1972C" />
+          </InputRightElement>
+        )}
       </InputGroup>
 
       {!!error && <FormErrorMessage>{error.message}</FormErrorMessage>}
