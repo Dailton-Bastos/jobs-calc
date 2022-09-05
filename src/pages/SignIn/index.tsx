@@ -9,6 +9,7 @@ import flagsImg from '~/assets/flags.png';
 import { InputEmail } from '~/components/Form/InputEmail';
 import { InputPassword } from '~/components/Form/InputPassword';
 import { SubmitButton } from '~/components/Form/SubmitButton';
+import { useAuth } from '~/hooks/useAuth';
 import { signInFormSchema } from '~/schemas/signInFormSchema';
 
 export const SignIn = () => {
@@ -19,12 +20,13 @@ export const SignIn = () => {
 
   const { errors, isSubmitting, dirtyFields } = formState;
 
+  const { signIn } = useAuth();
+
   const onSubmit: SubmitHandler<SignInFormData> = React.useCallback(
     async (data: SignInFormData) => {
-      return;
-      data;
+      await signIn({ ...data });
     },
-    [],
+    [signIn],
   );
 
   return (

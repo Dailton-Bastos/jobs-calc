@@ -1,5 +1,10 @@
+import { GlobalContext } from '~/contexts';
 import { SignIn } from '~/pages/SignIn';
 
 export const App = () => {
-  return <SignIn />;
+  return (
+    <GlobalContext>
+      <SignIn />
+    </GlobalContext>
+  );
 };
