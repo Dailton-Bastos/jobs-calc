@@ -1,5 +1,6 @@
 import React from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { RiUserLine } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 
 import {
@@ -13,13 +14,14 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { SignInFormData } from '~/@types/signIn';
+import { Input } from '~/components/Form/Input';
 import { InputEmail } from '~/components/Form/InputEmail';
 import { InputPassword } from '~/components/Form/InputPassword';
 import { SubmitButton } from '~/components/Form/SubmitButton';
 import { useAuth } from '~/hooks/useAuth';
 import { signInFormSchema } from '~/schemas/signInFormSchema';
 
-export const SignIn = () => {
+export const Signup = () => {
   const { register, handleSubmit, formState } = useForm<SignInFormData>({
     mode: 'all',
     resolver: yupResolver(signInFormSchema),
@@ -39,10 +41,10 @@ export const SignIn = () => {
   return (
     <Flex direction="column" align="center">
       <Heading mb="6" fontFamily="Inter" fontWeight="semibold" size="xl">
-        Bem-vindo de volta
+        Crie sua conta
       </Heading>
 
-      <Text>Digite seu e-mail e senha para começar</Text>
+      <Text>Preencha os campos abaixo para começar</Text>
 
       <Flex
         as="form"
@@ -56,23 +58,30 @@ export const SignIn = () => {
         <Stack spacing="6" w="100%">
           <InputEmail
             {...register('email')}
-            placeholder="E-mail"
+            placeholder="Seu e-mail"
             error={errors?.email}
             isValidEmail={!!dirtyFields?.email && !errors.email?.message}
           />
 
+          <Input placeholder="Seu nome" leftIcon={RiUserLine} />
+
           <InputPassword
             {...register('password')}
-            placeholder="Senha"
+            placeholder="Sua senha"
             error={errors?.password}
             isValidPassword={
               !!dirtyFields?.password && !errors.password?.message
             }
           />
 
-          <Box textAlign="right">
-            <LinkChakra>Esqueci minha senha</LinkChakra>
-          </Box>
+          <InputPassword
+            {...register('password')}
+            placeholder="Confirme sua senha"
+            error={errors?.password}
+            isValidPassword={
+              !!dirtyFields?.password && !errors.password?.message
+            }
+          />
         </Stack>
 
         <SubmitButton
@@ -88,12 +97,12 @@ export const SignIn = () => {
           }}
           isLoading={isSubmitting}
         >
-          Acessar plataforma
+          Cadastrar
         </SubmitButton>
 
         <Box mt="8" textAlign="center">
-          <LinkChakra as={Link} to="/signup">
-            Criar conta
+          <LinkChakra as={Link} to="/">
+            Voltar para login
           </LinkChakra>
         </Box>
       </Flex>
