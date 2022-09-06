@@ -14,12 +14,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 import { SignInFormData } from '~/@types/signIn';
 import { InputEmail } from '~/components/Form/InputEmail';
-import { InputPassword } from '~/components/Form/InputPassword';
 import { SubmitButton } from '~/components/Form/SubmitButton';
 import { useAuth } from '~/hooks/useAuth';
 import { signInFormSchema } from '~/schemas/signInFormSchema';
 
-export const SignIn = () => {
+export const ForgotPassword = () => {
   const { register, handleSubmit, formState } = useForm<SignInFormData>({
     mode: 'all',
     resolver: yupResolver(signInFormSchema),
@@ -39,10 +38,10 @@ export const SignIn = () => {
   return (
     <Flex direction="column" align="center">
       <Heading mb="6" fontFamily="Inter" fontWeight="semibold" size="xl">
-        Bem-vindo de volta
+        Recuperar senha
       </Heading>
 
-      <Text>Digite seu e-mail e senha para começar</Text>
+      <Text>Digite seu e-mail para começar</Text>
 
       <Flex
         as="form"
@@ -60,21 +59,6 @@ export const SignIn = () => {
             error={errors?.email}
             isValidEmail={!!dirtyFields?.email && !errors.email?.message}
           />
-
-          <InputPassword
-            {...register('password')}
-            placeholder="Senha"
-            error={errors?.password}
-            isValidPassword={
-              !!dirtyFields?.password && !errors.password?.message
-            }
-          />
-
-          <Box textAlign="right">
-            <LinkChakra as={Link} to="/forgot">
-              Esqueci minha senha
-            </LinkChakra>
-          </Box>
         </Stack>
 
         <SubmitButton
@@ -90,12 +74,12 @@ export const SignIn = () => {
           }}
           isLoading={isSubmitting}
         >
-          Acessar plataforma
+          Recuperar
         </SubmitButton>
 
         <Box mt="8" textAlign="center">
-          <LinkChakra as={Link} to="/signup">
-            Criar conta
+          <LinkChakra as={Link} to="/">
+            Voltar
           </LinkChakra>
         </Box>
       </Flex>

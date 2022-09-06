@@ -1,10 +1,10 @@
-import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { Box, Image, Flex } from '@chakra-ui/react';
 
 import flagsImg from '~/assets/flags.png';
 import { useAuth } from '~/hooks/useAuth';
+import { ForgotPassword } from '~/pages/Forgot';
 import { SignIn } from '~/pages/SignIn';
 import { Signup } from '~/pages/Signup';
 
@@ -38,6 +38,7 @@ export const Auth = () => {
         <Routes>
           <Route path="/" element={<SignIn />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot" element={<ForgotPassword />} />
         </Routes>
       </Flex>
     </Flex>
