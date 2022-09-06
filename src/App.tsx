@@ -1,10 +1,14 @@
+import { BrowserRouter } from 'react-router-dom';
+
 import { GlobalContext } from '~/contexts';
-import { SignIn } from '~/pages/SignIn';
+import { GlobalRoutes } from '~/routes';
 
 export const App = () => {
   return (
-    <GlobalContext>
-      <SignIn />
-    </GlobalContext>
+    <BrowserRouter>
+      <GlobalContext>
+        <GlobalRoutes />
+      </GlobalContext>
+    </BrowserRouter>
   );
 };

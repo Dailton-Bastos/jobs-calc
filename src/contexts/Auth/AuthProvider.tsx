@@ -1,6 +1,7 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 
 import { SignInFormData } from '~/@types/signIn';
 import { User } from '~/@types/user';
@@ -16,6 +17,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const isAuthenticated = !!user;
 
+  const navigate = useNavigate();
+
   const signIn = React.useCallback(
     async ({ email, password }: SignInFormData) => {
       try {
@@ -27,21 +30,32 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
         if (userCredential) {
           setUser(userCredential?.user);
+
+          navigate('/dashboard');
         }
       } catch (error) {
         throw new Error('Failed to sign in user');
       }
     },
-    [],
+    [navigate],
   );
+
+  const logout = React.useCallback(() => {
+    signOut(auth);
+
+    setUser(null);
+
+    navigate('/');
+  }, [navigate]);
 
   const contextValue = React.useMemo(
     () => ({
       signIn,
       user,
       isAuthenticated,
+      logout,
     }),
-    [signIn, user, isAuthenticated],
+    [signIn, user, isAuthenticated, logout],
   );
 
   React.useEffect(() => {

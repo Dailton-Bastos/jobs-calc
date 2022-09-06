@@ -1,5 +1,6 @@
 import React from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { Navigate } from 'react-router-dom';
 
 import { Box, Image, Flex, Heading, Text, Stack, Link } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -20,7 +21,7 @@ export const SignIn = () => {
 
   const { errors, isSubmitting, dirtyFields } = formState;
 
-  const { signIn } = useAuth();
+  const { signIn, isAuthenticated } = useAuth();
 
   const onSubmit: SubmitHandler<SignInFormData> = React.useCallback(
     async (data: SignInFormData) => {
@@ -28,6 +29,8 @@ export const SignIn = () => {
     },
     [signIn],
   );
+
+  if (isAuthenticated) return <Navigate to="/dashboard" />;
 
   return (
     <Flex

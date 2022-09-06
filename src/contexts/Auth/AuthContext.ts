@@ -5,6 +5,7 @@ import { User } from '~/@types/user';
 
 type AuthContextData = {
   signIn: (credentials: SignInFormData) => Promise<void>;
+  logout: () => void;
   user: User | null;
   isAuthenticated: boolean;
 };

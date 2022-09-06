@@ -9,10 +9,13 @@ import {
 import { Box, List, Flex, Button } from '@chakra-ui/react';
 
 import { Logo } from '~/components/Logo';
+import { useAuth } from '~/hooks/useAuth';
 
 import { NavLink } from './NavLink';
 
 export const Sidebar = () => {
+  const { logout } = useAuth();
+
   return (
     <Flex
       direction="column"
@@ -52,6 +55,7 @@ export const Sidebar = () => {
             bg: 'black',
             color: 'white',
           }}
+          onClick={logout}
         >
           Log out
         </Button>
