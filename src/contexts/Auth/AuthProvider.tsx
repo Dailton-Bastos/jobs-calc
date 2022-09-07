@@ -28,17 +28,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const signIn = React.useCallback(
     async ({ email, password }: SignInFormData) => {
       try {
-        const userCredential = await signInWithEmailAndPassword(
-          auth,
-          email,
-          password,
-        );
+        await signInWithEmailAndPassword(auth, email, password);
 
-        if (userCredential) {
-          setUser(userCredential?.user);
-
-          navigate('/dashboard');
-        }
+        navigate('/dashboard');
       } catch (error) {
         throw new Error('Failed to sign in user');
       }
@@ -46,12 +38,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     [navigate],
   );
 
-  const logout = React.useCallback(() => {
-    signOut(auth);
+  const logout = React.useCallback(async () => {
+    await signOut(auth);
 
-    setUser(null);
-
-    navigate('/');
+    navigate('/', { replace: true });
   }, [navigate]);
 
   const signUp = React.useCallback(
@@ -94,9 +84,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   );
 
   React.useEffect(() => {
-    onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });
+
+    return () => unsubscribe();
   }, []);
 
   return (

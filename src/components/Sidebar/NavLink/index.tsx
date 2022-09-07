@@ -1,6 +1,13 @@
 import { IconType } from 'react-icons';
+import { Link } from 'react-router-dom';
 
-import { ListItem, Flex, Link, Icon, Text } from '@chakra-ui/react';
+import {
+  ListItem,
+  Flex,
+  Link as ChakraLink,
+  Icon,
+  Text,
+} from '@chakra-ui/react';
 
 type Props = {
   children: string;
@@ -11,8 +18,9 @@ type Props = {
 export const NavLink = ({ children, url, icon }: Props) => {
   return (
     <ListItem>
-      <Link
-        href={url}
+      <ChakraLink
+        as={Link}
+        to={url}
         w="100%"
         px="2"
         display="inline-block"
@@ -26,7 +34,7 @@ export const NavLink = ({ children, url, icon }: Props) => {
           <Icon as={icon} />
           <Text as="span">{children}</Text>
         </Flex>
-      </Link>
+      </ChakraLink>
     </ListItem>
   );
 };

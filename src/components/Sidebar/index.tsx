@@ -33,7 +33,7 @@ export const Sidebar = () => {
           Overview
         </NavLink>
 
-        <NavLink icon={RiTodoLine} url="/jobs">
+        <NavLink icon={RiTodoLine} url="/jobs/new">
           Jobs
         </NavLink>
 

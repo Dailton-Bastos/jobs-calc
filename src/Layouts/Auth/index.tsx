@@ -11,7 +11,7 @@ import { SignUp } from '~/pages/Signup';
 export const Auth = () => {
   const { isAuthenticated } = useAuth();
 
-  if (isAuthenticated) return <Navigate to="/dashboard" />;
+  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
 
   return (
     <Flex
