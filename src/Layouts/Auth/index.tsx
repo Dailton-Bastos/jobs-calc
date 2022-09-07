@@ -1,12 +1,9 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 
 import { Box, Image, Flex } from '@chakra-ui/react';
 
 import flagsImg from '~/assets/flags.png';
 import { useAuth } from '~/hooks/useAuth';
-import { ForgotPassword } from '~/pages/Forgot';
-import { SignIn } from '~/pages/SignIn';
-import { SignUp } from '~/pages/Signup';
 
 export const Auth = () => {
   const { isAuthenticated } = useAuth();
@@ -35,11 +32,7 @@ export const Auth = () => {
           <Image src={flagsImg} alt="Flags dark" />
         </Box>
 
-        <Routes>
-          <Route path="/" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/forgot" element={<ForgotPassword />} />
-        </Routes>
+        <Outlet />
       </Flex>
     </Flex>
   );
