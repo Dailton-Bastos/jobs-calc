@@ -13,29 +13,29 @@ import {
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import { SignInFormData } from '~/@types/signIn';
+import { SignUpFormData } from '~/@types/signUp';
 import { Input } from '~/components/Form/Input';
 import { InputEmail } from '~/components/Form/InputEmail';
 import { InputPassword } from '~/components/Form/InputPassword';
 import { SubmitButton } from '~/components/Form/SubmitButton';
 import { useAuth } from '~/hooks/useAuth';
-import { signInFormSchema } from '~/schemas/signInFormSchema';
+import { signUpFormSchema } from '~/schemas/signUpFormSchema';
 
-export const Signup = () => {
-  const { register, handleSubmit, formState } = useForm<SignInFormData>({
+export const SignUp = () => {
+  const { register, handleSubmit, formState } = useForm<SignUpFormData>({
     mode: 'all',
-    resolver: yupResolver(signInFormSchema),
+    resolver: yupResolver(signUpFormSchema),
   });
 
   const { errors, isSubmitting, dirtyFields } = formState;
 
-  const { signIn } = useAuth();
+  const { signUp } = useAuth();
 
-  const onSubmit: SubmitHandler<SignInFormData> = React.useCallback(
-    async (data: SignInFormData) => {
-      await signIn({ ...data });
+  const onSubmit: SubmitHandler<SignUpFormData> = React.useCallback(
+    async (data: SignUpFormData) => {
+      await signUp({ ...data });
     },
-    [signIn],
+    [signUp],
   );
 
   return (
@@ -63,7 +63,13 @@ export const Signup = () => {
             isValidEmail={!!dirtyFields?.email && !errors.email?.message}
           />
 
-          <Input placeholder="Seu nome" leftIcon={RiUserLine} />
+          <Input
+            {...register('displayName')}
+            placeholder="Seu nome"
+            leftIcon={RiUserLine}
+            error={errors?.displayName}
+            isValid={!!dirtyFields?.displayName && !errors.displayName?.message}
+          />
 
           <InputPassword
             {...register('password')}
@@ -75,11 +81,12 @@ export const Signup = () => {
           />
 
           <InputPassword
-            {...register('password')}
+            {...register('passwordConfirmation')}
             placeholder="Confirme sua senha"
-            error={errors?.password}
+            error={errors?.passwordConfirmation}
             isValidPassword={
-              !!dirtyFields?.password && !errors.password?.message
+              !!dirtyFields?.passwordConfirmation &&
+              !errors.passwordConfirmation?.message
             }
           />
         </Stack>

@@ -6,7 +6,7 @@ import flagsImg from '~/assets/flags.png';
 import { useAuth } from '~/hooks/useAuth';
 import { ForgotPassword } from '~/pages/Forgot';
 import { SignIn } from '~/pages/SignIn';
-import { Signup } from '~/pages/Signup';
+import { SignUp } from '~/pages/Signup';
 
 export const Auth = () => {
   const { isAuthenticated } = useAuth();
@@ -37,7 +37,7 @@ export const Auth = () => {
 
         <Routes>
           <Route path="/" element={<SignIn />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path="/signup" element={<SignUp />} />
           <Route path="/forgot" element={<ForgotPassword />} />
         </Routes>
       </Flex>
