@@ -1,6 +1,7 @@
 import { RiArrowLeftLine } from 'react-icons/ri';
+import { Link } from 'react-router-dom';
 
-import { Box, Flex, Text, Link } from '@chakra-ui/react';
+import { Box, Flex, Text, Link as ChakraLink } from '@chakra-ui/react';
 
 type Props = {
   title: string;
@@ -27,9 +28,9 @@ export const Header = ({ title }: Props) => {
               color: 'white',
             }}
           >
-            <Link href="/">
+            <ChakraLink as={Link} to="/dashboard">
               <RiArrowLeftLine size={24} />
-            </Link>
+            </ChakraLink>
           </Box>
 
           <Text
