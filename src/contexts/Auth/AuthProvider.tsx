@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import {
   signInWithEmailAndPassword,
@@ -18,24 +18,33 @@ type AuthProviderProps = {
   children: React.ReactNode;
 };
 
+type propState = {
+  from: { pathname: string };
+};
+
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = React.useState<User | null>(null);
 
   const isAuthenticated = !!user;
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const path = location.state as propState;
+
+  const origin = path?.from?.pathname || '/dashboard';
 
   const signIn = React.useCallback(
     async ({ email, password }: SignInFormData) => {
       try {
         await signInWithEmailAndPassword(auth, email, password);
 
-        navigate('/dashboard');
+        navigate(origin);
       } catch (error) {
         throw new Error('Failed to sign in user');
       }
     },
-    [navigate],
+    [navigate, origin],
   );
 
   const logout = React.useCallback(async () => {

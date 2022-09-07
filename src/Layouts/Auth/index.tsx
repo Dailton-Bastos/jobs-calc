@@ -1,14 +1,24 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Outlet, Navigate, useLocation } from 'react-router-dom';
 
 import { Box, Image, Flex } from '@chakra-ui/react';
 
 import flagsImg from '~/assets/flags.png';
 import { useAuth } from '~/hooks/useAuth';
 
+type propState = {
+  from: { pathname: string };
+};
+
 export const Auth = () => {
   const { isAuthenticated } = useAuth();
 
-  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
+  const location = useLocation();
+
+  const path = location.state as propState;
+
+  const origin = path?.from?.pathname || '/dashboard';
+
+  if (isAuthenticated) return <Navigate to={origin} replace />;
 
   return (
     <Flex
