@@ -1,24 +1,15 @@
 import React from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import {
-  Box,
-  Flex,
-  Grid,
-  GridItem,
-  FormControl,
-  Textarea,
-  VStack,
-  Text,
-} from '@chakra-ui/react';
+import { Box, Flex, Grid, GridItem, VStack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { CreateJobFormData } from '~/@types/job';
 import { Container } from '~/components/Container';
 import { Input } from '~/components/Form/Input';
 import { InputNumber } from '~/components/Form/InputNumber';
-import { Label } from '~/components/Form/Label';
 import { Select } from '~/components/Form/Select';
+import { Textarea } from '~/components/Form/Textarea';
 import { JobEstimate } from '~/components/Job/Estimate';
 import { Title } from '~/components/Title';
 import { useJob } from '~/hooks/useJob';
@@ -195,23 +186,10 @@ export const NewJobPage = () => {
                   />
                 </Grid>
 
-                <FormControl mb="4" fontWeight="500" lineHeight="6">
-                  <Flex>
-                    <Label>Briefing</Label>
-
-                    <Text as="span" fontSize="small">
-                      (Opcional)
-                    </Text>
-                  </Flex>
-                  <Textarea
-                    {...register('job_briefing')}
-                    bg="white"
-                    resize="none"
-                    _focusVisible={{
-                      borderColor: 'gray.500',
-                    }}
-                  />
-                </FormControl>
+                <Textarea
+                  {...register('job_briefing')}
+                  label="Briefing (Opcional)"
+                />
               </VStack>
             </Box>
           </Box>
