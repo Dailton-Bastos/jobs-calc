@@ -28,12 +28,19 @@ const InputNumberBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
     <FormControl isInvalid={!!error}>
       {!!label && <Label>{label}</Label>}
 
-      <NumberInput focusBorderColor="pink.500" ref={ref} {...rest}>
+      <NumberInput focusBorderColor="orange.300" ref={ref} {...rest}>
         <NumberInputField
           bg="white"
           h="12"
+          borderColor="transparent"
+          _hover={{
+            bg: 'gray.100',
+            border: '2px solid',
+            borderColor: 'orange.300',
+          }}
           _focusVisible={{
-            borderColor: 'gray.500',
+            bg: 'white',
+            borderColor: 'orange.300',
           }}
         />
 

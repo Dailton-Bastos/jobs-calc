@@ -31,9 +31,16 @@ const SelectBase: ForwardRefRenderFunction<HTMLSelectElement, Props> = (
 
       <ChakraSelect
         bg="white"
-        h="12"
+        height="12"
+        variant="filled"
+        focusBorderColor="orange.300"
+        _hover={{
+          bg: 'gray.100',
+          borderColor: 'orange.300',
+        }}
         _focusVisible={{
-          borderColor: 'gray.500',
+          bg: 'white',
+          borderColor: 'orange.300',
         }}
         defaultValue=""
         ref={ref}
