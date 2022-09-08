@@ -12,6 +12,7 @@ import { Select } from '~/components/Form/Select';
 import { Textarea } from '~/components/Form/Textarea';
 import { JobEstimate } from '~/components/Job/Estimate';
 import { Title } from '~/components/Title';
+import { useAuth } from '~/hooks/useAuth';
 import { useJob } from '~/hooks/useJob';
 import { createJobFormSchema } from '~/schemas/createJobFormSchema';
 
@@ -38,6 +39,8 @@ export const NewJobPage = () => {
   const [isJobIdFieldDisabled, setIsJobIdFieldDisabled] = React.useState(false);
   const [isJobEstimateFieldDisabled, setIsJobEstimateFieldDisabled] =
     React.useState(false);
+
+  const { user } = useAuth();
 
   const { register, handleSubmit, resetField, formState } =
     useForm<CreateJobFormData>({
@@ -80,11 +83,13 @@ export const NewJobPage = () => {
         job_estimate_hour: jobType === 'budget' ? 1 : data?.job_estimate_hour,
         job_estimate_minutis:
           jobType === 'budget' ? 0 : data?.job_estimate_minutis,
+        user_id: user?.uid as string,
+        status: 'opened' as const,
       };
 
       await handleCreateJobData(values);
     },
-    [jobType, handleCreateJobData],
+    [jobType, handleCreateJobData, user],
   );
 
   React.useEffect(() => {
