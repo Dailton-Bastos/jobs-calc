@@ -1,7 +1,9 @@
+import React from 'react';
+import { useParams } from 'react-router-dom';
+
 import {
   Box,
   Flex,
-  Grid,
   VStack,
   Text,
   Table,
@@ -14,152 +16,193 @@ import {
   TableContainer,
 } from '@chakra-ui/react';
 
+import { JobDetail } from '~/@types/job';
 import { Container } from '~/components/Container';
 import { InfoJob } from '~/components/Job/Info';
+import { JobStatus } from '~/components/Job/Status';
 import { Title } from '~/components/Title';
+import { getJob } from '~/hooks/useJob';
 
 export const DetailsJobPage = () => {
+  const [data, setData] = React.useState<JobDetail | null>();
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const { id } = useParams();
+
+  const handleGetJobData = React.useCallback(async () => {
+    if (id) {
+      try {
+        setIsLoading(true);
+        const { job } = await getJob(id);
+
+        setData(job);
+        setIsLoading(false);
+      } catch (_) {
+        throw new Error('Error fetch job');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  }, [id]);
+
+  React.useEffect(() => {
+    handleGetJobData();
+  }, [handleGetJobData]);
+
   return (
     <Container title="Detalhes do Job">
-      <Box as="section">
-        <Flex alignItems="center" justifyContent="space-between" gap="8">
-          <Box w="100%" maxW="640px">
-            <Title>Descrição</Title>
+      <Box as="section" bg="white" px="8" py="12" borderRadius="5px">
+        {isLoading && <p>Carregando...</p>}
 
-            <VStack spacing="6" mt="8" align="flex-start">
-              <Grid gap="4" templateColumns="repeat(2, 1fr)" w="100%">
-                <InfoJob title="ID:">2207</InfoJob>
+        {data && (
+          <>
+            <Flex alignItems="center" justifyContent="space-between" gap="8">
+              <Box w="100%" maxW="640px">
+                <Title>Descrição</Title>
 
-                <InfoJob title="Título:">[Fibra] - Novo layout</InfoJob>
+                <VStack spacing="6" mt="8" align="flex-start">
+                  <Flex align="center" justify="space-between" w="100%">
+                    {data.id && <InfoJob title="ID:">{data?.id}</InfoJob>}
 
-                <InfoJob title="Tempo Estimado:">02h:00m</InfoJob>
+                    <InfoJob title="Título:">{data.title}</InfoJob>
+                  </Flex>
 
-                <InfoJob title="Tempo utilizado:">05h:38m</InfoJob>
+                  <Flex align="center" justify="space-between" w="100%">
+                    <InfoJob title="Tempo Estimado:">{data.estimate}</InfoJob>
 
-                <InfoJob title="Tipo:">Desenvolvimento</InfoJob>
+                    <InfoJob title="Tempo utilizado:">00h:00m</InfoJob>
+                  </Flex>
 
-                <InfoJob title="Status:">Em andamento</InfoJob>
+                  <Flex align="center" justify="space-between" w="100%">
+                    <InfoJob title="Tipo:">{data.type}</InfoJob>
 
-                <InfoJob title="Criado em:">08 de Setembro de 2022</InfoJob>
+                    <JobStatus color={data.status.color}>
+                      {data.status.title}
+                    </JobStatus>
+                  </Flex>
 
-                <InfoJob title="Última atualização:">08/09/2022</InfoJob>
-              </Grid>
+                  <Flex align="center" justify="space-between" w="100%">
+                    <InfoJob title="Criado em:">{data.createdAt}</InfoJob>
 
-              <Box>
-                <Text fontWeight="bold">Briefing:</Text>
+                    <InfoJob title="Última atualização:">
+                      {data.updatedAt}
+                    </InfoJob>
+                  </Flex>
 
-                <Text fontSize="md">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Expedita eos alias vero quod. Nam modi eveniet officiis, id
-                  enim, numquam, nostrum rerum quasi neque vitae consectetur
-                  nobis? Unde, et necessitatibus.
-                </Text>
+                  {data.briefing && (
+                    <Box>
+                      <Text fontWeight="bold">Briefing:</Text>
+
+                      <Text fontSize="md">{data.briefing}</Text>
+                    </Box>
+                  )}
+                </VStack>
               </Box>
-            </VStack>
-          </Box>
 
-          <Box>Estimate</Box>
-        </Flex>
+              <Box>Estimate</Box>
+            </Flex>
 
-        <TableContainer mt="10">
-          <Table>
-            <TableCaption>
-              <Flex gap="2" align="center" justify="flex-end">
-                <Text fontWeight="bold">Total de horas:</Text>
-                <Text>07h:30m</Text>
-              </Flex>
-            </TableCaption>
-            <Thead>
-              <Tr>
-                <Th>Data</Th>
-                <Th>Intervalo</Th>
-                <Th>Horas</Th>
-                <Th>Total Hora</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              <Tr>
-                <Td>09 setembro 2022</Td>
+            <TableContainer mt="10">
+              <Table colorScheme="blackAlpha">
+                <TableCaption>
+                  <Flex gap="2" align="center" justify="flex-end">
+                    <Text fontWeight="bold">Total de horas:</Text>
+                    <Text>07h:30m</Text>
+                  </Flex>
+                </TableCaption>
+                <Thead>
+                  <Tr>
+                    <Th>Data</Th>
+                    <Th>Intervalo</Th>
+                    <Th>Horas</Th>
+                    <Th>Total Hora</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  <Tr>
+                    <Td>09 setembro 2022</Td>
 
-                <Td>
-                  <VStack spacing="2" align="flex-start">
-                    <Text>09:00 - 12:20</Text>
-                    <Text>15:25 - 16:30</Text>
-                  </VStack>
-                </Td>
+                    <Td>
+                      <VStack spacing="2" align="flex-start">
+                        <Text>09:00 - 12:20</Text>
+                        <Text>15:25 - 16:30</Text>
+                      </VStack>
+                    </Td>
 
-                <Td>
-                  <VStack spacing="2" align="flex-start">
-                    <Text>3h:20m</Text>
-                    <Text>1h:55m</Text>
-                  </VStack>
-                </Td>
+                    <Td>
+                      <VStack spacing="2" align="flex-start">
+                        <Text>3h:20m</Text>
+                        <Text>1h:55m</Text>
+                      </VStack>
+                    </Td>
 
-                <Td>5h:15m</Td>
-              </Tr>
+                    <Td>5h:15m</Td>
+                  </Tr>
 
-              <Tr>
-                <Td>12 setembro 2022</Td>
+                  <Tr>
+                    <Td>12 setembro 2022</Td>
 
-                <Td>
-                  <VStack spacing="2" align="flex-start">
-                    <Text>10:45 - 11:30</Text>
-                    <Text>11:30 - 12:00</Text>
-                  </VStack>
-                </Td>
+                    <Td>
+                      <VStack spacing="2" align="flex-start">
+                        <Text>10:45 - 11:30</Text>
+                        <Text>11:30 - 12:00</Text>
+                      </VStack>
+                    </Td>
 
-                <Td>
-                  <VStack spacing="2" align="flex-start">
-                    <Text>1h:20m</Text>
-                    <Text>0h:55m</Text>
-                  </VStack>
-                </Td>
+                    <Td>
+                      <VStack spacing="2" align="flex-start">
+                        <Text>1h:20m</Text>
+                        <Text>0h:55m</Text>
+                      </VStack>
+                    </Td>
 
-                <Td>2h:15m</Td>
-              </Tr>
+                    <Td>2h:15m</Td>
+                  </Tr>
 
-              <Tr>
-                <Td>12 setembro 2022</Td>
+                  <Tr>
+                    <Td>12 setembro 2022</Td>
 
-                <Td>
-                  <VStack spacing="2" align="flex-start">
-                    <Text>10:45 - 11:30</Text>
-                    <Text>11:30 - 12:00</Text>
-                  </VStack>
-                </Td>
+                    <Td>
+                      <VStack spacing="2" align="flex-start">
+                        <Text>10:45 - 11:30</Text>
+                        <Text>11:30 - 12:00</Text>
+                      </VStack>
+                    </Td>
 
-                <Td>
-                  <VStack spacing="2" align="flex-start">
-                    <Text>1h:20m</Text>
-                    <Text>0h:55m</Text>
-                  </VStack>
-                </Td>
+                    <Td>
+                      <VStack spacing="2" align="flex-start">
+                        <Text>1h:20m</Text>
+                        <Text>0h:55m</Text>
+                      </VStack>
+                    </Td>
 
-                <Td>2h:15m</Td>
-              </Tr>
+                    <Td>2h:15m</Td>
+                  </Tr>
 
-              <Tr>
-                <Td>09 setembro 2022</Td>
+                  <Tr>
+                    <Td>09 setembro 2022</Td>
 
-                <Td>
-                  <VStack spacing="2" align="flex-start">
-                    <Text>09:00 - 12:20</Text>
-                    <Text>15:25 - 16:30</Text>
-                  </VStack>
-                </Td>
+                    <Td>
+                      <VStack spacing="2" align="flex-start">
+                        <Text>09:00 - 12:20</Text>
+                        <Text>15:25 - 16:30</Text>
+                      </VStack>
+                    </Td>
 
-                <Td>
-                  <VStack spacing="2" align="flex-start">
-                    <Text>3h:20m</Text>
-                    <Text>1h:55m</Text>
-                  </VStack>
-                </Td>
+                    <Td>
+                      <VStack spacing="2" align="flex-start">
+                        <Text>3h:20m</Text>
+                        <Text>1h:55m</Text>
+                      </VStack>
+                    </Td>
 
-                <Td>5h:15m</Td>
-              </Tr>
-            </Tbody>
-          </Table>
-        </TableContainer>
+                    <Td>5h:15m</Td>
+                  </Tr>
+                </Tbody>
+              </Table>
+            </TableContainer>
+          </>
+        )}
       </Box>
     </Container>
   );
