@@ -4,17 +4,17 @@ import { SubmitButton } from '~/components/Form/SubmitButton';
 
 type Props = {
   estimateHour: number;
-  estimateMinutis: number;
+  estimateMinutes: number;
   isSubmitting?: boolean;
 };
 
 export const JobEstimate = ({
   estimateHour,
-  estimateMinutis,
+  estimateMinutes,
   isSubmitting,
 }: Props) => {
   const hour = estimateHour.toString().padStart(2, '0');
-  const minutis = estimateMinutis.toString().padStart(2, '0');
+  const minutis = estimateMinutes.toString().padStart(2, '0');
 
   return (
     <Flex

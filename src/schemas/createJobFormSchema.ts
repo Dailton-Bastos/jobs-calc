@@ -9,7 +9,7 @@ export const createJobFormSchema = yup
     job_title: yup.string().required('Campo obrigatório*').trim(),
     job_type: yup.string().required('Campo obrigatório*'),
     job_estimate_hour: yup.number().integer().required('Campo obrigatório*'),
-    job_estimate_minutis: yup.number().when('job_estimate_hour', {
+    job_estimate_minutes: yup.number().when('job_estimate_hour', {
       is: (value: number) => value === 0,
       then: yup.number().min(1, 'O valor não pode ser 0').required(),
     }),

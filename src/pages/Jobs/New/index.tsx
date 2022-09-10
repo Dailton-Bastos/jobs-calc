@@ -33,7 +33,7 @@ const jobTypes = [
 
 export const NewJobPage = () => {
   const [jobEstimateHour, setJobEstimateHour] = React.useState(1);
-  const [jobEstimateMinutis, setJobEstimateMinutis] = React.useState(0);
+  const [jobEstimateMinutes, setJobEstimateMinutes] = React.useState(0);
   const [jobId, setJobId] = React.useState('');
   const [jobType, setJobType] = React.useState('');
   const [isJobIdFieldDisabled, setIsJobIdFieldDisabled] = React.useState(false);
@@ -47,7 +47,7 @@ export const NewJobPage = () => {
       mode: 'all',
       defaultValues: {
         job_estimate_hour: 1,
-        job_estimate_minutis: 0,
+        job_estimate_minutes: 0,
         job_id: '',
       },
       resolver: yupResolver(createJobFormSchema),
@@ -61,8 +61,8 @@ export const NewJobPage = () => {
     setJobEstimateHour(Number(e));
   }, []);
 
-  const handleJobEstimateMinutis = React.useCallback((e: string) => {
-    setJobEstimateMinutis(Number(e));
+  const handleJobEstimateMinutes = React.useCallback((e: string) => {
+    setJobEstimateMinutes(Number(e));
   }, []);
 
   const handleIdJobber = React.useCallback((e: string) => {
@@ -81,8 +81,8 @@ export const NewJobPage = () => {
       const values = {
         ...data,
         job_estimate_hour: jobType === 'budget' ? 1 : data?.job_estimate_hour,
-        job_estimate_minutis:
-          jobType === 'budget' ? 0 : data?.job_estimate_minutis,
+        job_estimate_minutes:
+          jobType === 'budget' ? 0 : data?.job_estimate_minutes,
         user_id: user?.uid as string,
         status: 'opened' as const,
       };
@@ -98,9 +98,9 @@ export const NewJobPage = () => {
         setIsJobEstimateFieldDisabled(true);
         setIsJobIdFieldDisabled(false);
         setJobEstimateHour(1);
-        setJobEstimateMinutis(0);
+        setJobEstimateMinutes(0);
         resetField('job_estimate_hour');
-        resetField('job_estimate_minutis');
+        resetField('job_estimate_minutes');
         break;
 
       case 'other':
@@ -114,7 +114,7 @@ export const NewJobPage = () => {
         setIsJobEstimateFieldDisabled(false);
         setIsJobIdFieldDisabled(false);
         setJobEstimateHour((prev) => prev);
-        setJobEstimateMinutis((prev) => prev);
+        setJobEstimateMinutes((prev) => prev);
         setJobId((prev) => prev);
         break;
     }
@@ -179,15 +179,15 @@ export const NewJobPage = () => {
                   />
 
                   <InputNumber
-                    {...register('job_estimate_minutis')}
+                    {...register('job_estimate_minutes')}
                     label="Tempo Estimado (min)*"
                     max={59}
                     min={0}
                     stepper
-                    value={jobEstimateMinutis}
-                    onChange={handleJobEstimateMinutis}
+                    value={jobEstimateMinutes}
+                    onChange={handleJobEstimateMinutes}
                     isDisabled={isJobEstimateFieldDisabled}
-                    error={errors?.job_estimate_minutis}
+                    error={errors?.job_estimate_minutes}
                   />
                 </Grid>
 
@@ -201,7 +201,7 @@ export const NewJobPage = () => {
 
           <JobEstimate
             estimateHour={jobEstimateHour}
-            estimateMinutis={jobEstimateMinutis}
+            estimateMinutes={jobEstimateMinutes}
             isSubmitting={isSubmitting}
           />
         </Flex>
