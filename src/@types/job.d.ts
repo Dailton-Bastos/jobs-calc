@@ -1,15 +1,9 @@
-export enum JobTypeEnum {
-  budget = 'budget',
-  development = 'development',
-  other = 'other',
-}
-
 type JobStatus = 'opened' | 'developing' | 'done' | 'paused';
 
 export type Job = {
   job_id: string;
   job_title: string;
-  job_type: JobTypeEnum;
+  job_type: 'budget' | 'development' | 'other';
   job_estimate_hour: number;
   job_estimate_minutis: number;
   job_briefing: string;

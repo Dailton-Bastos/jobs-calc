@@ -1,6 +1,5 @@
 import { Flex, Text } from '@chakra-ui/react';
 
-import { CancellButton } from '~/components/Form/CancellButton';
 import { SubmitButton } from '~/components/Form/SubmitButton';
 
 type Props = {
@@ -50,9 +49,9 @@ export const JobEstimate = ({
         justifyContent="space-between"
         width="100%"
       >
-        <SubmitButton isLoading={isSubmitting}>Salvar</SubmitButton>
-
-        <CancellButton linkTo="/jobs" />
+        <SubmitButton isLoading={isSubmitting} maxW="100%">
+          Salvar
+        </SubmitButton>
       </Flex>
     </Flex>
   );

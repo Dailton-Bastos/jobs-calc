@@ -5,6 +5,7 @@ import { useSpinner } from '~/hooks/useSpinner';
 import { Auth } from '~/Layouts/Auth';
 import { ForgotPassword } from '~/pages/Forgot';
 import { Home } from '~/pages/Home';
+import { DetailsJobPage } from '~/pages/Jobs/Details';
 import { NewJobPage } from '~/pages/Jobs/New';
 import { SignIn } from '~/pages/SignIn';
 import { SignUp } from '~/pages/Signup';
@@ -25,6 +26,7 @@ export const GlobalRoutes = () => {
 
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<Home />} />
+        <Route path="/jobs/:id" element={<DetailsJobPage />} />
         <Route path="/jobs/new" element={<NewJobPage />} />
       </Route>
     </Routes>
