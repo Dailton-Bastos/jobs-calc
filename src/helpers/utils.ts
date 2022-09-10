@@ -1,3 +1,7 @@
+/* eslint-disable import/no-duplicates */
+import { format } from 'date-fns';
+import pt from 'date-fns/locale/pt-BR';
+
 import { JobStatus, JobTypes } from '~/@types/job';
 
 export function jobType(type: JobTypes) {
@@ -56,4 +60,10 @@ export function formatTime(hour: number, minutes: number) {
   const formattedMinutes = minutes.toString().padStart(2, '0');
 
   return `${formattedHour}h:${formattedMinutes}m`;
+}
+
+export function formatDate(unix: number) {
+  return format(new Date(unix), "dd MMM yyyy, 'às 'HH:mm'", {
+    locale: pt,
+  });
 }

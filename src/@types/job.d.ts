@@ -11,8 +11,8 @@ export type Job = {
   job_briefing: string;
   user_id: string;
   status: JobStatus;
-  created_at: string;
-  updated_at: string;
+  created_at: number;
+  updated_at: number;
 };
 
 export type CreateJobFormData = Job;

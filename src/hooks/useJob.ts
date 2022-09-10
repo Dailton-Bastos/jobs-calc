@@ -5,7 +5,7 @@ import { ref, push, get, child } from 'firebase/database';
 
 import { CreateJobFormData, Job, GetJobResponse } from '~/@types/job';
 import { db, serverTimestamp } from '~/config/firebase';
-import { jobType, jobStatus, formatTime } from '~/helpers/utils';
+import { jobType, jobStatus, formatTime, formatDate } from '~/helpers/utils';
 
 export const getJob = async (id: string): Promise<GetJobResponse> => {
   try {
@@ -21,11 +21,11 @@ export const getJob = async (id: string): Promise<GetJobResponse> => {
         title: data.job_title,
         type: jobType(data.job_type),
         estimate: formatTime(data.job_estimate_hour, data.job_estimate_minutes),
-        briefing: null,
+        briefing: data.job_briefing,
         status: jobStatus(data.status),
-        user: 'LvXwBaO8O8VvlZ9YScOvuwiXHwf1',
-        createdAt: '10/09/2022',
-        updatedAt: '10/09/2022',
+        user: data.user_id,
+        createdAt: formatDate(data.created_at),
+        updatedAt: formatDate(data.updated_at),
       };
     }
     return { job };
