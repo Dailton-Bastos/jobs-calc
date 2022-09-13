@@ -1,24 +1,12 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
-import {
-  Box,
-  Flex,
-  VStack,
-  Text,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableCaption,
-  TableContainer,
-} from '@chakra-ui/react';
+import { Box, Flex, VStack, Text } from '@chakra-ui/react';
 
 import { JobDetail } from '~/@types/job';
 import { Container } from '~/components/Container';
 import { InfoJob } from '~/components/Job/Info';
+import { JobProgress } from '~/components/Job/Progress';
 import { JobStatus } from '~/components/Job/Status';
 import { Title } from '~/components/Title';
 import { getJob } from '~/hooks/useJob';
@@ -99,10 +87,10 @@ export const DetailsJobPage = () => {
                 </VStack>
               </Box>
 
-              <Box>Estimate</Box>
+              <JobProgress />
             </Flex>
 
-            <TableContainer mt="10">
+            {/* <TableContainer mt="10">
               <Table colorScheme="blackAlpha">
                 <TableCaption>
                   <Flex gap="2" align="center" justify="flex-end">
@@ -200,7 +188,7 @@ export const DetailsJobPage = () => {
                   </Tr>
                 </Tbody>
               </Table>
-            </TableContainer>
+            </TableContainer> */}
           </>
         )}
       </Box>
