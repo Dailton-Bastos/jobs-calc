@@ -8,17 +8,27 @@ import { ProgressButton } from '~/components/Job/Progress/Button';
 
 import 'react-circular-progressbar/dist/styles.css';
 
-export const JobProgress = () => {
+interface Props {
+  estimateTotalSeconds: number;
+}
+
+export const JobProgress = ({ estimateTotalSeconds = 0 }: Props) => {
   const [isPaused, setIsPaused] = React.useState(true);
   const [secondsLeft, setSecondsLeft] = React.useState(0);
 
   const secondsLeftRef = React.useRef(secondsLeft);
   const isPausedRef = React.useRef(isPaused);
 
-  const totalSeconds = 1 * 60; // minutes
-  const minutes = Math.floor(secondsLeft / 60)
+  const totalSeconds = estimateTotalSeconds; // hour + minutes in seconds
+
+  const hour = Math.floor(secondsLeft / 60 / 60)
     .toString()
     .padStart(2, '0');
+
+  const minutes = Math.floor((secondsLeft / 60) % 60)
+    .toString()
+    .padStart(2, '0');
+
   const seconds = (secondsLeft % 60).toString().padStart(2, '0');
 
   const percentage = Math.round((secondsLeft / totalSeconds) * 100);
@@ -39,7 +49,7 @@ export const JobProgress = () => {
   }, []);
 
   React.useEffect(() => {
-    secondsLeftRef.current = 1 * 60; // minutes
+    secondsLeftRef.current = totalSeconds;
     setSecondsLeft(secondsLeftRef.current);
 
     const interval = setInterval(() => {
@@ -55,7 +65,7 @@ export const JobProgress = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [tick]);
+  }, [tick, totalSeconds]);
 
   return (
     <Flex
@@ -72,11 +82,12 @@ export const JobProgress = () => {
     >
       <CircularProgressbar
         value={percentage}
-        text={minutes + ':' + seconds}
+        text={`${hour}:${minutes}:${seconds}`}
         styles={buildStyles({
           textColor: '#5A5A66',
           pathColor: percentage > 60 ? '#36B336' : '#EB3B35',
           trailColor: percentage === 0 ? '#EB3B35' : '#E1E3E5',
+          textSize: 16,
         })}
         strokeWidth={5}
       />

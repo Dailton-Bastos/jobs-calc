@@ -8,6 +8,7 @@ export type Job = {
   job_type: JobTypes;
   job_estimate_hour: number;
   job_estimate_minutes: number;
+  estimateTotalSeconds: number;
   job_briefing: string;
   user_id: string;
   status: JobStatus;
@@ -22,6 +23,7 @@ export interface JobDetail {
   title: string;
   type: string;
   estimate: string;
+  estimateTotalSeconds: number;
   briefing: string | null;
   status: {
     title: string;

@@ -21,6 +21,7 @@ export const getJob = async (id: string): Promise<GetJobResponse> => {
         title: data.job_title,
         type: jobType(data.job_type),
         estimate: formatTime(data.job_estimate_hour, data.job_estimate_minutes),
+        estimateTotalSeconds: data.estimateTotalSeconds,
         briefing: data.job_briefing,
         status: jobStatus(data.status),
         user: data.user_id,

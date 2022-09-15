@@ -83,6 +83,8 @@ export const NewJobPage = () => {
         job_estimate_hour: jobType === 'budget' ? 1 : data?.job_estimate_hour,
         job_estimate_minutes:
           jobType === 'budget' ? 0 : data?.job_estimate_minutes,
+        estimateTotalSeconds:
+          (data.job_estimate_hour * 60 + data.job_estimate_minutes) * 60,
         user_id: user?.uid as string,
         status: 'opened' as const,
       };

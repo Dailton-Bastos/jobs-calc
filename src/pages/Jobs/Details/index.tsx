@@ -87,7 +87,7 @@ export const DetailsJobPage = () => {
                 </VStack>
               </Box>
 
-              <JobProgress />
+              <JobProgress estimateTotalSeconds={data.estimateTotalSeconds} />
             </Flex>
 
             {/* <TableContainer mt="10">
