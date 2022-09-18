@@ -5,15 +5,18 @@ import { RiPlayMiniLine, RiPauseMiniFill } from 'react-icons/ri';
 import { Flex, Box } from '@chakra-ui/react';
 
 import { ProgressButton } from '~/components/Job/Progress/Button';
+import { addJobReport } from '~/hooks/useJob';
 
 import 'react-circular-progressbar/dist/styles.css';
 
 interface Props {
   estimateTotalSeconds: number;
+  uid: string;
 }
 
-export const JobProgress = ({ estimateTotalSeconds = 0 }: Props) => {
+export const JobProgress = ({ estimateTotalSeconds = 0, uid }: Props) => {
   const [isPaused, setIsPaused] = React.useState(true);
+  const [isSaveReports, setIsSaveReports] = React.useState(false);
   const [secondsLeft, setSecondsLeft] = React.useState(0);
 
   const secondsLeftRef = React.useRef(secondsLeft);
@@ -41,11 +44,18 @@ export const JobProgress = ({ estimateTotalSeconds = 0 }: Props) => {
   const handlePayButton = React.useCallback(() => {
     setIsPaused(false);
     isPausedRef.current = false;
+    setIsSaveReports(false);
+
+    window.localStorage.setItem(
+      '@JobsCalc-StartHour',
+      JSON.stringify(new Date()),
+    );
   }, []);
 
-  const handlePauseButton = React.useCallback(() => {
+  const handlePauseButton = React.useCallback(async () => {
     setIsPaused(true);
     isPausedRef.current = true;
+    setIsSaveReports(true);
   }, []);
 
   React.useEffect(() => {
@@ -57,6 +67,7 @@ export const JobProgress = ({ estimateTotalSeconds = 0 }: Props) => {
 
       if (secondsLeftRef.current === 0) {
         setIsPaused(true);
+        setIsSaveReports(true);
 
         return;
       }
@@ -66,6 +77,24 @@ export const JobProgress = ({ estimateTotalSeconds = 0 }: Props) => {
 
     return () => clearInterval(interval);
   }, [tick, totalSeconds]);
+
+  React.useEffect(() => {
+    async function handleSaveJobReports() {
+      const hourStart = window.localStorage.getItem('@JobsCalc-StartHour');
+
+      if (hourStart) {
+        await addJobReport(uid, new Date(JSON.parse(hourStart)), new Date());
+
+        setIsSaveReports(false);
+
+        window.localStorage.removeItem('@JobsCalc-StartHour');
+      }
+    }
+
+    if (isSaveReports) {
+      handleSaveJobReports();
+    }
+  }, [uid, isSaveReports]);
 
   return (
     <Flex

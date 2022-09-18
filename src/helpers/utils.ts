@@ -1,5 +1,5 @@
 /* eslint-disable import/no-duplicates */
-import { format } from 'date-fns';
+import { format, intervalToDuration } from 'date-fns';
 import pt from 'date-fns/locale/pt-BR';
 
 import { JobStatus, JobTypes } from '~/@types/job';
@@ -66,4 +66,20 @@ export function formatDate(unix: number) {
   return format(new Date(unix), "dd MMM yyyy, 'às 'HH:mm'", {
     locale: pt,
   });
+}
+
+export function formatDateWithoutHour(date: Date) {
+  return format(new Date(date), 'dd/MM/yyyy', {
+    locale: pt,
+  });
+}
+
+export function formatHour(date: Date) {
+  return format(new Date(date), 'HH:mm', {
+    locale: pt,
+  });
+}
+
+export function formatIntervalDuration(dateStart: Date, dateEnd: Date) {
+  return intervalToDuration({ start: dateStart, end: dateEnd });
 }

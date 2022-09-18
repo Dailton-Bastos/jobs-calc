@@ -5,7 +5,15 @@ import { ref, push, get, child } from 'firebase/database';
 
 import { CreateJobFormData, Job, GetJobResponse } from '~/@types/job';
 import { db, serverTimestamp } from '~/config/firebase';
-import { jobType, jobStatus, formatTime, formatDate } from '~/helpers/utils';
+import {
+  jobType,
+  jobStatus,
+  formatTime,
+  formatDate,
+  formatDateWithoutHour,
+  formatHour,
+  formatIntervalDuration,
+} from '~/helpers/utils';
 
 export const getJob = async (id: string): Promise<GetJobResponse> => {
   try {
@@ -60,4 +68,34 @@ export const useJob = () => {
   );
 
   return { handleCreateJobData };
+};
+
+export const addJobReport = async (
+  uid: string,
+  hourStart: Date,
+  hourEnd: Date,
+) => {
+  try {
+    const data = {
+      job_id: uid,
+      date: formatDateWithoutHour(new Date()),
+
+      report: {
+        hourStart: formatHour(hourStart),
+        hourEnd: formatHour(hourEnd),
+        duration: formatIntervalDuration(hourStart, hourEnd),
+      },
+    };
+
+    const minutes = data?.report?.duration?.minutes;
+    const hour = data?.report?.duration?.hours;
+
+    const isValid = hour || (!!minutes && minutes >= 1);
+
+    if (!isValid) return;
+
+    await push(ref(db, 'reports'), data);
+  } catch (error) {
+    throw new Error('Erro save job reports');
+  }
 };
