@@ -37,3 +37,28 @@ export interface JobDetail {
 export interface GetJobResponse {
   job: JobDetail | null;
 }
+
+interface Duration {
+  duration: {
+    hours: string;
+    minutes: string;
+  };
+  hourEnd: string;
+  hourStart: string;
+}
+
+export interface JobReport {
+  date: string;
+  job_id: string;
+  reports: Duration[];
+}
+
+export interface JobReports {
+  date: string;
+  job_id: string;
+  report: Duration;
+}
+
+export interface GetJobReports {
+  reports: Array<string, JobReports>;
+}

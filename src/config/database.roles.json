@@ -9,8 +9,9 @@
       }
     },
     "reports": {
-      ".read": false,
+      ".read": "auth != null",
       ".write": "auth != null",
+      ".indexOn": "job_id",
       "$uid": {
         ".write": "auth != null && (!data.exists())"
       }

@@ -1,9 +1,22 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { ref, push, get, child } from 'firebase/database';
+import {
+  ref,
+  push,
+  get,
+  child,
+  orderByChild,
+  equalTo,
+  query,
+} from 'firebase/database';
 
-import { CreateJobFormData, Job, GetJobResponse } from '~/@types/job';
+import {
+  CreateJobFormData,
+  Job,
+  GetJobResponse,
+  GetJobReports,
+} from '~/@types/job';
 import { db, serverTimestamp } from '~/config/firebase';
 import {
   jobType,
@@ -98,4 +111,30 @@ export const addJobReport = async (
   } catch (error) {
     throw new Error('Erro save job reports');
   }
+};
+
+export const getJobReports = async (jobId: string): Promise<GetJobReports> => {
+  let reports = null;
+
+  const reportRef = query(
+    ref(db, 'reports'),
+    orderByChild('job_id'),
+    equalTo(jobId),
+  );
+
+  const snapshot = await get(reportRef);
+
+  if (snapshot && snapshot.exists()) {
+    const data = snapshot.val();
+
+    reports = Object.keys(data).map((key: string) => {
+      return {
+        date: data[key].date,
+        job_id: data[key].job_id,
+        report: data[key].report,
+      };
+    });
+  }
+
+  return { reports };
 };

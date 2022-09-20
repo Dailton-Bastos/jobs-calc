@@ -1,32 +1,26 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
-import {
-  Box,
-  Flex,
-  VStack,
-  Text,
-  TableContainer,
-  Table,
-  TableCaption,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-} from '@chakra-ui/react';
+import { Box, Flex, VStack, Text } from '@chakra-ui/react';
 
-import { JobDetail } from '~/@types/job';
+import {
+  JobDetail,
+  JobReport,
+  JobReports as JobReportsType,
+} from '~/@types/job';
 import { Container } from '~/components/Container';
 import { InfoJob } from '~/components/Job/Info';
 import { JobProgress } from '~/components/Job/Progress';
+import { JobReports } from '~/components/Job/Reports';
 import { JobStatus } from '~/components/Job/Status';
 import { Title } from '~/components/Title';
-import { getJob } from '~/hooks/useJob';
+import { groupBy } from '~/helpers/utils';
+import { getJob, getJobReports } from '~/hooks/useJob';
 
 export const DetailsJobPage = () => {
   const [data, setData] = React.useState<JobDetail | null>();
   const [isLoading, setIsLoading] = React.useState(false);
+  const [jobReports, setJobReports] = React.useState<JobReport[]>([]);
 
   const { id } = useParams();
 
@@ -34,11 +28,36 @@ export const DetailsJobPage = () => {
     if (id) {
       try {
         setIsLoading(true);
-        const { job } = await getJob(id);
 
-        setData(job);
+        const [{ job }, { reports }] = await Promise.all([
+          getJob(id),
+          getJobReports(id),
+        ]);
+
+        if (job) {
+          setData(job);
+        }
+
+        if (reports) {
+          const reportsData = groupBy(reports, 'date');
+
+          const formattedJobReports = Object.keys(reportsData).map(
+            (key: string) => {
+              return {
+                date: reportsData[key][0]?.date,
+                job_id: reportsData[key][0]?.job_id,
+                reports: reportsData[key]?.map(
+                  (item: JobReportsType) => item.report,
+                ),
+              };
+            },
+          );
+
+          setJobReports(formattedJobReports);
+        }
+
         setIsLoading(false);
-      } catch (_) {
+      } catch (err) {
         throw new Error('Error fetch job');
       } finally {
         setIsLoading(false);
@@ -109,65 +128,7 @@ export const DetailsJobPage = () => {
             <Box mt="12">
               <Title>Apontamentos</Title>
 
-              <TableContainer mt="10">
-                <Table colorScheme="blackAlpha">
-                  <TableCaption>
-                    <Flex gap="2" align="center" justify="flex-end">
-                      <Text fontWeight="bold">Total de horas:</Text>
-                      <Text>07h:30m</Text>
-                    </Flex>
-                  </TableCaption>
-                  <Thead>
-                    <Tr>
-                      <Th>Data</Th>
-                      <Th>Intervalo</Th>
-                      <Th>Horas</Th>
-                      <Th>Total Hora</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    <Tr>
-                      <Td>09 setembro 2022</Td>
-
-                      <Td>
-                        <VStack spacing="2" align="flex-start">
-                          <Text>09:00 - 12:20</Text>
-                          <Text>15:25 - 16:30</Text>
-                        </VStack>
-                      </Td>
-
-                      <Td>
-                        <VStack spacing="2" align="flex-start">
-                          <Text>3h:20m</Text>
-                          <Text>1h:55m</Text>
-                        </VStack>
-                      </Td>
-
-                      <Td>5h:15m</Td>
-                    </Tr>
-
-                    <Tr>
-                      <Td>12 setembro 2022</Td>
-
-                      <Td>
-                        <VStack spacing="2" align="flex-start">
-                          <Text>10:45 - 11:30</Text>
-                          <Text>11:30 - 12:00</Text>
-                        </VStack>
-                      </Td>
-
-                      <Td>
-                        <VStack spacing="2" align="flex-start">
-                          <Text>1h:20m</Text>
-                          <Text>0h:55m</Text>
-                        </VStack>
-                      </Td>
-
-                      <Td>2h:15m</Td>
-                    </Tr>
-                  </Tbody>
-                </Table>
-              </TableContainer>
+              <JobReports reports={jobReports} />
             </Box>
           </>
         )}

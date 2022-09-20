@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable import/no-duplicates */
 import { format, intervalToDuration } from 'date-fns';
 import pt from 'date-fns/locale/pt-BR';
@@ -82,4 +83,17 @@ export function formatHour(date: Date) {
 
 export function formatIntervalDuration(dateStart: Date, dateEnd: Date) {
   return intervalToDuration({ start: dateStart, end: dateEnd });
+}
+
+export function groupBy(array: any[], key: string) {
+  return array.reduce(
+    (acc: Record<string, any[]>, item: Record<string, any>) => {
+      if (!acc[item[key]]) acc[item[key]] = [];
+
+      acc[item[key]].push(item);
+
+      return acc;
+    },
+    {},
+  );
 }
