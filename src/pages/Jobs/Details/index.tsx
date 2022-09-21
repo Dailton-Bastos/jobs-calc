@@ -5,8 +5,8 @@ import { Box, Flex, VStack, Text } from '@chakra-ui/react';
 
 import {
   JobDetail,
-  JobReport,
   JobReports as JobReportsType,
+  JobReport,
 } from '~/@types/job';
 import { Container } from '~/components/Container';
 import { InfoJob } from '~/components/Job/Info';
@@ -15,12 +15,12 @@ import { JobReports } from '~/components/Job/Reports';
 import { JobStatus } from '~/components/Job/Status';
 import { Title } from '~/components/Title';
 import { groupBy } from '~/helpers/utils';
-import { getJob, getJobReports } from '~/hooks/useJob';
+import { getJob, getJobReports, useFormattedHour } from '~/hooks/useJob';
 
 export const DetailsJobPage = () => {
   const [data, setData] = React.useState<JobDetail | null>();
   const [isLoading, setIsLoading] = React.useState(false);
-  const [jobReports, setJobReports] = React.useState<JobReport[]>([]);
+  const [jobReports, setJobReports] = React.useState<JobReportsType[]>([]);
 
   const { id } = useParams();
 
@@ -47,7 +47,17 @@ export const DetailsJobPage = () => {
                 date: reportsData[key][0]?.date,
                 job_id: reportsData[key][0]?.job_id,
                 reports: reportsData[key]?.map(
-                  (item: JobReportsType) => item.report,
+                  (item: JobReport) => item.report,
+                ),
+                totalHours: reportsData[key]?.reduce(
+                  (acc: number, item: JobReport) => {
+                    return (
+                      acc +
+                      item?.report?.duration?.hours * 60 * 60 +
+                      item?.report?.duration?.minutes * 60
+                    );
+                  },
+                  0,
                 ),
               };
             },
@@ -64,6 +74,12 @@ export const DetailsJobPage = () => {
       }
     }
   }, [id]);
+
+  const totalHourJob = React.useMemo(() => {
+    return jobReports.reduce((acc, item) => acc + item.totalHours, 0);
+  }, [jobReports]);
+
+  const { formattedHour } = useFormattedHour(totalHourJob);
 
   React.useEffect(() => {
     handleGetJobData();
@@ -90,7 +106,7 @@ export const DetailsJobPage = () => {
                   <Flex align="center" justify="space-between" w="100%">
                     <InfoJob title="Tempo Estimado:">{data.estimate}</InfoJob>
 
-                    <InfoJob title="Tempo utilizado:">00h:00m</InfoJob>
+                    <InfoJob title="Tempo utilizado:">{formattedHour}</InfoJob>
                   </Flex>
 
                   <Flex align="center" justify="space-between" w="100%">
@@ -128,7 +144,7 @@ export const DetailsJobPage = () => {
             <Box mt="12">
               <Title>Apontamentos</Title>
 
-              <JobReports reports={jobReports} />
+              <JobReports reports={jobReports} totalHourJob={totalHourJob} />
             </Box>
           </>
         )}

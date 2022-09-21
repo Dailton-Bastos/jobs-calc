@@ -138,3 +138,14 @@ export const getJobReports = async (jobId: string): Promise<GetJobReports> => {
 
   return { reports };
 };
+
+export const useFormattedHour = (totalHourJob: number) => {
+  const formattedHour = React.useMemo(() => {
+    return formatTime(
+      Math.floor(totalHourJob / 60 / 60),
+      Math.floor((totalHourJob / 60) % 60),
+    );
+  }, [totalHourJob]);
+
+  return { formattedHour };
+};

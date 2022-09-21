@@ -38,22 +38,38 @@ export interface GetJobResponse {
   job: JobDetail | null;
 }
 
+export interface FormattedJobType {
+  date: string;
+  job_id: string;
+  reports: Array<{
+    duration: {
+      hours: string;
+      minutes: string;
+    };
+    hourEnd: string;
+    hourStart: string;
+  }>;
+  totalHours: number;
+  formattedTimer: string;
+}
+
 interface Duration {
   duration: {
-    hours: string;
-    minutes: string;
+    hours: number;
+    minutes: number;
   };
   hourEnd: string;
   hourStart: string;
 }
 
-export interface JobReport {
+export interface JobReports {
   date: string;
   job_id: string;
   reports: Duration[];
+  totalHours: number;
 }
 
-export interface JobReports {
+export interface JobReport {
   date: string;
   job_id: string;
   report: Duration;

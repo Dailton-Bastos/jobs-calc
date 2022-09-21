@@ -14,14 +14,19 @@ import {
   Td,
 } from '@chakra-ui/react';
 
-import { JobReport } from '~/@types/job';
+import { FormattedJobType, JobReports as JobReportsType } from '~/@types/job';
+import { formatTime } from '~/helpers/utils';
+import { useFormattedHour } from '~/hooks/useJob';
 
 interface Props {
-  reports: JobReport[];
+  reports: JobReportsType[];
+  totalHourJob: number;
 }
 
-export const JobReports = ({ reports = [] }: Props) => {
-  const [jobReports, setJobReports] = React.useState<JobReport[]>([]);
+export const JobReports = ({ reports = [], totalHourJob }: Props) => {
+  const [jobReports, setJobReports] = React.useState<FormattedJobType[]>([]);
+
+  const { formattedHour } = useFormattedHour(totalHourJob);
 
   React.useEffect(() => {
     const data = reports.map((report) => {
@@ -37,6 +42,10 @@ export const JobReports = ({ reports = [] }: Props) => {
             },
           };
         }),
+        formattedTimer: formatTime(
+          Math.floor(report.totalHours / 60 / 60),
+          Math.floor((report.totalHours / 60) % 60),
+        ),
       };
     });
 
@@ -49,7 +58,7 @@ export const JobReports = ({ reports = [] }: Props) => {
         <TableCaption>
           <Flex gap="2" align="center" justify="flex-end">
             <Text fontWeight="bold">Total de horas:</Text>
-            <Text>07h:30m</Text>
+            <Text>{formattedHour}</Text>
           </Flex>
         </TableCaption>
         <Thead>
@@ -83,7 +92,7 @@ export const JobReports = ({ reports = [] }: Props) => {
                 </VStack>
               </Td>
 
-              <Td>5h:15m</Td>
+              <Td>{report.formattedTimer}</Td>
             </Tr>
           ))}
         </Tbody>
