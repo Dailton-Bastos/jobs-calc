@@ -138,6 +138,7 @@ export const DetailsJobPage = () => {
               <JobProgress
                 estimateTotalSeconds={data.estimateTotalSeconds}
                 uid={id as string}
+                totalHourJobUsed={totalHourJob}
               />
             </Flex>
 

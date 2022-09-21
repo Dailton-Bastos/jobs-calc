@@ -12,9 +12,14 @@ import 'react-circular-progressbar/dist/styles.css';
 interface Props {
   estimateTotalSeconds: number;
   uid: string;
+  totalHourJobUsed: number;
 }
 
-export const JobProgress = ({ estimateTotalSeconds = 0, uid }: Props) => {
+export const JobProgress = ({
+  estimateTotalSeconds = 0,
+  uid,
+  totalHourJobUsed = 0,
+}: Props) => {
   const [isPaused, setIsPaused] = React.useState(true);
   const [isSaveReports, setIsSaveReports] = React.useState(false);
   const [secondsLeft, setSecondsLeft] = React.useState(0);
@@ -22,7 +27,7 @@ export const JobProgress = ({ estimateTotalSeconds = 0, uid }: Props) => {
   const secondsLeftRef = React.useRef(secondsLeft);
   const isPausedRef = React.useRef(isPaused);
 
-  const totalSeconds = estimateTotalSeconds; // hour + minutes in seconds
+  const totalSeconds = estimateTotalSeconds - totalHourJobUsed; // hour + minutes in seconds
 
   const hour = Math.floor(secondsLeft / 60 / 60)
     .toString()
@@ -34,7 +39,9 @@ export const JobProgress = ({ estimateTotalSeconds = 0, uid }: Props) => {
 
   const seconds = (secondsLeft % 60).toString().padStart(2, '0');
 
-  const percentage = Math.round((secondsLeft / totalSeconds) * 100);
+  const percentage = Math.round(
+    (secondsLeft / (totalSeconds + totalHourJobUsed)) * 100,
+  );
 
   const tick = React.useCallback(() => {
     secondsLeftRef.current--;
@@ -114,7 +121,7 @@ export const JobProgress = ({ estimateTotalSeconds = 0, uid }: Props) => {
         text={`${hour}:${minutes}:${seconds}`}
         styles={buildStyles({
           textColor: '#5A5A66',
-          pathColor: percentage > 60 ? '#36B336' : '#EB3B35',
+          pathColor: percentage > 30 ? '#36B336' : '#EB3B35',
           trailColor: percentage === 0 ? '#EB3B35' : '#E1E3E5',
           textSize: 16,
         })}
