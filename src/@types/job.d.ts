@@ -57,6 +57,7 @@ interface Duration {
   duration: {
     hours: number;
     minutes: number;
+    seconds: number;
   };
   hourEnd: string;
   hourStart: string;

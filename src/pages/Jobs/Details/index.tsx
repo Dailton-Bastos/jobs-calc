@@ -54,7 +54,8 @@ export const DetailsJobPage = () => {
                     return (
                       acc +
                       item?.report?.duration?.hours * 60 * 60 +
-                      item?.report?.duration?.minutes * 60
+                      item?.report?.duration?.minutes * 60 +
+                      item?.report?.duration?.seconds
                     );
                   },
                   0,
