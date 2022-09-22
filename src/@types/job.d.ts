@@ -39,6 +39,7 @@ export interface GetJobResponse {
 }
 
 export interface FormattedJobType {
+  id: string;
   date: string;
   job_id: string;
   reports: Array<{
@@ -64,6 +65,7 @@ interface Duration {
 }
 
 export interface JobReports {
+  id: string;
   date: string;
   job_id: string;
   reports: Duration[];
@@ -77,5 +79,5 @@ export interface JobReport {
 }
 
 export interface GetJobReports {
-  reports: Array<string, JobReports>;
+  reports: JobReport[];
 }

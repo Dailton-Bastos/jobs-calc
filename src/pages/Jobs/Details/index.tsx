@@ -15,7 +15,7 @@ import { JobReports } from '~/components/Job/Reports';
 import { JobStatus } from '~/components/Job/Status';
 import { Title } from '~/components/Title';
 import { groupBy } from '~/helpers/utils';
-import { getJob, getJobReports, useFormattedHour } from '~/hooks/useJob';
+import { getJob, useJobReports, useFormattedHour } from '~/hooks/useJob';
 
 export const DetailsJobPage = () => {
   const [data, setData] = React.useState<JobDetail | null>();
@@ -24,47 +24,17 @@ export const DetailsJobPage = () => {
 
   const { id } = useParams();
 
+  const { reportList } = useJobReports(id as string);
+
   const handleGetJobData = React.useCallback(async () => {
     if (id) {
       try {
         setIsLoading(true);
 
-        const [{ job }, { reports }] = await Promise.all([
-          getJob(id),
-          getJobReports(id),
-        ]);
+        const { job } = await getJob(id);
 
         if (job) {
           setData(job);
-        }
-
-        if (reports) {
-          const reportsData = groupBy(reports, 'date');
-
-          const formattedJobReports = Object.keys(reportsData).map(
-            (key: string) => {
-              return {
-                date: reportsData[key][0]?.date,
-                job_id: reportsData[key][0]?.job_id,
-                reports: reportsData[key]?.map(
-                  (item: JobReport) => item.report,
-                ),
-                totalHours: reportsData[key]?.reduce(
-                  (acc: number, item: JobReport) => {
-                    return (
-                      acc +
-                      item?.report?.duration?.hours * 60 * 60 +
-                      item?.report?.duration?.minutes * 60 +
-                      item?.report?.duration?.seconds
-                    );
-                  },
-                  0,
-                ),
-              };
-            },
-          );
-
-          setJobReports(formattedJobReports);
         }
 
         setIsLoading(false);
@@ -85,6 +55,29 @@ export const DetailsJobPage = () => {
   React.useEffect(() => {
     handleGetJobData();
   }, [handleGetJobData]);
+
+  React.useEffect(() => {
+    const reportsList = groupBy(reportList, 'date');
+
+    const formattedJobReports = Object.keys(reportsList).map((key: string) => {
+      return {
+        id: reportsList[key][0]?.id,
+        date: reportsList[key][0]?.date,
+        job_id: reportsList[key][0]?.job_id,
+        reports: reportsList[key]?.map((item: JobReport) => item.report),
+        totalHours: reportsList[key]?.reduce((acc: number, item: JobReport) => {
+          return (
+            acc +
+            item?.report?.duration?.hours * 60 * 60 +
+            item?.report?.duration?.minutes * 60 +
+            item?.report?.duration?.seconds
+          );
+        }, 0),
+      };
+    });
+
+    setJobReports(formattedJobReports);
+  }, [reportList]);
 
   return (
     <Container title="Detalhes do Job">

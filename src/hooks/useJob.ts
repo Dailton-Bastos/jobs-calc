@@ -9,13 +9,14 @@ import {
   orderByChild,
   equalTo,
   query,
+  onValue,
 } from 'firebase/database';
 
 import {
   CreateJobFormData,
   Job,
   GetJobResponse,
-  GetJobReports,
+  JobReport,
 } from '~/@types/job';
 import { db, serverTimestamp } from '~/config/firebase';
 import {
@@ -113,30 +114,34 @@ export const addJobReport = async (
   }
 };
 
-export const getJobReports = async (jobId: string): Promise<GetJobReports> => {
-  let reports = null;
+export const useJobReports = (jobId: string) => {
+  const [reportList, setReportList] = React.useState<JobReport[]>([]);
 
-  const reportRef = query(
-    ref(db, 'reports'),
-    orderByChild('job_id'),
-    equalTo(jobId),
-  );
+  React.useEffect(() => {
+    const reportRef = query(
+      ref(db, 'reports'),
+      orderByChild('job_id'),
+      equalTo(jobId),
+    );
 
-  const snapshot = await get(reportRef);
+    onValue(reportRef, (snapshot) => {
+      const existsData = snapshot.exists();
 
-  if (snapshot && snapshot.exists()) {
-    const data = snapshot.val();
+      if (existsData) {
+        const reports = snapshot.val();
 
-    reports = Object.keys(data).map((key: string) => {
-      return {
-        date: data[key].date,
-        job_id: data[key].job_id,
-        report: data[key].report,
-      };
+        const newReportList: JobReport[] = [];
+
+        for (const id in reports) {
+          newReportList.push({ id, ...reports[id] });
+        }
+
+        setReportList(newReportList);
+      }
     });
-  }
+  }, [jobId]);
 
-  return { reports };
+  return { reportList };
 };
 
 export const useFormattedHour = (totalHourJob: number) => {

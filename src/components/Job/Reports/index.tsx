@@ -71,7 +71,7 @@ export const JobReports = ({ reports = [], totalHourJob }: Props) => {
         </Thead>
         <Tbody>
           {jobReports.map((report) => (
-            <Tr key={report.date}>
+            <Tr key={report.id}>
               <Td>{report.date}</Td>
 
               <Td>
