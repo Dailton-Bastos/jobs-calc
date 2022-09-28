@@ -81,3 +81,9 @@ export interface JobReport {
 export interface GetJobReports {
   reports: JobReport[];
 }
+
+export interface JobProgressProps {
+  estimateTotalSeconds: number;
+  uid: string;
+  totalHourJobUsed: number;
+}
