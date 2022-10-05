@@ -5,6 +5,7 @@ export interface AppLocalData {
       totalTimeUsed: number;
       startOfHour: Date | null;
       endOfHour: Date | null;
+      isPaused: boolean;
     };
   };
 }
