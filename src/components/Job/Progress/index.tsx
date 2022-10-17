@@ -4,32 +4,20 @@ import { RiPlayMiniLine, RiPauseMiniFill } from 'react-icons/ri';
 
 import { Flex, Box } from '@chakra-ui/react';
 
-import { AppLocalData } from '~/@types/dataLocal';
 import { JobProgressProps } from '~/@types/job';
 import { ProgressButton } from '~/components/Job/Progress/Button';
-import { addJobReport } from '~/hooks/useJob';
-import { usePersistentStorageValue } from '~/hooks/useLocalStorage';
 
 import 'react-circular-progressbar/dist/styles.css';
 
 export const JobProgress = ({
   estimateTotalSeconds = 0,
-  uid,
   totalHourJobUsed = 0,
 }: JobProgressProps) => {
   const [isPaused, setIsPaused] = React.useState(true);
   const [secondsLeft, setSecondsLeft] = React.useState(0);
-  const [jobStartOfHour, setJobStartOfHour] = React.useState<Date | null>(null);
-  const [jobEndOfHour, setJobEndOfHour] = React.useState<Date | null>(null);
-  const [isSavingLoading, setIsSavingLoading] = React.useState(false);
-  const [localTimeLeft, setLocalTimeLeft] = React.useState(0);
 
-  const localTimeLeftRef = React.useRef(localTimeLeft);
   const secondsLeftRef = React.useRef(secondsLeft);
   const isPausedRef = React.useRef(isPaused);
-
-  const [, setAppLocalData] =
-    usePersistentStorageValue<AppLocalData>('@AppJobsCalc');
 
   const totalSeconds = React.useMemo(() => {
     return estimateTotalSeconds - totalHourJobUsed;
@@ -50,74 +38,22 @@ export const JobProgress = ({
   const tick = React.useCallback(() => {
     secondsLeftRef.current--;
     setSecondsLeft(secondsLeftRef.current);
-
-    localTimeLeftRef.current++;
-    setLocalTimeLeft(localTimeLeftRef.current);
-
-    setAppLocalData((prev) => {
-      return {
-        ...prev,
-        jobs: {
-          ...prev?.jobs,
-          [uid]: {
-            ...prev?.jobs[uid],
-            timeLeft: localTimeLeftRef.current,
-          },
-        },
-      };
-    });
-  }, [uid, setAppLocalData]);
+  }, []);
 
   const handlePlayButton = React.useCallback(() => {
     setIsPaused(false);
     isPausedRef.current = false;
-
-    setJobStartOfHour(new Date());
   }, []);
 
   const handlePauseButton = React.useCallback(async () => {
     setIsPaused(true);
     isPausedRef.current = true;
-
-    setJobEndOfHour(new Date());
   }, []);
 
-  const handleSaveReports = React.useCallback(async () => {
-    try {
-      if (jobStartOfHour && jobEndOfHour) {
-        setIsSavingLoading(true);
-
-        await addJobReport(
-          uid,
-          new Date(jobStartOfHour),
-          new Date(jobEndOfHour),
-        );
-
-        setAppLocalData((prev) => {
-          return {
-            ...prev,
-            jobs: {
-              ...prev?.jobs,
-              [uid]: {
-                ...prev?.jobs[uid],
-                startOfHour: null,
-                endOfHour: null,
-                totalTimeUsed: prev?.jobs[uid]?.totalTimeUsed,
-                timeLeft: 0,
-                isPaused: true,
-              },
-            },
-          };
-        });
-      }
-    } catch (error) {
-      setIsSavingLoading(false);
-    } finally {
-      setIsSavingLoading(false);
-    }
-  }, [jobStartOfHour, jobEndOfHour, uid, setAppLocalData]);
-
   React.useEffect(() => {
+    secondsLeftRef.current = totalSeconds;
+    setSecondsLeft(secondsLeftRef.current);
+
     const interval = setInterval(() => {
       if (isPausedRef.current) return;
 
@@ -131,59 +67,6 @@ export const JobProgress = ({
 
     return () => clearInterval(interval);
   }, [tick, totalSeconds]);
-
-  React.useEffect(() => {
-    setAppLocalData((prev) => {
-      return {
-        ...prev,
-        jobs: {
-          ...prev?.jobs,
-          [uid]: {
-            ...prev?.jobs[uid],
-            startOfHour: prev?.jobs[uid]?.startOfHour || jobStartOfHour,
-            endOfHour: jobEndOfHour,
-            totalTimeUsed: totalHourJobUsed,
-            timeLeft: localTimeLeftRef.current,
-            isPaused: isPausedRef.current,
-          },
-        },
-      };
-    });
-  }, [setAppLocalData, jobStartOfHour, jobEndOfHour, uid, totalHourJobUsed]);
-
-  React.useEffect(() => {
-    const appLocal = window.localStorage.getItem('@AppJobsCalc');
-
-    if (appLocal) {
-      const appLocalParsed: AppLocalData = JSON.parse(appLocal);
-
-      const time = appLocalParsed?.jobs[uid]?.timeLeft;
-      const localStartOfHour = appLocalParsed?.jobs[uid]?.startOfHour;
-      const localIsPausedJob = appLocalParsed?.jobs[uid]?.isPaused;
-
-      if (localStartOfHour && time && !localIsPausedJob) {
-        setIsPaused(false);
-        isPausedRef.current = false;
-      }
-
-      localTimeLeftRef.current = time || 0;
-      setLocalTimeLeft(localTimeLeftRef.current);
-    }
-  }, [uid]);
-
-  React.useEffect(() => {
-    if (localTimeLeftRef.current) {
-      secondsLeftRef.current = totalSeconds - localTimeLeftRef.current;
-    } else {
-      secondsLeftRef.current = totalSeconds;
-    }
-
-    setSecondsLeft(secondsLeftRef.current);
-  }, [totalSeconds]);
-
-  React.useEffect(() => {
-    handleSaveReports();
-  }, [handleSaveReports]);
 
   return (
     <Flex
@@ -215,14 +98,12 @@ export const JobProgress = ({
           <ProgressButton
             icon={RiPlayMiniLine}
             label="Play"
-            isLoading={isSavingLoading}
             onClick={handlePlayButton}
           />
         ) : (
           <ProgressButton
             icon={RiPauseMiniFill}
             label="Pause"
-            isLoading={isSavingLoading}
             onClick={handlePauseButton}
           />
         )}

@@ -101,13 +101,6 @@ export const addJobReport = async (
       },
     };
 
-    const minutes = data?.report?.duration?.minutes;
-    const hour = data?.report?.duration?.hours;
-
-    const isValid = hour || (!!minutes && minutes >= 1);
-
-    if (!isValid) return;
-
     await push(ref(db, 'reports'), data);
   } catch (error) {
     throw new Error('Erro save job reports');

@@ -97,3 +97,14 @@ export function groupBy(array: any[], key: string) {
     {},
   );
 }
+
+export function getTotalTimeInSeconds(
+  hour: number,
+  minutes: number,
+  seconds: number,
+) {
+  const totalHourInSeconds = hour * 60 * 60;
+  const totalMinutesSeconds = minutes * 60;
+
+  return totalHourInSeconds + totalMinutesSeconds + seconds;
+}
