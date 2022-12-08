@@ -1,7 +1,7 @@
 import { Box, Container, Grid, GridItem } from '@chakra-ui/react';
 
 import { Sidebar } from '~/components/Sidebar';
-import { Topbar } from '~/components/Topbar';
+import { UserIdentifier } from '~/components/UserIdentifier';
 
 export const Home = () => {
   return (
@@ -20,7 +20,7 @@ export const Home = () => {
         <GridItem area={'main'}>
           <Container as="main" maxW="1440px" centerContent px="16">
             <Container maxW="1120px" centerContent>
-              <Topbar />
+              <UserIdentifier />
             </Container>
           </Container>
         </GridItem>
