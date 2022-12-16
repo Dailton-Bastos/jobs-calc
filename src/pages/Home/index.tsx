@@ -1,5 +1,6 @@
 import { Box, Container, Grid, GridItem } from '@chakra-ui/react';
 
+import { RecentJobs } from '~/components/RecentJobs';
 import { Sidebar } from '~/components/Sidebar';
 import { UserIdentifier } from '~/components/UserIdentifier';
 
@@ -21,6 +22,8 @@ export const Home = () => {
           <Container as="main" maxW="1440px" centerContent px="16">
             <Container maxW="1120px" centerContent>
               <UserIdentifier />
+
+              <RecentJobs />
             </Container>
           </Container>
         </GridItem>

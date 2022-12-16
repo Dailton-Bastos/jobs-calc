@@ -3,6 +3,7 @@ export type JobStatus = 'opened' | 'developing' | 'done' | 'paused';
 export type JobTypes = 'budget' | 'development' | 'other';
 
 export type Job = {
+  id?: string;
   job_id: string;
   job_title: string;
   job_type: JobTypes;
@@ -19,7 +20,7 @@ export type Job = {
 export type CreateJobFormData = Job;
 
 export interface JobDetail {
-  id: string;
+  id?: string;
   title: string;
   type: string;
   estimate: string;
