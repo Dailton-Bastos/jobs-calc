@@ -123,7 +123,7 @@ export const NewJobPage = () => {
   }, [jobType, resetField]);
 
   return (
-    <Container title="Adicionar Novo Job">
+    <Container title="Adicionar Novo Job" to="/jobs">
       <Box as="section">
         <Flex
           as="form"

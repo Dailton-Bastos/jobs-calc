@@ -7,12 +7,13 @@ import { Header } from '~/components/Header';
 type Props = {
   children: React.ReactElement;
   title: string;
+  to?: string;
 };
 
-export const Container = ({ children, title }: Props) => {
+export const Container = ({ children, title, to }: Props) => {
   return (
     <Box as="main" w="100%">
-      <Header title={title} />
+      <Header title={title} to={to} />
 
       <Box
         w="100%"

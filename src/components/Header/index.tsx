@@ -5,9 +5,10 @@ import { Box, Flex, Text, Link as ChakraLink } from '@chakra-ui/react';
 
 type Props = {
   title: string;
+  to?: string;
 };
 
-export const Header = ({ title }: Props) => {
+export const Header = ({ title, to }: Props) => {
   return (
     <Box as="header" bg="black" w="100%" position="fixed" left="0" top="0">
       <Box w="100%" maxW="1440px" mx="auto" px="12">
@@ -28,7 +29,7 @@ export const Header = ({ title }: Props) => {
               color: 'white',
             }}
           >
-            <ChakraLink as={Link} to="/dashboard">
+            <ChakraLink as={Link} to={to ?? '/dashboard'}>
               <RiArrowLeftLine size={24} />
             </ChakraLink>
           </Box>

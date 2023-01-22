@@ -29,11 +29,11 @@ export const Sidebar = () => {
       <Logo />
 
       <List spacing={6} mt="14">
-        <NavLink icon={RiDashboardLine} url="/">
-          Overview
+        <NavLink icon={RiDashboardLine} url="/dashboard">
+          Dashboard
         </NavLink>
 
-        <NavLink icon={RiTodoLine} url="/jobs/new">
+        <NavLink icon={RiTodoLine} url="/jobs">
           Jobs
         </NavLink>
 

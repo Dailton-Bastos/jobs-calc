@@ -80,7 +80,7 @@ export const DetailsJobPage = () => {
   }, [reportList]);
 
   return (
-    <Container title="Detalhes do Job">
+    <Container title="Detalhes do Job" to="/jobs">
       <Box as="section" bg="white" px="8" py="12" borderRadius="5px">
         {isLoading && <p>Carregando...</p>}
 

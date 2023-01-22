@@ -1,7 +1,4 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-
-import { Box, Flex, Text, Link as LinkChakra, Avatar } from '@chakra-ui/react';
+import { Box, Flex, Text, Avatar } from '@chakra-ui/react';
 
 import { useAuth } from '~/hooks/useAuth';
 
@@ -26,27 +23,6 @@ export const UserIdentifier = () => {
             <Text fontSize="sm">Desenvolvedor Front-end Pleno</Text>
           </Box>
         </Flex>
-
-        <LinkChakra
-          as={Link}
-          to="/jobs/new"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          position="relative"
-          bg="orange.300"
-          borderRadius="md"
-          p="3"
-          h="56px"
-          w="260px"
-          _hover={{
-            textDecoration: 'none',
-          }}
-        >
-          <Text color="white" fontWeight="bold">
-            Adicionar novo job
-          </Text>
-        </LinkChakra>
       </Flex>
     </Box>
   );
