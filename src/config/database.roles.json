@@ -1,8 +1,9 @@
 {
   "rules": {
     "jobs": {
-      ".read": false,
+      ".read": "auth !== null",
       ".write": "auth != null",
+      ".indexOn": "user_id",
       "$uid": {
         ".read": "auth !== null && data.child('user_id').val() === auth.uid",
         ".write": "auth != null && (!data.exists() || data.child('user_id').val() === auth.uid)"

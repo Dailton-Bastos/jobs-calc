@@ -17,78 +17,27 @@ import {
   Th,
   Td,
 } from '@chakra-ui/react';
-import {
-  ref,
-  get,
-  child,
-  query,
-  orderByChild,
-  equalTo,
-} from 'firebase/database';
 
-import { Job, JobDetail } from '~/@types/job';
-import { db } from '~/config/firebase';
-import { jobType, jobStatus, formatTime, formatDate } from '~/helpers/utils';
+import { JobDetail } from '~/@types/job';
 import { useAuth } from '~/hooks/useAuth';
+import { handleGetJobs } from '~/hooks/useJob';
 
 export const RecentJobs = () => {
-  const [jobs, setJobs] = React.useState<JobDetail[]>([]);
+  const [recentsJobs, setRecentsJobs] = React.useState<JobDetail[]>([]);
 
   const { user } = useAuth();
 
-  const handleGetJobs = React.useCallback(async () => {
-    try {
-      // const jobsRef = query(
-      //   ref(db, 'jobs'),
-      //   orderByChild('user_id'),
-      //   equalTo(user?.uid as string),
-      // );
+  const uid = user?.uid as string;
 
-      const snapshot = await get(
-        query(
-          child(ref(db), 'jobs'),
-          orderByChild('user_id'),
-          equalTo(user?.uid as string),
-        ),
-      );
+  const handleRecentsJobs = React.useCallback(async () => {
+    const { allJobs } = await handleGetJobs(uid);
 
-      if (snapshot && snapshot.exists()) {
-        const data = snapshot.val();
-
-        const jobsList: Job[] = [];
-
-        for (const id in data) {
-          jobsList.push({ id, ...data[id] });
-        }
-
-        const recentJobs = jobsList.slice(0, 10).map((job) => {
-          return {
-            id: job.id,
-            title: job.job_title,
-            type: jobType(job.job_type),
-            estimate: formatTime(
-              job.job_estimate_hour,
-              job.job_estimate_minutes,
-            ),
-            estimateTotalSeconds: job.estimateTotalSeconds,
-            briefing: job.job_briefing,
-            status: jobStatus(job.status),
-            user: job.user_id,
-            createdAt: formatDate(job.created_at),
-            updatedAt: formatDate(job.updated_at),
-          };
-        });
-
-        setJobs(recentJobs);
-      }
-    } catch (error) {
-      throw new Error('Error fetch jobs list');
-    }
-  }, [user?.uid]);
+    setRecentsJobs(allJobs?.slice(-10).reverse());
+  }, [uid]);
 
   React.useEffect(() => {
-    handleGetJobs();
-  }, [handleGetJobs]);
+    handleRecentsJobs();
+  }, [handleRecentsJobs]);
 
   return (
     <Box w="100%" my="10">
@@ -128,8 +77,8 @@ export const RecentJobs = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {jobs &&
-              jobs.map((job) => (
+            {recentsJobs &&
+              recentsJobs.map((job) => (
                 <Tr key={job.id}>
                   <Td>{job.title}</Td>
 

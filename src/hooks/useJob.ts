@@ -137,6 +137,43 @@ export const useJobReports = (jobId: string) => {
   return { reportList };
 };
 
+export const handleGetJobs = async (uid: string) => {
+  try {
+    const snapshot = await get(
+      query(child(ref(db), 'jobs'), orderByChild('user_id'), equalTo(uid)),
+    );
+
+    const jobsList: Job[] = [];
+
+    if (snapshot && snapshot.exists()) {
+      const data = snapshot.val();
+
+      for (const id in data) {
+        jobsList.push({ id, ...data[id] });
+      }
+    }
+
+    const allJobs = jobsList?.map((job: Job) => {
+      return {
+        id: job.id,
+        title: job.job_title,
+        type: jobType(job.job_type),
+        estimate: formatTime(job.job_estimate_hour, job.job_estimate_minutes),
+        estimateTotalSeconds: job.estimateTotalSeconds,
+        briefing: job.job_briefing,
+        status: jobStatus(job.status),
+        user: job.user_id,
+        createdAt: formatDate(job.created_at),
+        updatedAt: formatDate(job.updated_at),
+      };
+    });
+
+    return { allJobs };
+  } catch (error) {
+    throw new Error('Error fetch jobs list');
+  }
+};
+
 export const useFormattedHour = (totalHourJob: number) => {
   const formattedHour = React.useMemo(() => {
     return formatTime(
