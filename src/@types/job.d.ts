@@ -4,17 +4,17 @@ export type JobTypes = 'budget' | 'development' | 'other';
 
 export type Job = {
   id?: string;
-  job_id: string;
-  job_title: string;
-  job_type: JobTypes;
-  job_estimate_hour: number;
-  job_estimate_minutes: number;
-  estimateTotalSeconds: number;
-  job_briefing: string;
-  user_id: string;
+  jobberId: string;
+  title: string;
+  type: JobTypes;
+  estimateHour: number;
+  estimateHinutes: number;
+  // estimateTotalSeconds: number;
+  briefing?: string;
+  // user_id: string;
   status: JobStatus;
-  created_at: number;
-  updated_at: number;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type CreateJobFormData = Job;

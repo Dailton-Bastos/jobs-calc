@@ -23,7 +23,6 @@ import {
   jobType,
   jobStatus,
   formatTime,
-  formatDate,
   formatDateWithoutHour,
   formatHour,
   formatIntervalDuration,
@@ -39,16 +38,19 @@ export const getJob = async (id: string): Promise<GetJobResponse> => {
       const data: Job = snapshot.val();
 
       job = {
-        id: data.job_id,
-        title: data.job_title,
-        type: jobType(data.job_type),
-        estimate: formatTime(data.job_estimate_hour, data.job_estimate_minutes),
-        estimateTotalSeconds: data.estimateTotalSeconds,
-        briefing: data.job_briefing,
-        status: jobStatus(data.status),
-        user: data.user_id,
-        createdAt: formatDate(data.created_at),
-        updatedAt: formatDate(data.updated_at),
+        id: data.id,
+        title: data.title,
+        type: data.type,
+        estimate: '',
+        estimateTotalSeconds: 0,
+        briefing: '',
+        status: {
+          title: '',
+          color: '',
+        },
+        user: '',
+        createdAt: '',
+        updatedAt: '',
       };
     }
     return { job };
@@ -91,7 +93,7 @@ export const addJobReport = async (
 ) => {
   try {
     const data = {
-      job_id: uid,
+      id: uid,
       date: formatDateWithoutHour(new Date()),
 
       report: {
@@ -156,15 +158,11 @@ export const handleGetJobs = async (uid: string) => {
     const allJobs = jobsList?.map((job: Job) => {
       return {
         id: job.id,
-        title: job.job_title,
-        type: jobType(job.job_type),
-        estimate: formatTime(job.job_estimate_hour, job.job_estimate_minutes),
-        estimateTotalSeconds: job.estimateTotalSeconds,
-        briefing: job.job_briefing,
+        title: job.title,
+        type: jobType(job.type),
+        estimate: formatTime(job.estimateHour, job.estimateHinutes),
+
         status: jobStatus(job.status),
-        user: job.user_id,
-        createdAt: formatDate(job.created_at),
-        updatedAt: formatDate(job.updated_at),
       };
     });
 

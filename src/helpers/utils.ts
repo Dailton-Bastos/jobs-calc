@@ -108,3 +108,25 @@ export function getTotalTimeInSeconds(
 
   return totalHourInSeconds + totalMinutesSeconds + seconds;
 }
+
+export function uuid() {
+  return String(Date.now().toString(32) + Math.random().toString(16)).replace(
+    /\./g,
+    '',
+  );
+}
+
+export const jobSelectTypes = [
+  {
+    name: 'Orçamento',
+    value: 'budget',
+  },
+  {
+    name: 'Desenvolvimento',
+    value: 'development',
+  },
+  {
+    name: 'Outro',
+    value: 'other',
+  },
+];

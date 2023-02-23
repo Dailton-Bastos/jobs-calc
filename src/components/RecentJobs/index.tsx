@@ -19,21 +19,21 @@ import {
 } from '@chakra-ui/react';
 
 import { JobDetail } from '~/@types/job';
-import { useAuth } from '~/hooks/useAuth';
-import { handleGetJobs } from '~/hooks/useJob';
+// import { useAuth } from '~/hooks/useAuth';
+// import { handleGetJobs } from '~/hooks/useJob';
 
 export const RecentJobs = () => {
   const [recentsJobs, setRecentsJobs] = React.useState<JobDetail[]>([]);
 
-  const { user } = useAuth();
+  // const { user } = useAuth();
 
-  const uid = user?.uid as string;
+  // const uid = user?.uid as string;
 
   const handleRecentsJobs = React.useCallback(async () => {
-    const { allJobs } = await handleGetJobs(uid);
+    // const { allJobs } = await handleGetJobs(uid);
 
-    setRecentsJobs(allJobs?.slice(-10).reverse());
-  }, [uid]);
+    setRecentsJobs([]);
+  }, []);
 
   React.useEffect(() => {
     handleRecentsJobs();
@@ -88,9 +88,9 @@ export const RecentJobs = () => {
                     <Text>{job.estimate}</Text>
                   </Td>
 
-                  <Td>
+                  {/* <Td>
                     <Text color={job.status.color}>{job.status.title}</Text>
-                  </Td>
+                  </Td> */}
 
                   <Td>
                     <LinkChakra

@@ -1,5 +1,5 @@
-import React, { ForwardRefRenderFunction } from 'react';
-import { FieldError } from 'react-hook-form';
+import React from 'react';
+import { FieldError, useFormContext } from 'react-hook-form';
 
 import {
   FormControl,
@@ -18,18 +18,27 @@ type Props = NumberInputProps & {
   label?: string;
   stepper?: boolean;
   error?: FieldError;
+  registerName: string;
 };
 
-const InputNumberBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
-  { label, stepper = false, error = null, ...rest },
-  ref,
-) => {
+export const InputNumber = ({
+  label,
+  stepper = false,
+  error,
+  registerName,
+  ...rest
+}: Props) => {
+  const { register } = useFormContext();
+
   return (
     <FormControl isInvalid={!!error}>
       {!!label && <Label>{label}</Label>}
 
-      <NumberInput focusBorderColor="orange.300" ref={ref} {...rest}>
+      <NumberInput focusBorderColor="orange.300" {...rest}>
         <NumberInputField
+          {...register(registerName, {
+            valueAsNumber: true,
+          })}
           bg="white"
           h="12"
           borderColor="transparent"
@@ -56,5 +65,3 @@ const InputNumberBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
     </FormControl>
   );
 };
-
-export const InputNumber = React.forwardRef(InputNumberBase);

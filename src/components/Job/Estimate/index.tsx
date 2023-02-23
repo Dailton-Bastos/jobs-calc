@@ -2,19 +2,15 @@ import { Flex, Text } from '@chakra-ui/react';
 
 import { SubmitButton } from '~/components/Form/SubmitButton';
 
-type Props = {
-  estimateHour: number;
-  estimateMinutes: number;
-  isSubmitting?: boolean;
-};
+// type Props = {
+//   estimateHour: number;
+//   estimateMinutes: number;
+//   isSubmitting?: boolean;
+// };
 
-export const JobEstimate = ({
-  estimateHour,
-  estimateMinutes,
-  isSubmitting,
-}: Props) => {
-  const hour = estimateHour.toString().padStart(2, '0');
-  const minutis = estimateMinutes.toString().padStart(2, '0');
+export const JobEstimate = () => {
+  // const hour = estimateHour.toString().padStart(2, '0');
+  // const minutis = estimateMinutes.toString().padStart(2, '0');
 
   return (
     <Flex
@@ -29,7 +25,7 @@ export const JobEstimate = ({
       maxW="352px"
     >
       <Text as="time" fontSize="5xl" color="purple.700">
-        {`${hour}h:${minutis}m`}
+        {`${1}h:${1}m`}
       </Text>
 
       <Text
@@ -49,7 +45,7 @@ export const JobEstimate = ({
         justifyContent="space-between"
         width="100%"
       >
-        <SubmitButton isLoading={isSubmitting} maxW="100%">
+        <SubmitButton isLoading={false} maxW="100%">
           Salvar
         </SubmitButton>
       </Flex>

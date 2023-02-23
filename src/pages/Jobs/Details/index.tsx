@@ -129,11 +129,7 @@ export const DetailsJobPage = () => {
                 </VStack>
               </Box>
 
-              <JobProgress
-                estimateTotalSeconds={data.estimateTotalSeconds}
-                uid={id as string}
-                totalHourJobUsed={totalHourJob}
-              />
+              <JobProgress />
             </Flex>
 
             <Box mt="12">
