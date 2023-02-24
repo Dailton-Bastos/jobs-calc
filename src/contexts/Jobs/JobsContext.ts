@@ -1,10 +1,14 @@
 import React from 'react';
 
+import { Timestamp } from 'firebase/firestore';
+
 export type JobStatus = 'opened' | 'running' | 'finished';
 export type JobType = 'other' | 'budget' | 'development';
 
+type FirestoreTimestamp = Timestamp;
+
 export interface CreateNewJobData {
-  // jobberId: number | null;
+  jobberId?: string;
   type: JobType;
   title: string;
   hourEstimate: number;
@@ -14,8 +18,8 @@ export interface CreateNewJobData {
 
 export interface Job {
   id: string;
-  // type: string;
-  // jobberId: number | null;
+  jobberId?: string;
+  userId?: string;
   type: JobType;
   title: string;
   description?: string;
@@ -23,8 +27,9 @@ export interface Job {
   hourEstimate: number;
   minutesEstimate: number;
   // minutesAmount: number;
-  createdAt: Date;
-  updatedAt: Date;
+  // startDate: Date;
+  createdAt: FirestoreTimestamp;
+  updatedAt: FirestoreTimestamp;
 }
 
 interface JobsContextProps {

@@ -1,16 +1,35 @@
+import React from 'react';
+
 import { Flex, Text } from '@chakra-ui/react';
 
 import { SubmitButton } from '~/components/Form/SubmitButton';
 
-// type Props = {
-//   estimateHour: number;
-//   estimateMinutes: number;
-//   isSubmitting?: boolean;
-// };
+type Props = {
+  hourEstimate?: number;
+  minutesEstimate?: number;
+  // isSubmitting?: boolean;
+};
 
-export const JobEstimate = () => {
-  // const hour = estimateHour.toString().padStart(2, '0');
-  // const minutis = estimateMinutes.toString().padStart(2, '0');
+export const JobEstimate = ({
+  hourEstimate = 0,
+  minutesEstimate = 0,
+}: Props) => {
+  const [hour, setHour] = React.useState('');
+  const [minutes, setMinutes] = React.useState('');
+
+  React.useEffect(() => {
+    if (isNaN(hourEstimate)) {
+      setHour('00');
+    } else {
+      setHour(hourEstimate.toString().padStart(2, '0'));
+    }
+
+    if (isNaN(minutesEstimate)) {
+      setMinutes('00');
+    } else {
+      setMinutes(minutesEstimate.toString().padStart(2, '0'));
+    }
+  }, [hourEstimate, minutesEstimate]);
 
   return (
     <Flex
@@ -25,7 +44,7 @@ export const JobEstimate = () => {
       maxW="352px"
     >
       <Text as="time" fontSize="5xl" color="purple.700">
-        {`${1}h:${1}m`}
+        {`${hour}h:${minutes}m`}
       </Text>
 
       <Text

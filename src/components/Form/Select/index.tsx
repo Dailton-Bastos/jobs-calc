@@ -1,5 +1,4 @@
-import React, { ForwardRefRenderFunction } from 'react';
-import { FieldError } from 'react-hook-form';
+import { FieldError, useFormContext } from 'react-hook-form';
 
 import {
   FormControl,
@@ -19,12 +18,18 @@ type Props = SelectProps & {
   label?: string;
   options: Options[];
   error?: FieldError;
+  registerName: string;
 };
 
-const SelectBase: ForwardRefRenderFunction<HTMLSelectElement, Props> = (
-  { label, options = [], error = null, ...rest },
-  ref,
-) => {
+export const Select = ({
+  label,
+  options = [],
+  error,
+  registerName,
+  ...rest
+}: Props) => {
+  const { register } = useFormContext();
+
   return (
     <FormControl isInvalid={!!error}>
       {!!label && <Label>{label}</Label>}
@@ -43,7 +48,7 @@ const SelectBase: ForwardRefRenderFunction<HTMLSelectElement, Props> = (
           borderColor: 'orange.300',
         }}
         defaultValue=""
-        ref={ref}
+        {...register(registerName)}
         {...rest}
       >
         <option value="" disabled>
@@ -60,5 +65,3 @@ const SelectBase: ForwardRefRenderFunction<HTMLSelectElement, Props> = (
     </FormControl>
   );
 };
-
-export const Select = React.forwardRef(SelectBase);

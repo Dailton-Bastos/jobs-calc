@@ -1,5 +1,4 @@
-import React, { ForwardRefRenderFunction } from 'react';
-import { FieldError } from 'react-hook-form';
+import { FieldError, useFormContext } from 'react-hook-form';
 
 import {
   FormControl,
@@ -13,12 +12,11 @@ import { Label } from '~/components/Form/Label';
 type Props = TextareaProps & {
   label?: string;
   error?: FieldError;
+  registerName: string;
 };
 
-const TextareaBase: ForwardRefRenderFunction<HTMLTextAreaElement, Props> = (
-  { label, error = null, ...rest },
-  ref,
-) => {
+export const Textarea = ({ label, error, registerName, ...rest }: Props) => {
+  const { register } = useFormContext();
   return (
     <FormControl isInvalid={!!error}>
       {!!label && <Label>{label}</Label>}
@@ -36,7 +34,7 @@ const TextareaBase: ForwardRefRenderFunction<HTMLTextAreaElement, Props> = (
           bg: 'white',
           borderColor: 'orange.300',
         }}
-        ref={ref}
+        {...register(registerName)}
         {...rest}
       />
 
@@ -44,5 +42,3 @@ const TextareaBase: ForwardRefRenderFunction<HTMLTextAreaElement, Props> = (
     </FormControl>
   );
 };
-
-export const Textarea = React.forwardRef(TextareaBase);

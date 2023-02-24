@@ -25,20 +25,22 @@ export const NewJobPage = () => {
   // const { user } = useAuth();
 
   const newJobForm = useForm<NewJobFormData>({
-    mode: 'onSubmit',
+    mode: 'all',
     defaultValues: {
-      // jobberId: '',
       hourEstimate: 1,
       minutesEstimate: 0,
     },
     resolver: yupResolver(newJobFormValidationSchema),
   });
 
-  const { handleSubmit, formState, register } = newJobForm;
+  const { handleSubmit, formState, watch } = newJobForm;
 
   const { errors } = formState;
 
   const { createNewJob } = useJobsContext();
+
+  const hourEstimate = watch('hourEstimate');
+  const minutesEstimate = watch('minutesEstimate');
 
   // React.useEffect(() => {
   //   switch (jobType) {
@@ -96,44 +98,37 @@ export const NewJobPage = () => {
             <Box mt="8">
               <VStack spacing="6" align="flex-start">
                 <FormProvider {...newJobForm}>
+                  <Select
+                    registerName="type"
+                    label="Tipo do Job*"
+                    options={jobSelectTypes}
+                    error={errors?.type}
+                  />
+
                   <Grid gap="6" templateColumns="140px 1fr" w="100%">
                     <GridItem w="100%">
-                      {/* <InputNumber
-                      {...register('jobberId')}
-                      label={`ID no Jobber${jobType !== 'other' ? '*' : ''}`}
-                      max={undefined}
-                      min={undefined}
-                      // value={jobId}
-                      // onChange={handleIdJobber}
-                      isDisabled={isJobIdFieldDisabled}
-                      error={errors?.jobberId}
-                    /> */}
+                      <Input
+                        registerName="jobberId"
+                        label="ID Jobber"
+                        error={errors?.jobberId}
+                      />
                     </GridItem>
 
                     <GridItem w="100%">
                       <Input
-                        {...register('title')}
+                        registerName="title"
                         label="Título do Job*"
                         error={errors?.title}
                       />
                     </GridItem>
                   </Grid>
 
-                  <Select
-                    {...register('type')}
-                    label="Tipo do Job*"
-                    options={jobSelectTypes}
-                    error={errors?.type}
-                  />
-
                   <Grid gap="6" templateColumns="repeat(2, 1fr)" w="100%">
                     <InputNumber
-                      // {...register('hourEstimate')}
                       registerName="hourEstimate"
                       label="Tempo Estimado (h)*"
-                      min={0}
-                      stepper
-                      // isDisabled={isJobEstimateFieldDisabled}
+                      max={150}
+                      clampValueOnBlur={false}
                       error={errors?.hourEstimate}
                     />
 
@@ -141,15 +136,13 @@ export const NewJobPage = () => {
                       registerName="minutesEstimate"
                       label="Tempo Estimado (min)*"
                       max={59}
-                      min={5}
-                      stepper
-                      // isDisabled={isJobEstimateFieldDisabled}
+                      clampValueOnBlur={false}
                       error={errors?.minutesEstimate}
                     />
                   </Grid>
 
                   <Textarea
-                    {...register('description')}
+                    registerName="description"
                     label="Descrição (Opcional)"
                   />
                 </FormProvider>
@@ -157,7 +150,10 @@ export const NewJobPage = () => {
             </Box>
           </Box>
 
-          <JobEstimate />
+          <JobEstimate
+            hourEstimate={hourEstimate}
+            minutesEstimate={minutesEstimate}
+          />
         </Flex>
       </Box>
     </Container>

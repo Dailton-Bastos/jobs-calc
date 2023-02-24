@@ -4,7 +4,7 @@ export type JobTypes = 'budget' | 'development' | 'other';
 
 export type Job = {
   id?: string;
-  jobberId: string;
+  jobberId?: string;
   title: string;
   type: JobTypes;
   estimateHour: number;
