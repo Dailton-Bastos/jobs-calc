@@ -1,5 +1,4 @@
-import React, { ForwardRefRenderFunction } from 'react';
-import { FieldError } from 'react-hook-form';
+import { FieldError, useFormContext } from 'react-hook-form';
 import type { IconType } from 'react-icons';
 
 import {
@@ -18,12 +17,18 @@ type Props = InputProps & {
   error?: FieldError;
   leftIcon?: IconType;
   isValid?: boolean;
+  registerName: string;
 };
 
-const InputBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
-  { label, error = null, leftIcon: LeftIcon, isValid = false, ...rest },
-  ref,
-) => {
+export const Input = ({
+  label,
+  error,
+  leftIcon: LeftIcon,
+  isValid = false,
+  registerName,
+  ...rest
+}: Props) => {
+  const { register } = useFormContext();
   return (
     <FormControl isInvalid={!!error}>
       {!!label && <Label>{label}</Label>}
@@ -47,7 +52,7 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
             bg: 'white',
             borderColor: 'orange.300',
           }}
-          ref={ref}
+          {...register(registerName)}
           {...rest}
         />
       </InputGroup>
@@ -56,5 +61,3 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
     </FormControl>
   );
 };
-
-export const Input = React.forwardRef(InputBase);

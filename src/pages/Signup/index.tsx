@@ -64,7 +64,7 @@ export const SignUp = () => {
           />
 
           <Input
-            {...register('displayName')}
+            registerName="displayName"
             placeholder="Seu nome"
             leftIcon={RiUserLine}
             error={errors?.displayName}
