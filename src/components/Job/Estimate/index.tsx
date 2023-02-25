@@ -7,12 +7,13 @@ import { SubmitButton } from '~/components/Form/SubmitButton';
 type Props = {
   hourEstimate?: number;
   minutesEstimate?: number;
-  // isSubmitting?: boolean;
+  isSubmitting?: boolean;
 };
 
 export const JobEstimate = ({
   hourEstimate = 0,
   minutesEstimate = 0,
+  isSubmitting = false,
 }: Props) => {
   const [hour, setHour] = React.useState('');
   const [minutes, setMinutes] = React.useState('');
@@ -64,7 +65,7 @@ export const JobEstimate = ({
         justifyContent="space-between"
         width="100%"
       >
-        <SubmitButton isLoading={false} maxW="100%">
+        <SubmitButton isLoading={isSubmitting} maxW="100%">
           Salvar
         </SubmitButton>
       </Flex>
