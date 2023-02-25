@@ -1,5 +1,3 @@
-import React from 'react';
-import { RiEyeLine } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 
 import {
@@ -15,29 +13,28 @@ import {
   Tbody,
   Tr,
   Th,
-  Td,
 } from '@chakra-ui/react';
 
-import { JobDetail } from '~/@types/job';
+// import { JobDetail } from '~/@types/job';
 // import { useAuth } from '~/hooks/useAuth';
 // import { handleGetJobs } from '~/hooks/useJob';
 
 export const RecentJobs = () => {
-  const [recentsJobs, setRecentsJobs] = React.useState<JobDetail[]>([]);
+  // const [recentsJobs, setRecentsJobs] = React.useState<JobDetail[]>([]);
 
   // const { user } = useAuth();
 
   // const uid = user?.uid as string;
 
-  const handleRecentsJobs = React.useCallback(async () => {
-    // const { allJobs } = await handleGetJobs(uid);
+  // const handleRecentsJobs = React.useCallback(async () => {
+  //   const { allJobs } = await handleGetJobs(uid);
 
-    setRecentsJobs([]);
-  }, []);
+  //   setRecentsJobs([]);
+  // }, []);
 
-  React.useEffect(() => {
-    handleRecentsJobs();
-  }, [handleRecentsJobs]);
+  // React.useEffect(() => {
+  //   handleRecentsJobs();
+  // }, [handleRecentsJobs]);
 
   return (
     <Box w="100%" my="10">
@@ -77,7 +74,7 @@ export const RecentJobs = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {recentsJobs &&
+            {/* {recentsJobs &&
               recentsJobs.map((job) => (
                 <Tr key={job.id}>
                   <Td>{job.title}</Td>
@@ -88,9 +85,9 @@ export const RecentJobs = () => {
                     <Text>{job.estimate}</Text>
                   </Td>
 
-                  {/* <Td>
+                  <Td>
                     <Text color={job.status.color}>{job.status.title}</Text>
-                  </Td> */}
+                  </Td>
 
                   <Td>
                     <LinkChakra
@@ -105,7 +102,7 @@ export const RecentJobs = () => {
                     </LinkChakra>
                   </Td>
                 </Tr>
-              ))}
+              ))} */}
           </Tbody>
         </Table>
       </TableContainer>

@@ -5,13 +5,13 @@ import { Box, Flex, Grid, GridItem, VStack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
+import { JobType } from '~/@types/job';
 import { Container } from '~/components/Container';
 import { Input } from '~/components/Form/Input';
 import { Select } from '~/components/Form/Select';
 import { Textarea } from '~/components/Form/Textarea';
 import { JobEstimate } from '~/components/Job/Estimate';
 import { Title } from '~/components/Title';
-import type { JobType } from '~/contexts/Jobs/JobsContext';
 import { jobSelectTypes } from '~/helpers/utils';
 import { useJobsContext } from '~/hooks/useJobsContext';
 import {

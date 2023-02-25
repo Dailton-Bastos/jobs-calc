@@ -1,5 +1,4 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import {
   ref,
@@ -12,15 +11,9 @@ import {
   onValue,
 } from 'firebase/database';
 
+import { Job, GetJobResponse, JobReport } from '~/@types/job';
+import { db } from '~/config/firebase';
 import {
-  CreateJobFormData,
-  Job,
-  GetJobResponse,
-  JobReport,
-} from '~/@types/job';
-import { db, serverTimestamp } from '~/config/firebase';
-import {
-  jobType,
   jobStatus,
   formatTime,
   formatDateWithoutHour,
@@ -57,33 +50,6 @@ export const getJob = async (id: string): Promise<GetJobResponse> => {
   } catch (error) {
     throw new Error('Error fetch job');
   }
-};
-
-export const useJob = () => {
-  const navigate = useNavigate();
-
-  const handleCreateJobData = React.useCallback(
-    async (data: CreateJobFormData) => {
-      if (!data) return;
-
-      try {
-        const job = await push(ref(db, 'jobs'), {
-          ...data,
-          created_at: serverTimestamp(),
-          updated_at: serverTimestamp(),
-        });
-
-        if (job) {
-          return navigate(`/jobs/${job?.key}`);
-        }
-      } catch (error) {
-        throw new Error('Erro save job');
-      }
-    },
-    [navigate],
-  );
-
-  return { handleCreateJobData };
 };
 
 export const addJobReport = async (
@@ -157,10 +123,8 @@ export const handleGetJobs = async (uid: string) => {
 
     const allJobs = jobsList?.map((job: Job) => {
       return {
-        id: job.id,
-        title: job.title,
-        type: jobType(job.type),
-        estimate: formatTime(job.estimateHour, job.estimateHinutes),
+        ...job,
+        estimate: formatTime(job.hourEstimate, job.minutesEstimate),
 
         status: jobStatus(job.status),
       };

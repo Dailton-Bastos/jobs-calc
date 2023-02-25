@@ -1,38 +1,37 @@
+import { Timestamp } from 'firebase/firestore';
+
 export type JobStatus = 'opened' | 'developing' | 'done' | 'paused';
 
-export type JobTypes = 'budget' | 'development' | 'other';
+export type JobType = 'other' | 'budget' | 'development';
 
-export type Job = {
-  id?: string;
+export type FirestoreTimestamp = Timestamp;
+
+export interface CreateNewJobData {
   jobberId?: string;
+  type: JobType;
   title: string;
-  type: JobTypes;
-  estimateHour: number;
-  estimateHinutes: number;
-  // estimateTotalSeconds: number;
-  briefing?: string;
-  // user_id: string;
+  hourEstimate: number;
+  minutesEstimate: number;
+  description?: string;
+}
+
+export interface Job {
+  id: string;
+  jobberId?: string;
+  userId?: string;
+  type: JobType;
+  title: string;
+  description?: string;
   status: JobStatus;
-  createdAt: Date;
-  updatedAt: Date;
-};
+  hourEstimate: number;
+  minutesEstimate: number;
+  createdAt: FirestoreTimestamp;
+  updatedAt: FirestoreTimestamp;
+}
 
-export type CreateJobFormData = Job;
-
-export interface JobDetail {
-  id?: string;
-  title: string;
-  type: string;
-  estimate: string;
-  estimateTotalSeconds: number;
-  briefing: string | null;
-  status: {
-    title: string;
-    color: string;
-  };
-  user: string;
-  createdAt: string;
-  updatedAt: string;
+export interface JobsContextProps {
+  jobs: Job[];
+  createNewJob: (data: CreateNewJobData) => void;
 }
 
 export interface GetJobResponse {

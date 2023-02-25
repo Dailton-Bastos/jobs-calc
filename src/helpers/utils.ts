@@ -3,27 +3,7 @@
 import { format, intervalToDuration } from 'date-fns';
 import pt from 'date-fns/locale/pt-BR';
 
-import { JobStatus, JobTypes } from '~/@types/job';
-
-export function jobType(type: JobTypes) {
-  let result = '';
-
-  switch (type) {
-    case 'development':
-      result = 'Desenvolvimento';
-      break;
-
-    case 'other':
-      result = 'Outro';
-      break;
-
-    default:
-      result = 'Orçamento';
-      break;
-  }
-
-  return result;
-}
+import { JobStatus } from '~/@types/job';
 
 export function jobStatus(status: JobStatus) {
   const result = {

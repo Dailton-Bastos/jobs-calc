@@ -1,5 +1,3 @@
-import React from 'react';
-import { RiEyeLine } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 
 import {
@@ -15,29 +13,28 @@ import {
   Tbody,
   Tr,
   Th,
-  Td,
 } from '@chakra-ui/react';
 
-import { JobDetail } from '~/@types/job';
+// import { JobDetail } from '~/@types/job';
 // import { useAuth } from '~/hooks/useAuth';
 // import { handleGetJobs } from '~/hooks/useJob';
 
 export const ListJobs = () => {
-  const [jobs, setJobs] = React.useState<JobDetail[]>([]);
+  // const [jobs, setJobs] = React.useState<JobDetail[]>([]);
 
   // const { user } = useAuth();
 
   // const uid = user?.uid as string;
 
-  const handleRecentsJobs = React.useCallback(async () => {
-    // const { allJobs } = await handleGetJobs(uid);
+  // const handleRecentsJobs = React.useCallback(async () => {
+  //   const { allJobs } = await handleGetJobs(uid);
 
-    setJobs([]);
-  }, []);
+  //   setJobs([]);
+  // }, []);
 
-  React.useEffect(() => {
-    handleRecentsJobs();
-  }, [handleRecentsJobs]);
+  // React.useEffect(() => {
+  //   handleRecentsJobs();
+  // }, [handleRecentsJobs]);
 
   return (
     <Box w="100%" my="10">
@@ -71,7 +68,7 @@ export const ListJobs = () => {
           <TableCaption>
             <Flex gap="2" align="center" justify="flex-end">
               <Text fontWeight="bold">Total de jobs:</Text>
-              <Text>{jobs?.length}</Text>
+              {/* <Text>{jobs?.length}</Text> */}
             </Flex>
           </TableCaption>
           <Thead>
@@ -84,7 +81,7 @@ export const ListJobs = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {jobs &&
+            {/* {jobs &&
               jobs.map((job) => (
                 <Tr key={job.id}>
                   <Td>{job.title}</Td>
@@ -95,9 +92,9 @@ export const ListJobs = () => {
                     <Text>{job.estimate}</Text>
                   </Td>
 
-                  {/* <Td>
+                  <Td>
                     <Text color={job.status.color}>{job.status.title}</Text>
-                  </Td> */}
+                  </Td>
 
                   <Td>
                     <LinkChakra
@@ -112,7 +109,7 @@ export const ListJobs = () => {
                     </LinkChakra>
                   </Td>
                 </Tr>
-              ))}
+              ))} */}
           </Tbody>
         </Table>
       </TableContainer>

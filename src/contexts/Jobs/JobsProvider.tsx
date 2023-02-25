@@ -4,12 +4,12 @@ import { ref, push } from 'firebase/database';
 import type { DatabaseReference } from 'firebase/database';
 import { Timestamp } from 'firebase/firestore';
 
+import { CreateNewJobData, Job } from '~/@types/job';
 import { db, serverTimestamp } from '~/config/firebase';
 import { uuid } from '~/helpers/utils';
 import { useAuth } from '~/hooks/useAuth';
 
 import { JobsContext } from './JobsContext';
-import type { CreateNewJobData, Job } from './JobsContext';
 
 interface JobsProviderProps {
   children: React.ReactNode;
@@ -34,7 +34,6 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
         hourEstimate: data.hourEstimate,
         minutesEstimate: data.minutesEstimate,
         description: data.description,
-        // startDate: new Date(),
         createdAt: serverTimestamp() as FirestoreTimestamp,
         updatedAt: serverTimestamp() as FirestoreTimestamp,
       };
