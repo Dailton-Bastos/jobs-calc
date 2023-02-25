@@ -1,17 +1,15 @@
 import { Timestamp } from 'firebase/firestore';
 
 export type JobStatus = 'opened' | 'developing' | 'done' | 'paused';
-
 export type JobType = 'other' | 'budget' | 'development';
-
 export type FirestoreTimestamp = Timestamp;
 
 export interface CreateNewJobData {
   jobberId?: string;
   type: JobType;
   title: string;
-  hourEstimate: number;
-  minutesEstimate: number;
+  hourEstimate?: number;
+  minutesEstimate?: number;
   description?: string;
 }
 
@@ -23,8 +21,8 @@ export interface Job {
   title: string;
   description?: string;
   status: JobStatus;
-  hourEstimate: number;
-  minutesEstimate: number;
+  hourEstimate?: number;
+  minutesEstimate?: number;
   createdAt: FirestoreTimestamp;
   updatedAt: FirestoreTimestamp;
 }
@@ -32,6 +30,10 @@ export interface Job {
 export interface JobsContextProps {
   jobs: Job[];
   createNewJob: (data: CreateNewJobData) => void;
+}
+
+export interface JobsProviderProps {
+  children: React.ReactNode;
 }
 
 export interface GetJobResponse {

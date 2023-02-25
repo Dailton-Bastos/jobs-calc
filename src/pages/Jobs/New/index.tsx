@@ -83,8 +83,6 @@ export const NewJobPage = () => {
       createNewJob({
         ...data,
         type: data.type as JobType,
-        hourEstimate: Number(data?.hourEstimate) ?? 0,
-        minutesEstimate: Number(data?.minutesEstimate) ?? 0,
       });
 
       reset();

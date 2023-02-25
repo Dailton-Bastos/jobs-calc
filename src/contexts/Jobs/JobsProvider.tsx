@@ -2,25 +2,30 @@ import React from 'react';
 
 import { ref, push } from 'firebase/database';
 import type { DatabaseReference } from 'firebase/database';
-import { Timestamp } from 'firebase/firestore';
 
-import { CreateNewJobData, Job } from '~/@types/job';
+import {
+  CreateNewJobData,
+  FirestoreTimestamp,
+  Job,
+  JobType,
+  JobsProviderProps,
+} from '~/@types/job';
 import { db, serverTimestamp } from '~/config/firebase';
 import { uuid } from '~/helpers/utils';
 import { useAuth } from '~/hooks/useAuth';
+import { addNewJobActions } from '~/reducers/jobs/actions';
+import { jobsReducer } from '~/reducers/jobs/reducer';
 
 import { JobsContext } from './JobsContext';
 
-interface JobsProviderProps {
-  children: React.ReactNode;
-}
-
-type FirestoreTimestamp = Timestamp;
-
 export const JobsProvider = ({ children }: JobsProviderProps) => {
-  const [jobs, setJobs] = React.useState<Job[]>([]);
+  const [jobsState, dispatch] = React.useReducer(jobsReducer, {
+    jobs: [],
+  });
 
   const { user } = useAuth();
+
+  const { jobs } = jobsState;
 
   const createNewJob = React.useCallback(
     async (data: CreateNewJobData) => {
@@ -28,7 +33,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
         id: uuid(),
         jobberId: data.jobberId,
         userId: user?.uid,
-        type: data.type,
+        type: data.type as JobType,
         title: data.title,
         status: 'opened',
         hourEstimate: data.hourEstimate,
@@ -41,7 +46,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       const reference: DatabaseReference = await push(ref(db, 'jobs'), newJob);
 
       if (reference) {
-        setJobs((prevState) => [newJob, ...prevState]);
+        dispatch(addNewJobActions(newJob));
       }
     },
     [user],

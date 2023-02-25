@@ -124,7 +124,7 @@ export const handleGetJobs = async (uid: string) => {
     const allJobs = jobsList?.map((job: Job) => {
       return {
         ...job,
-        estimate: formatTime(job.hourEstimate, job.minutesEstimate),
+        estimate: formatTime(job.hourEstimate ?? 0, job.minutesEstimate ?? 0),
 
         status: jobStatus(job.status),
       };
