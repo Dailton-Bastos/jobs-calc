@@ -11,6 +11,13 @@ interface JobTypeState {
   isResetJobberIdField: boolean;
 }
 
+export const JOB_TYPE_INITIAL_STATE = {
+  isDisableEstimateField: false,
+  isDisableJobberIdField: false,
+  isResetEstimateField: false,
+  isResetJobberIdField: false,
+};
+
 export const jobTypeReducer = (state: JobTypeState, action: Action) => {
   switch (action.type) {
     case ActionTypes.TYPE_BUDGET:

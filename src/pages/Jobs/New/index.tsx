@@ -19,18 +19,19 @@ import {
   jobTypeOtherAction,
   jobTypeDevelopmentAction,
 } from '~/reducers/JobType/actions';
-import { jobTypeReducer } from '~/reducers/JobType/reducer';
+import {
+  JOB_TYPE_INITIAL_STATE,
+  jobTypeReducer,
+} from '~/reducers/JobType/reducer';
 import { newJobFormValidationSchema } from '~/schemas/newJobFormSchema';
 
 type NewJobFormData = yup.InferType<typeof newJobFormValidationSchema>;
 
 export const NewJobPage = () => {
-  const [jobTypeState, dispatch] = React.useReducer(jobTypeReducer, {
-    isDisableEstimateField: false,
-    isDisableJobberIdField: false,
-    isResetEstimateField: false,
-    isResetJobberIdField: false,
-  });
+  const [jobTypeState, dispatch] = React.useReducer(
+    jobTypeReducer,
+    JOB_TYPE_INITIAL_STATE,
+  );
 
   const { isDisableEstimateField, isDisableJobberIdField } = jobTypeState;
 
@@ -50,39 +51,32 @@ export const NewJobPage = () => {
 
   const { createNewJob } = useJobsContext();
 
-  const type = watch('type');
+  const type = watch('type') as JobType;
 
-  const jobTypeBudget = React.useCallback(() => {
-    dispatch(jobTypeBudgetAction());
+  const jobTypeActions = React.useCallback(
+    (jobType: JobType) => {
+      switch (jobType) {
+        case 'budget':
+          dispatch(jobTypeBudgetAction());
+          resetField('hourEstimate');
+          resetField('minutesEstimate');
+          break;
+        case 'other':
+          dispatch(jobTypeOtherAction());
+          resetField('jobberId');
+          break;
 
-    resetField('hourEstimate');
-    resetField('minutesEstimate');
-  }, [resetField]);
-
-  const jobTypeOther = React.useCallback(() => {
-    dispatch(jobTypeOtherAction());
-
-    resetField('jobberId');
-  }, [resetField]);
-
-  const jobTypeDevelopement = React.useCallback(() => {
-    dispatch(jobTypeDevelopmentAction());
-  }, []);
+        default:
+          dispatch(jobTypeDevelopmentAction());
+          break;
+      }
+    },
+    [resetField],
+  );
 
   React.useEffect(() => {
-    switch (type) {
-      case 'budget':
-        jobTypeBudget();
-        break;
-      case 'other':
-        jobTypeOther();
-        break;
-
-      default:
-        jobTypeDevelopement();
-        break;
-    }
-  }, [type, jobTypeBudget, jobTypeOther, jobTypeDevelopement]);
+    jobTypeActions(type);
+  }, [type, jobTypeActions]);
 
   const handleCreateNewJob = React.useCallback(
     (data: NewJobFormData) => {
