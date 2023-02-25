@@ -1,6 +1,14 @@
 import React from 'react';
 
-import { ref, push } from 'firebase/database';
+import {
+  ref,
+  push,
+  child,
+  get,
+  query,
+  orderByChild,
+  equalTo,
+} from 'firebase/database';
 import type { DatabaseReference } from 'firebase/database';
 
 import {
@@ -13,17 +21,19 @@ import {
 import { db, serverTimestamp } from '~/config/firebase';
 import { uuid } from '~/helpers/utils';
 import { useAuth } from '~/hooks/useAuth';
-import { addNewJobActions } from '~/reducers/jobs/actions';
-import { jobsReducer } from '~/reducers/jobs/reducer';
+import {
+  addNewJobActions,
+  createInitialStateActions,
+} from '~/reducers/jobs/actions';
+import { initialJobsState, jobsReducer } from '~/reducers/jobs/reducer';
 
 import { JobsContext } from './JobsContext';
 
 export const JobsProvider = ({ children }: JobsProviderProps) => {
-  const [jobsState, dispatch] = React.useReducer(jobsReducer, {
-    jobs: [],
-  });
+  const [jobsState, dispatch] = React.useReducer(jobsReducer, initialJobsState);
 
   const { user } = useAuth();
+  const userId = user?.uid;
 
   const { jobs } = jobsState;
 
@@ -51,6 +61,30 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
     },
     [user],
   );
+
+  const createInitialState = React.useCallback(async () => {
+    if (!userId) return;
+
+    const snapshot = await get(
+      query(child(ref(db), 'jobs'), orderByChild('userId'), equalTo(userId)),
+    );
+
+    const jobsList: Job[] = [];
+
+    if (snapshot && snapshot.exists()) {
+      const data = snapshot.val();
+
+      for (const id in data) {
+        jobsList.push({ id, ...data[id] });
+      }
+    }
+
+    dispatch(createInitialStateActions(jobsList));
+  }, [userId]);
+
+  React.useEffect(() => {
+    createInitialState();
+  }, [createInitialState]);
 
   return (
     <JobsContext.Provider value={{ jobs, createNewJob }}>

@@ -1,3 +1,4 @@
+import { RiEyeLine } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 
 import {
@@ -13,7 +14,10 @@ import {
   Tbody,
   Tr,
   Th,
+  Td,
 } from '@chakra-ui/react';
+
+import { useJobsContext } from '~/hooks/useJobsContext';
 
 // import { JobDetail } from '~/@types/job';
 // import { useAuth } from '~/hooks/useAuth';
@@ -35,6 +39,8 @@ export const RecentJobs = () => {
   // React.useEffect(() => {
   //   handleRecentsJobs();
   // }, [handleRecentsJobs]);
+
+  const { jobs } = useJobsContext();
 
   return (
     <Box w="100%" my="10">
@@ -74,6 +80,32 @@ export const RecentJobs = () => {
             </Tr>
           </Thead>
           <Tbody>
+            {jobs?.map((job) => (
+              <Tr key={job.id}>
+                <Td>{job.title}</Td>
+
+                <Td>{job.type}</Td>
+
+                <Td>
+                  <Text>{job.hourEstimate}</Text>
+                </Td>
+
+                <Td>{job.status}</Td>
+
+                <Td>
+                  <LinkChakra
+                    as={Link}
+                    to={`/jobs/${job.id}`}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    p="2"
+                  >
+                    <RiEyeLine size={22} />
+                  </LinkChakra>
+                </Td>
+              </Tr>
+            ))}
             {/* {recentsJobs &&
               recentsJobs.map((job) => (
                 <Tr key={job.id}>
