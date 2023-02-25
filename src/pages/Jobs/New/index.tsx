@@ -46,12 +46,10 @@ export const NewJobPage = () => {
 
   const { handleSubmit, formState, watch, resetField, reset } = newJobForm;
 
-  const { errors, isSubmitting } = formState;
+  const { errors } = formState;
 
   const { createNewJob } = useJobsContext();
 
-  const hourEstimate = watch('hourEstimate');
-  const minutesEstimate = watch('minutesEstimate');
   const type = watch('type');
 
   const jobTypeBudget = React.useCallback(() => {
@@ -91,8 +89,8 @@ export const NewJobPage = () => {
       createNewJob({
         ...data,
         type: data.type as JobType,
-        hourEstimate: data?.hourEstimate ?? 0,
-        minutesEstimate: data?.minutesEstimate ?? 0,
+        hourEstimate: Number(data?.hourEstimate) ?? 0,
+        minutesEstimate: Number(data?.minutesEstimate) ?? 0,
       });
 
       reset();
@@ -110,12 +108,12 @@ export const NewJobPage = () => {
           gap="8"
           onSubmit={handleSubmit(handleCreateNewJob)}
         >
-          <Box w="100%" maxW="640px">
-            <Title>Dados do Job</Title>
+          <FormProvider {...newJobForm}>
+            <Box w="100%" maxW="640px">
+              <Title>Dados do Job</Title>
 
-            <Box mt="8">
-              <VStack spacing="6" align="flex-start">
-                <FormProvider {...newJobForm}>
+              <Box mt="8">
+                <VStack spacing="6" align="flex-start">
                   <Select
                     registerName="type"
                     label="Tipo do Job*"
@@ -146,6 +144,7 @@ export const NewJobPage = () => {
                     <Input
                       registerName="hourEstimate"
                       label="Tempo Estimado (h)"
+                      type="number"
                       isDisabled={isDisableEstimateField}
                       error={errors?.hourEstimate}
                     />
@@ -153,6 +152,7 @@ export const NewJobPage = () => {
                     <Input
                       registerName="minutesEstimate"
                       label="Tempo Estimado (min)"
+                      type="number"
                       isDisabled={isDisableEstimateField}
                       error={errors?.minutesEstimate}
                     />
@@ -162,16 +162,12 @@ export const NewJobPage = () => {
                     registerName="description"
                     label="Descrição (Opcional)"
                   />
-                </FormProvider>
-              </VStack>
+                </VStack>
+              </Box>
             </Box>
-          </Box>
 
-          <JobEstimate
-            hourEstimate={hourEstimate}
-            minutesEstimate={minutesEstimate}
-            isSubmitting={isSubmitting}
-          />
+            <JobEstimate />
+          </FormProvider>
         </Flex>
       </Box>
     </Container>

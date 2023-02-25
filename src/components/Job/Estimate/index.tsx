@@ -1,36 +1,22 @@
 import React from 'react';
+import { useFormContext } from 'react-hook-form';
 
 import { Flex, Text } from '@chakra-ui/react';
 
 import { SubmitButton } from '~/components/Form/SubmitButton';
 
-type Props = {
-  hourEstimate?: number;
-  minutesEstimate?: number;
-  isSubmitting?: boolean;
-};
+export const JobEstimate = () => {
+  const { formState, watch } = useFormContext();
 
-export const JobEstimate = ({
-  hourEstimate = 0,
-  minutesEstimate = 0,
-  isSubmitting = false,
-}: Props) => {
-  const [hour, setHour] = React.useState('');
-  const [minutes, setMinutes] = React.useState('');
+  const { isSubmitting } = formState;
 
-  React.useEffect(() => {
-    if (isNaN(hourEstimate)) {
-      setHour('00');
-    } else {
-      setHour(hourEstimate.toString().padStart(2, '0'));
-    }
+  const hourEstimate = Number(watch('hourEstimate'))
+    .toString()
+    .padStart(2, '0');
 
-    if (isNaN(minutesEstimate)) {
-      setMinutes('00');
-    } else {
-      setMinutes(minutesEstimate.toString().padStart(2, '0'));
-    }
-  }, [hourEstimate, minutesEstimate]);
+  const minutesEstimate = Number(watch('minutesEstimate'))
+    .toString()
+    .padStart(2, '0');
 
   return (
     <Flex
@@ -45,7 +31,7 @@ export const JobEstimate = ({
       maxW="352px"
     >
       <Text as="time" fontSize="5xl" color="purple.700">
-        {`${hour}h:${minutes}m`}
+        {`${hourEstimate}h:${minutesEstimate}m`}
       </Text>
 
       <Text
