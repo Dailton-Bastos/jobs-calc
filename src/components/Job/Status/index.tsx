@@ -1,13 +1,18 @@
-import React from 'react';
-
 import { Box, Flex, GridItem, Text } from '@chakra-ui/react';
+
+const STATUS_COLORS = {
+  yellow: 'yellow.500',
+  red: 'red.500',
+  green: 'green.500',
+  blue: 'blue.500',
+} as const;
 
 interface Props {
   children: string;
-  color: string;
+  statusColor: keyof typeof STATUS_COLORS;
 }
 
-export const JobStatus = ({ children, color }: Props) => {
+export const JobStatus = ({ children, statusColor }: Props) => {
   return (
     <GridItem w="100%">
       <Text fontWeight="bold" mb="2">
@@ -18,11 +23,10 @@ export const JobStatus = ({ children, color }: Props) => {
           w="8px"
           h="8px"
           borderRadius="50%"
-          bg="white"
-          border={`2px solid ${color}`}
+          bg={STATUS_COLORS[statusColor]}
         />
 
-        <Text fontSize="md" color={`${color}`}>
+        <Text fontSize="md" color={STATUS_COLORS[statusColor]}>
           {children}
         </Text>
       </Flex>

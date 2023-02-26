@@ -6,10 +6,12 @@ import { Action, ActionTypes } from './actions';
 
 interface JobsState {
   jobs: Job[];
+  currentJobId: string | null;
 }
 
 export const initialJobsState: JobsState = {
   jobs: [],
+  currentJobId: null,
 };
 
 export const jobsReducer = (state: JobsState, action: Action): JobsState => {
@@ -24,6 +26,7 @@ export const jobsReducer = (state: JobsState, action: Action): JobsState => {
     case ActionTypes.ADD_NEW_JOB:
       return produce(state, (draft) => {
         draft.jobs.push(payload.newJob);
+        draft.currentJobId = payload.newJob.id;
       });
 
     default:

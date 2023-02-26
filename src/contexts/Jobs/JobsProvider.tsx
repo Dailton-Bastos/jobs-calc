@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import {
   ref,
@@ -37,6 +38,8 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
 
   const { jobs } = jobsState;
 
+  const navigate = useNavigate();
+
   const createNewJob = React.useCallback(
     async (data: CreateNewJobData) => {
       const newJob: Job = {
@@ -57,9 +60,11 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
 
       if (reference) {
         dispatch(addNewJobActions(newJob));
+
+        navigate(`/jobs/${newJob.id}`);
       }
     },
-    [user],
+    [user, navigate],
   );
 
   const createInitialState = React.useCallback(async () => {

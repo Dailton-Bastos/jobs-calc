@@ -14,7 +14,6 @@ import {
 import { Job, GetJobResponse, JobReport } from '~/@types/job';
 import { db } from '~/config/firebase';
 import {
-  jobStatus,
   formatTime,
   formatDateWithoutHour,
   formatHour,
@@ -103,37 +102,6 @@ export const useJobReports = (jobId: string) => {
   }, [jobId]);
 
   return { reportList };
-};
-
-export const handleGetJobs = async (uid: string) => {
-  try {
-    const snapshot = await get(
-      query(child(ref(db), 'jobs'), orderByChild('user_id'), equalTo(uid)),
-    );
-
-    const jobsList: Job[] = [];
-
-    if (snapshot && snapshot.exists()) {
-      const data = snapshot.val();
-
-      for (const id in data) {
-        jobsList.push({ id, ...data[id] });
-      }
-    }
-
-    const allJobs = jobsList?.map((job: Job) => {
-      return {
-        ...job,
-        estimate: formatTime(job.hourEstimate ?? 0, job.minutesEstimate ?? 0),
-
-        status: jobStatus(job.status),
-      };
-    });
-
-    return { allJobs };
-  } catch (error) {
-    throw new Error('Error fetch jobs list');
-  }
 };
 
 export const useFormattedHour = (totalHourJob: number) => {

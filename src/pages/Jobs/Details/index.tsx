@@ -1,86 +1,47 @@
-// import React from 'react';
-// import { useParams } from 'react-router-dom';
+import React from 'react';
+import { useParams } from 'react-router-dom';
 
-import { Box } from '@chakra-ui/react';
+import { Flex, Box, VStack, Text } from '@chakra-ui/react';
+import { ref, onValue, query, orderByChild, equalTo } from 'firebase/database';
 
-// import { JobReports as JobReportsType, JobReport } from '~/@types/job';
+import { Job } from '~/@types/job';
 import { Container } from '~/components/Container';
-// import { InfoJob } from '~/components/Job/Info';
-// import { JobProgress } from '~/components/Job/Progress';
-// import { JobReports } from '~/components/Job/Reports';
-// import { JobStatus } from '~/components/Job/Status';
-// import { Title } from '~/components/Title';
-// import { groupBy } from '~/helpers/utils';
-// import { useJobReports, useFormattedHour } from '~/hooks/useJob';
+import { InfoJob } from '~/components/Job/Info';
+import { JobProgress } from '~/components/Job/Progress';
+import { JobStatus } from '~/components/Job/Status';
+import { Title } from '~/components/Title';
+import { db } from '~/config/firebase';
+import { formatTime, formatDate } from '~/helpers/utils';
 
 export const DetailsJobPage = () => {
-  // const [data, setData] = React.useState<JobDetail | null>();
-  // const [isLoading, setIsLoading] = React.useState(false);
-  // const [jobReports, setJobReports] = React.useState<JobReportsType[]>([]);
+  const [job, setJob] = React.useState<Job | null>(null);
 
-  // const { id } = useParams();
+  const { id } = useParams();
 
-  // const { reportList } = useJobReports(id as string);
+  const onFetchJob = React.useCallback(() => {
+    if (!id) return;
 
-  // const handleGetJobData = React.useCallback(async () => {
-  //   if (id) {
-  //     try {
-  //       setIsLoading(true);
+    const jobRef = query(ref(db, 'jobs'), orderByChild('id'), equalTo(id));
 
-  //       const { job } = await getJob(id);
+    onValue(jobRef, (snapshot) => {
+      if (snapshot && snapshot.exists()) {
+        const data = snapshot.val();
 
-  //       if (job) {
-  //         setData(job);
-  //       }
+        for (const key in data) {
+          setJob({ ...data[key] });
+        }
+      }
+    });
+  }, [id]);
 
-  //       setIsLoading(false);
-  //     } catch (err) {
-  //       throw new Error('Error fetch job');
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   }
-  // }, [id]);
-
-  // const totalHourJob = React.useMemo(() => {
-  //   return jobReports.reduce((acc, item) => acc + item.totalHours, 0);
-  // }, [jobReports]);
-
-  // const { formattedHour } = useFormattedHour(totalHourJob);
-
-  // React.useEffect(() => {
-  //   handleGetJobData();
-  // }, [handleGetJobData]);
-
-  // React.useEffect(() => {
-  //   const reportsList = groupBy(reportList, 'date');
-
-  //   const formattedJobReports = Object.keys(reportsList).map((key: string) => {
-  //     return {
-  //       id: reportsList[key][0]?.id,
-  //       date: reportsList[key][0]?.date,
-  //       job_id: reportsList[key][0]?.job_id,
-  //       reports: reportsList[key]?.map((item: JobReport) => item.report),
-  //       totalHours: reportsList[key]?.reduce((acc: number, item: JobReport) => {
-  //         return (
-  //           acc +
-  //           item?.report?.duration?.hours * 60 * 60 +
-  //           item?.report?.duration?.minutes * 60 +
-  //           item?.report?.duration?.seconds
-  //         );
-  //       }, 0),
-  //     };
-  //   });
-
-  //   setJobReports(formattedJobReports);
-  // }, [reportList]);
+  React.useEffect(() => {
+    onFetchJob();
+  }, [onFetchJob]);
 
   return (
     <Container title="Detalhes do Job" to="/jobs">
       <Box as="section" bg="white" px="8" py="12" borderRadius="5px">
-        {/* {isLoading && <p>Carregando...</p>}
-
-        {data && (
+        {job && (
           <>
             <Flex alignItems="center" justifyContent="space-between" gap="8">
               <Box w="100%" maxW="640px">
@@ -88,53 +49,84 @@ export const DetailsJobPage = () => {
 
                 <VStack spacing="6" mt="8" align="flex-start">
                   <Flex align="center" justify="space-between" w="100%">
-                    {data.id && <InfoJob title="ID:">{data?.id}</InfoJob>}
+                    {job.jobberId && (
+                      <InfoJob title="ID:">{job?.jobberId}</InfoJob>
+                    )}
 
-                    <InfoJob title="Título:">{data.title}</InfoJob>
+                    <InfoJob title="Título:">{job?.title}</InfoJob>
                   </Flex>
 
                   <Flex align="center" justify="space-between" w="100%">
-                    <InfoJob title="Tempo Estimado:">{data.estimate}</InfoJob>
+                    <InfoJob title="Tempo Estimado:">
+                      {formatTime(
+                        job.hourEstimate ?? 0,
+                        job.minutesEstimate ?? 0,
+                      )}
+                    </InfoJob>
 
-                    <InfoJob title="Tempo utilizado:">{formattedHour}</InfoJob>
-                  </Flex>
-
-                  <Flex align="center" justify="space-between" w="100%">
-                    <InfoJob title="Tipo:">{data.type}</InfoJob>
-
-                    <JobStatus color={data.status.color}>
-                      {data.status.title}
-                    </JobStatus>
-                  </Flex>
-
-                  <Flex align="center" justify="space-between" w="100%">
-                    <InfoJob title="Criado em:">{data.createdAt}</InfoJob>
-
-                    <InfoJob title="Última atualização:">
-                      {data.updatedAt}
+                    <InfoJob title="Tempo utilizado:">
+                      {`${job?.hourEstimate}h${job?.minutesEstimate}m`}
                     </InfoJob>
                   </Flex>
 
-                  {data.briefing && (
-                    <Box>
-                      <Text fontWeight="bold">Briefing:</Text>
+                  <Flex align="center" justify="space-between" w="100%">
+                    {job.type === 'budget' && (
+                      <InfoJob title="Tipo:">Orçamento</InfoJob>
+                    )}
 
-                      <Text fontSize="md">{data.briefing}</Text>
-                    </Box>
-                  )}
+                    {job.type === 'development' && (
+                      <InfoJob title="Tipo:">Desenvolvimento</InfoJob>
+                    )}
+
+                    {job.type === 'other' && (
+                      <InfoJob title="Tipo:">Outro</InfoJob>
+                    )}
+
+                    {job.status === 'opened' && (
+                      <JobStatus statusColor="blue">Em aberto</JobStatus>
+                    )}
+
+                    {job.status === 'developing' && (
+                      <JobStatus statusColor="yellow">Em andamento</JobStatus>
+                    )}
+
+                    {job.status === 'paused' && (
+                      <JobStatus statusColor="red">Em espera</JobStatus>
+                    )}
+
+                    {job.status === 'done' && (
+                      <JobStatus statusColor="green">Concluído</JobStatus>
+                    )}
+                  </Flex>
+
+                  <Flex align="center" justify="space-between" w="100%">
+                    <InfoJob title="Criado em:">
+                      {formatDate(job.createdAt)}
+                    </InfoJob>
+
+                    <InfoJob title="Última atualização:">
+                      {formatDate(job.updatedAt)}
+                    </InfoJob>
+                  </Flex>
+
+                  <Box>
+                    <Text fontWeight="bold">Descrição:</Text>
+
+                    <Text fontSize="md">{job?.description}</Text>
+                  </Box>
                 </VStack>
               </Box>
 
               <JobProgress />
             </Flex>
 
-            <Box mt="12">
+            {/* <Box mt="12">
               <Title>Apontamentos</Title>
 
               <JobReports reports={jobReports} totalHourJob={totalHourJob} />
-            </Box>
+            </Box> */}
           </>
-        )} */}
+        )}
       </Box>
     </Container>
   );
