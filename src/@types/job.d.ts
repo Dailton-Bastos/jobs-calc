@@ -8,8 +8,9 @@ export interface CreateNewJobData {
   jobberId?: string;
   type: JobType;
   title: string;
-  hourEstimate?: number;
-  minutesEstimate?: number;
+  hourEstimate: number;
+  minutesEstimate: number;
+  totalMinutesAmount: number;
   description?: string;
 }
 
@@ -21,8 +22,10 @@ export interface Job {
   title: string;
   description?: string;
   status: JobStatus;
-  hourEstimate?: number;
-  minutesEstimate?: number;
+  hourEstimate: number;
+  minutesEstimate: number;
+  totalMinutesAmount: number;
+  startDate: FirestoreTimestamp | null;
   createdAt: FirestoreTimestamp;
   updatedAt: FirestoreTimestamp;
 }
@@ -32,6 +35,8 @@ export interface JobsContextProps {
   createNewJob: (data: CreateNewJobData) => void;
   fetchJob: (id: string) => void;
   job: Job | null;
+  amountSecondsPassed: number;
+  setSecondsPassed: (seconds: number) => void;
 }
 
 export interface JobsProviderProps {

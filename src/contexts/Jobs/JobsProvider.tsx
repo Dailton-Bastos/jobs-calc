@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { differenceInSeconds } from 'date-fns';
 import {
   ref,
   push,
@@ -35,6 +36,14 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
   const [jobsState, dispatch] = React.useReducer(jobsReducer, initialJobsState);
   const [job, setJob] = React.useState<Job | null>(null);
 
+  const [amountSecondsPassed, setAmountSecondsPassed] = React.useState(() => {
+    if (job?.startDate) {
+      return differenceInSeconds(new Date(), new Date(Number(job?.startDate)));
+    }
+
+    return 0;
+  });
+
   const { user } = useAuth();
   const userId = user?.uid;
 
@@ -53,7 +62,9 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
         status: 'opened',
         hourEstimate: data.hourEstimate,
         minutesEstimate: data.minutesEstimate,
+        totalMinutesAmount: data.totalMinutesAmount,
         description: data.description,
+        startDate: serverTimestamp() as FirestoreTimestamp,
         createdAt: serverTimestamp() as FirestoreTimestamp,
         updatedAt: serverTimestamp() as FirestoreTimestamp,
       };
@@ -105,6 +116,10 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
     });
   }, []);
 
+  const setSecondsPassed = React.useCallback((seconds: number) => {
+    setAmountSecondsPassed(seconds);
+  }, []);
+
   React.useEffect(() => {
     createInitialState();
   }, [createInitialState]);
@@ -115,8 +130,10 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       createNewJob,
       fetchJob,
       job,
+      amountSecondsPassed,
+      setSecondsPassed,
     }),
-    [jobs, createNewJob, fetchJob, job],
+    [jobs, createNewJob, fetchJob, job, amountSecondsPassed, setSecondsPassed],
   );
 
   return <JobsContext.Provider value={values}>{children}</JobsContext.Provider>;

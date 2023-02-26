@@ -3,67 +3,54 @@ import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import { RiPauseMiniFill, RiPlayMiniLine } from 'react-icons/ri';
 
 import { Flex, Box, IconButton } from '@chakra-ui/react';
-
-// import { JobProgressProps } from '~/@types/job';
-// import { ProgressButton } from '~/components/Job/Progress/Button';
+import { differenceInSeconds } from 'date-fns';
 
 import 'react-circular-progressbar/dist/styles.css';
+import { useJobsContext } from '~/hooks/useJobsContext';
 
 export const Countdown = () => {
-  // const [isPaused, setIsPaused] = React.useState(true);
-  // const [secondsLeft, setSecondsLeft] = React.useState(0);
+  const { job, amountSecondsPassed, setSecondsPassed } = useJobsContext();
 
-  // const secondsLeftRef = React.useRef(secondsLeft);
-  // const isPausedRef = React.useRef(isPaused);
+  const totalSeconds = job ? job?.totalMinutesAmount * 60 : 0;
+  const currentSeconds = job ? totalSeconds - amountSecondsPassed : 0;
 
-  // const totalSeconds = React.useMemo(() => {
-  //   return estimateTotalSeconds - totalHourJobUsed;
-  // }, [totalHourJobUsed, estimateTotalSeconds]);
+  const minutesHour = Math.floor(currentSeconds / (60 * 60));
+  const minutesAmount = Math.floor(currentSeconds / 60);
+  const secondsAmount = currentSeconds % 60;
 
-  // const hour = Math.floor(secondsLeft / 60 / 60)
-  //   .toString()
-  //   .padStart(2, '0');
+  const minutes = minutesAmount.toString().padStart(2, '0');
+  const seconds = secondsAmount.toString().padStart(2, '0');
 
-  // const minutes = Math.floor((secondsLeft / 60) % 60)
-  //   .toString()
-  //   .padStart(2, '0');
+  const percentage = Math.round((currentSeconds / totalSeconds) * 100);
 
-  // const seconds = (secondsLeft % 60).toString().padStart(2, '0');
+  const startCountdown = React.useCallback(() => {
+    let interval: ReturnType<typeof setInterval>;
 
-  // const percentage = Math.round((secondsLeft / estimateTotalSeconds) * 100);
+    function countdown() {
+      const secondsDifference = differenceInSeconds(
+        new Date(),
+        new Date(Number(job?.startDate)),
+      );
 
-  // const tick = React.useCallback(() => {
-  //   secondsLeftRef.current--;
-  //   setSecondsLeft(secondsLeftRef.current);
-  // }, []);
+      if (secondsDifference >= totalSeconds) {
+        setSecondsPassed(totalSeconds);
 
-  // const handlePlayButton = React.useCallback(() => {
-  //   setIsPaused(false);
-  //   isPausedRef.current = false;
-  // }, []);
+        return clearInterval(interval);
+      }
 
-  // const handlePauseButton = React.useCallback(async () => {
-  //   setIsPaused(true);
-  //   isPausedRef.current = true;
-  // }, []);
+      setSecondsPassed(secondsDifference);
+    }
 
-  // React.useEffect(() => {
-  //   secondsLeftRef.current = totalSeconds;
-  //   setSecondsLeft(secondsLeftRef.current);
+    if (job) {
+      interval = setInterval(countdown, 1000);
+    }
 
-  //   const interval = setInterval(() => {
-  //     if (isPausedRef.current) return;
+    return () => clearInterval(interval);
+  }, [job, setSecondsPassed, totalSeconds]);
 
-  //     if (secondsLeftRef.current === 0) {
-  //       setIsPaused(true);
-  //       return;
-  //     }
-
-  //     tick();
-  //   }, 1000);
-
-  //   return () => clearInterval(interval);
-  // }, [tick, totalSeconds]);
+  React.useEffect(() => {
+    startCountdown();
+  }, [startCountdown]);
 
   return (
     <Flex
@@ -79,14 +66,12 @@ export const Countdown = () => {
       maxW="352px"
     >
       <CircularProgressbar
-        value={30}
-        text={`${1}:${5}:${0}`}
+        value={percentage}
+        text={`${minutesHour}:${minutes}:${seconds}`}
         styles={buildStyles({
           textColor: '#5A5A66',
-          pathColor: '#36B336',
-          trailColor: '#E1E3E5',
-          // pathColor: percentage > 30 ? '#36B336' : '#EB3B35',
-          // trailColor: percentage === 0 ? '#EB3B35' : '#E1E3E5',
+          pathColor: percentage > 30 ? '#36B336' : '#EB3B35',
+          trailColor: percentage === 0 ? '#EB3B35' : '#E1E3E5',
           textSize: 16,
         })}
         strokeWidth={5}

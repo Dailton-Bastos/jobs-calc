@@ -80,9 +80,15 @@ export const NewJobPage = () => {
 
   const handleCreateNewJob = React.useCallback(
     (data: NewJobFormData) => {
+      const hourEstimate = data?.hourEstimate ?? 0;
+      const minutesEstimate = data?.minutesEstimate ?? 0;
+
       createNewJob({
         ...data,
         type: data.type as JobType,
+        hourEstimate,
+        minutesEstimate,
+        totalMinutesAmount: hourEstimate * 60 + minutesEstimate,
       });
 
       reset();
