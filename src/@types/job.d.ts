@@ -30,6 +30,8 @@ export interface Job {
 export interface JobsContextProps {
   jobs: Job[];
   createNewJob: (data: CreateNewJobData) => void;
+  fetchJob: (id: string) => void;
+  job: Job | null;
 }
 
 export interface JobsProviderProps {

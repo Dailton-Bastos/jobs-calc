@@ -1,15 +1,15 @@
 import React from 'react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
-import { RiPlayMiniLine } from 'react-icons/ri';
+import { RiPauseMiniFill, RiPlayMiniLine } from 'react-icons/ri';
 
-import { Flex, Box } from '@chakra-ui/react';
+import { Flex, Box, IconButton } from '@chakra-ui/react';
 
 // import { JobProgressProps } from '~/@types/job';
-import { ProgressButton } from '~/components/Job/Progress/Button';
+// import { ProgressButton } from '~/components/Job/Progress/Button';
 
 import 'react-circular-progressbar/dist/styles.css';
 
-export const JobProgress = () => {
+export const Countdown = () => {
   // const [isPaused, setIsPaused] = React.useState(true);
   // const [secondsLeft, setSecondsLeft] = React.useState(0);
 
@@ -93,24 +93,20 @@ export const JobProgress = () => {
       />
 
       <Box mt="6">
-        {/* {isPaused ? (
-          <ProgressButton
-            icon={RiPlayMiniLine}
-            label="Play"
-            onClick={handlePlayButton}
-          />
-        ) : (
-          <ProgressButton
-            icon={RiPauseMiniFill}
-            label="Pause"
-            onClick={handlePauseButton}
-          />
-        )} */}
+        <IconButton
+          aria-label="Iniciar"
+          variant="outline"
+          colorScheme="green"
+          size="lg"
+          icon={<RiPlayMiniLine size={28} />}
+        />
 
-        <ProgressButton
-          icon={RiPlayMiniLine}
-          label="Play"
-          // onClick={handlePlayButton}
+        <IconButton
+          aria-label="Parar"
+          variant="outline"
+          colorScheme="red"
+          size="lg"
+          icon={<RiPauseMiniFill size={28} />}
         />
       </Box>
     </Flex>
