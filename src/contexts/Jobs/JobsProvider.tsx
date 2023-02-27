@@ -7,6 +7,7 @@ import {
   push,
   child,
   get,
+  set,
   query,
   orderByChild,
   equalTo,
@@ -20,11 +21,13 @@ import {
   Job,
   JobType,
   JobsProviderProps,
+  Cycle,
 } from '~/@types/job';
 import { db, serverTimestamp } from '~/config/firebase';
 import { uuid } from '~/helpers/utils';
 import { useAuth } from '~/hooks/useAuth';
 import {
+  addNewCycleJobActions,
   addNewJobActions,
   createInitialStateActions,
 } from '~/reducers/jobs/actions';
@@ -47,9 +50,13 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
   const { user } = useAuth();
   const userId = user?.uid;
 
-  const { jobs } = jobsState;
+  const { jobs, cycles } = jobsState;
 
   const navigate = useNavigate();
+
+  const activeCycle = React.useMemo(() => {
+    return !!job?.startDate;
+  }, [job]);
 
   const createNewJob = React.useCallback(
     async (data: CreateNewJobData) => {
@@ -64,7 +71,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
         minutesEstimate: data.minutesEstimate,
         totalMinutesAmount: data.totalMinutesAmount,
         description: data.description,
-        startDate: serverTimestamp() as FirestoreTimestamp,
+        startDate: null,
         createdAt: serverTimestamp() as FirestoreTimestamp,
         updatedAt: serverTimestamp() as FirestoreTimestamp,
       };
@@ -78,6 +85,39 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       }
     },
     [user, navigate],
+  );
+
+  const updateJob = React.useCallback((data: Job) => {
+    set(ref(db, 'jobs/' + '-NPFRM9clOitF2-CdC2e'), { ...data });
+  }, []);
+
+  const createNewCycleJob = React.useCallback(
+    async (data: Job) => {
+      const startDate = serverTimestamp() as FirestoreTimestamp;
+
+      const newCycle: Cycle = {
+        id: uuid(),
+        jobId: data.id,
+        startDate,
+      };
+
+      updateJob({
+        ...data,
+        status: 'developing',
+        startDate,
+        updatedAt: serverTimestamp() as FirestoreTimestamp,
+      });
+
+      const reference: DatabaseReference = await push(
+        ref(db, 'cycles'),
+        newCycle,
+      );
+
+      if (reference) {
+        dispatch(addNewCycleJobActions(newCycle));
+      }
+    },
+    [updateJob],
   );
 
   const createInitialState = React.useCallback(async () => {
@@ -132,8 +172,23 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       job,
       amountSecondsPassed,
       setSecondsPassed,
+      cycles,
+      createNewCycleJob,
+      activeCycle,
+      updateJob,
     }),
-    [jobs, createNewJob, fetchJob, job, amountSecondsPassed, setSecondsPassed],
+    [
+      jobs,
+      createNewJob,
+      fetchJob,
+      job,
+      amountSecondsPassed,
+      setSecondsPassed,
+      cycles,
+      createNewCycleJob,
+      activeCycle,
+      updateJob,
+    ],
   );
 
   return <JobsContext.Provider value={values}>{children}</JobsContext.Provider>;

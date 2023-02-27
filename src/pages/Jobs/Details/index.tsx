@@ -6,6 +6,7 @@ import { Flex, Box, VStack, Text } from '@chakra-ui/react';
 import { Container } from '~/components/Container';
 import { Countdown } from '~/components/Job/Countdown';
 import { InfoJob } from '~/components/Job/Info';
+import { NewCycleForm } from '~/components/Job/NewCycleForm';
 import { JobStatus } from '~/components/Job/Status';
 import { Title } from '~/components/Title';
 import { formatTime, formatDate } from '~/helpers/utils';
@@ -98,7 +99,22 @@ export const DetailsJobPage = () => {
                 </VStack>
               </Box>
 
-              <Countdown />
+              <Flex
+                direction="column"
+                alignItems="center"
+                justifyContent="center"
+                bg="white"
+                boxShadow="lg"
+                borderRadius="5px"
+                py="6"
+                px="12"
+                w="100%"
+                maxW="352px"
+              >
+                <Countdown />
+
+                <NewCycleForm job={job} />
+              </Flex>
             </Flex>
 
             {/* <Box mt="12">

@@ -3,16 +3,16 @@
     "jobs": {
       ".read": "auth !== null",
       ".write": "auth != null",
-      ".indexOn": "userId",
+      ".indexOn": ["userId", "id"],
       "$uid": {
         ".read": "auth !== null && data.child('userId').val() === auth.uid",
         ".write": "auth != null && (!data.exists() || data.child('userId').val() === auth.uid)"
       }
     },
-    "reports": {
+    "cycles": {
       ".read": "auth != null",
       ".write": "auth != null",
-      ".indexOn": "job_id",
+      ".indexOn": "jobId",
       "$uid": {
         ".write": "auth != null && (!data.exists())"
       }
