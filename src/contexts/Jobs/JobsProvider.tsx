@@ -12,8 +12,8 @@ import {
   orderByChild,
   equalTo,
   onValue,
+  ThenableReference,
 } from 'firebase/database';
-import type { DatabaseReference } from 'firebase/database';
 
 import {
   CreateNewJobData,
@@ -22,9 +22,9 @@ import {
   JobType,
   JobsProviderProps,
   Cycle,
+  CreateNewCycleJobData,
 } from '~/@types/job';
 import { db, serverTimestamp } from '~/config/firebase';
-import { uuid } from '~/helpers/utils';
 import { useAuth } from '~/hooks/useAuth';
 import {
   addNewCycleJobActions,
@@ -58,67 +58,62 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
     return !!job?.startDate;
   }, [job]);
 
+  const createNewCycleJob = React.useCallback((data: CreateNewCycleJobData) => {
+    const newCycle: Cycle = { id: null, ...data };
+
+    const reference: ThenableReference = push(ref(db, 'cycles'), newCycle);
+
+    if (reference.key) {
+      dispatch(addNewCycleJobActions(newCycle));
+    }
+  }, []);
+
   const createNewJob = React.useCallback(
-    async (data: CreateNewJobData) => {
+    (data: CreateNewJobData) => {
+      const startDate = serverTimestamp() as FirestoreTimestamp;
+
       const newJob: Job = {
-        id: uuid(),
+        id: null,
         jobberId: data.jobberId,
         userId: user?.uid,
         type: data.type as JobType,
         title: data.title,
-        status: 'opened',
+        status: 'developing',
         hourEstimate: data.hourEstimate,
         minutesEstimate: data.minutesEstimate,
         totalMinutesAmount: data.totalMinutesAmount,
         description: data.description,
-        startDate: null,
+        startDate,
         createdAt: serverTimestamp() as FirestoreTimestamp,
         updatedAt: serverTimestamp() as FirestoreTimestamp,
       };
 
-      const reference: DatabaseReference = await push(ref(db, 'jobs'), newJob);
+      const reference: ThenableReference = push(ref(db, 'jobs'), newJob);
 
-      if (reference) {
-        dispatch(addNewJobActions(newJob));
-
-        navigate(`/jobs/${newJob.id}`);
-      }
-    },
-    [user, navigate],
-  );
-
-  const updateJob = React.useCallback((data: Job) => {
-    set(ref(db, 'jobs/' + '-NPFRM9clOitF2-CdC2e'), { ...data });
-  }, []);
-
-  const createNewCycleJob = React.useCallback(
-    async (data: Job) => {
-      const startDate = serverTimestamp() as FirestoreTimestamp;
+      if (!reference.key) return;
 
       const newCycle: Cycle = {
-        id: uuid(),
-        jobId: data.id,
+        id: null,
+        jobId: reference.key,
         startDate,
       };
 
-      updateJob({
-        ...data,
-        status: 'developing',
-        startDate,
-        updatedAt: serverTimestamp() as FirestoreTimestamp,
-      });
+      dispatch(addNewJobActions(newJob));
 
-      const reference: DatabaseReference = await push(
-        ref(db, 'cycles'),
-        newCycle,
-      );
+      createNewCycleJob(newCycle);
 
-      if (reference) {
-        dispatch(addNewCycleJobActions(newCycle));
-      }
+      navigate(`/jobs/${reference.key}`);
     },
-    [updateJob],
+    [user, navigate, createNewCycleJob],
   );
+
+  const updateJob = React.useCallback((key: string, data: Job) => {
+    if (!key) return;
+
+    set(ref(db, `jobs/${key}`), {
+      ...data,
+    });
+  }, []);
 
   const createInitialState = React.useCallback(async () => {
     if (!userId) return;
@@ -132,26 +127,25 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
     if (snapshot && snapshot.exists()) {
       const data = snapshot.val();
 
-      for (const id in data) {
-        jobsList.push({ id, ...data[id] });
+      for (const property in data) {
+        jobsList.push({ id: property, ...data[property] });
       }
     }
 
     dispatch(createInitialStateActions(jobsList));
   }, [userId]);
 
-  const fetchJob = React.useCallback((id: string) => {
-    if (!id) return;
+  const fetchJob = React.useCallback((key: string) => {
+    if (!key) return;
 
-    const jobRef = query(ref(db, 'jobs'), orderByChild('id'), equalTo(id));
-
-    onValue(jobRef, (snapshot) => {
+    onValue(ref(db, `jobs/${key}`), (snapshot) => {
       if (snapshot && snapshot.exists()) {
-        const data = snapshot.val();
+        const data: Job = snapshot.val();
 
-        for (const key in data) {
-          setJob({ ...data[key] });
-        }
+        setJob({
+          ...data,
+          id: snapshot.key,
+        });
       }
     });
   }, []);

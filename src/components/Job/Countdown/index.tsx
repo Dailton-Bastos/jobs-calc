@@ -26,8 +26,6 @@ export const Countdown = () => {
     let interval: ReturnType<typeof setInterval>;
 
     function countdown() {
-      if (!activeCycle) return;
-
       const secondsDifference = differenceInSeconds(
         new Date(),
         new Date(Number(job?.startDate)),

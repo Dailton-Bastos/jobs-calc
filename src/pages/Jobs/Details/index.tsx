@@ -113,7 +113,7 @@ export const DetailsJobPage = () => {
               >
                 <Countdown />
 
-                <NewCycleForm job={job} />
+                <NewCycleForm />
               </Flex>
             </Flex>
 

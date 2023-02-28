@@ -1,23 +1,27 @@
 import React from 'react';
 import { RiPauseMiniFill, RiPlayMiniLine } from 'react-icons/ri';
+import { useParams } from 'react-router-dom';
 
 import { Box, Flex, IconButton } from '@chakra-ui/react';
+import { serverTimestamp } from 'firebase/database';
 
-import { Job } from '~/@types/job';
+import { Cycle, FirestoreTimestamp } from '~/@types/job';
 import { useJobsContext } from '~/hooks/useJobsContext';
 
-interface Props {
-  job: Job;
-}
-
-export const NewCycleForm = ({ job }: Props) => {
+export const NewCycleForm = () => {
   const { createNewCycleJob, activeCycle } = useJobsContext();
 
-  // const jobId = job?.id;
+  const { id } = useParams();
 
   const handleCreateNewCycleJob = React.useCallback(() => {
-    createNewCycleJob(job);
-  }, [createNewCycleJob, job]);
+    const newCycle: Cycle = {
+      id: null,
+      jobId: id ?? '',
+      startDate: serverTimestamp() as FirestoreTimestamp,
+    };
+
+    createNewCycleJob(newCycle);
+  }, [createNewCycleJob, id]);
 
   return (
     <Flex align="center" justify="center">
