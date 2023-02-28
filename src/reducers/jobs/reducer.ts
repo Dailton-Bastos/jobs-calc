@@ -23,6 +23,7 @@ export const jobsReducer = (state: JobsState, action: Action): JobsState => {
     case ActionTypes.CREATE_INITIAL_STATE:
       return produce(state, (draft) => {
         draft.jobs = payload.jobs;
+        draft.cycles = payload.cycles;
       });
 
     case ActionTypes.ADD_NEW_JOB:

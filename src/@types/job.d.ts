@@ -5,6 +5,7 @@ export type JobType = 'other' | 'budget' | 'development';
 export type FirestoreTimestamp = Timestamp;
 
 interface CreateNewCycleJobData {
+  userId: string;
   jobId: string;
   startDate: FirestoreTimestamp;
 }
@@ -12,6 +13,7 @@ interface CreateNewCycleJobData {
 interface Cycle {
   id: string | null;
   jobId: string;
+  userId: string;
   startDate: FirestoreTimestamp;
   fineshedDate?: FirestoreTimestamp;
 }
@@ -29,7 +31,7 @@ export interface CreateNewJobData {
 export interface Job {
   id: string | null;
   jobberId?: string;
-  userId?: string;
+  userId: string;
   type: JobType;
   title: string;
   description?: string;

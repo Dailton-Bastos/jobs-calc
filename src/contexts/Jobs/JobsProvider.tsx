@@ -70,12 +70,14 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
 
   const createNewJob = React.useCallback(
     (data: CreateNewJobData) => {
+      if (!userId) return;
+
       const startDate = serverTimestamp() as FirestoreTimestamp;
 
       const newJob: Job = {
         id: null,
         jobberId: data.jobberId,
-        userId: user?.uid,
+        userId,
         type: data.type as JobType,
         title: data.title,
         status: 'developing',
@@ -95,6 +97,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       const newCycle: Cycle = {
         id: null,
         jobId: reference.key,
+        userId,
         startDate,
       };
 
@@ -104,7 +107,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
 
       navigate(`/jobs/${reference.key}`);
     },
-    [user, navigate, createNewCycleJob],
+    [userId, navigate, createNewCycleJob],
   );
 
   const updateJob = React.useCallback((key: string, data: Job) => {
@@ -118,21 +121,39 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
   const createInitialState = React.useCallback(async () => {
     if (!userId) return;
 
-    const snapshot = await get(
+    const jobsData = get(
       query(child(ref(db), 'jobs'), orderByChild('userId'), equalTo(userId)),
     );
 
-    const jobsList: Job[] = [];
+    const cyclesData = get(
+      query(child(ref(db), 'cycles'), orderByChild('userId'), equalTo(userId)),
+    );
 
-    if (snapshot && snapshot.exists()) {
-      const data = snapshot.val();
+    const [snapshotJobs, snapshotCycles] = await Promise.all([
+      jobsData,
+      cyclesData,
+    ]);
+
+    const jobsList: Job[] = [];
+    const cyclesList: Cycle[] = [];
+
+    if (snapshotJobs && snapshotJobs.exists()) {
+      const data = snapshotJobs.val();
 
       for (const property in data) {
         jobsList.push({ id: property, ...data[property] });
       }
     }
 
-    dispatch(createInitialStateActions(jobsList));
+    if (snapshotCycles && snapshotCycles.exists()) {
+      const data = snapshotCycles.val();
+
+      for (const property in data) {
+        cyclesList.push({ id: property, ...data[property] });
+      }
+    }
+
+    dispatch(createInitialStateActions(jobsList, cyclesList));
   }, [userId]);
 
   const fetchJob = React.useCallback((key: string) => {

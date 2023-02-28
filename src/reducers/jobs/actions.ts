@@ -11,6 +11,7 @@ export type Action =
       type: ActionTypes.CREATE_INITIAL_STATE;
       payload: {
         jobs: Job[];
+        cycles: Cycle[];
       };
     }
   | {
@@ -26,10 +27,13 @@ export type Action =
       };
     };
 
-export const createInitialStateActions = (jobs: Job[]) => {
+export const createInitialStateActions = (jobs: Job[], cycles: Cycle[]) => {
   return {
     type: ActionTypes.CREATE_INITIAL_STATE as const,
-    payload: { jobs },
+    payload: {
+      jobs,
+      cycles,
+    },
   };
 };
 
