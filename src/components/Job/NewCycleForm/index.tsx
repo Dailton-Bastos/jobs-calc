@@ -5,12 +5,15 @@ import { useParams } from 'react-router-dom';
 import { Box, Flex, IconButton } from '@chakra-ui/react';
 import { serverTimestamp } from 'firebase/database';
 
-import { Cycle, FirestoreTimestamp } from '~/@types/job';
+import { Cycle } from '~/@types/cycles';
+import { FirestoreTimestamp } from '~/@types/job';
 import { useAuth } from '~/hooks/useAuth';
+import { useCyclesContext } from '~/hooks/useCyclesContext';
 import { useJobsContext } from '~/hooks/useJobsContext';
 
 export const NewCycleForm = () => {
-  const { createNewCycleJob, activeCycle } = useJobsContext();
+  const { activeJob } = useJobsContext();
+  const { createNewCycleJob } = useCyclesContext();
 
   const { user } = useAuth();
   const { id } = useParams();
@@ -31,7 +34,7 @@ export const NewCycleForm = () => {
   return (
     <Flex align="center" justify="center">
       <Box mt="6">
-        {activeCycle ? (
+        {activeJob ? (
           <IconButton
             aria-label="Parar"
             variant="outline"

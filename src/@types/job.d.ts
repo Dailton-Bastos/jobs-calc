@@ -4,20 +4,6 @@ export type JobStatus = 'opened' | 'developing' | 'done' | 'paused';
 export type JobType = 'other' | 'budget' | 'development';
 export type FirestoreTimestamp = Timestamp;
 
-interface CreateNewCycleJobData {
-  userId: string;
-  jobId: string;
-  startDate: FirestoreTimestamp;
-}
-
-interface Cycle {
-  id: string | null;
-  jobId: string;
-  userId: string;
-  startDate: FirestoreTimestamp;
-  fineshedDate?: FirestoreTimestamp;
-}
-
 export interface CreateNewJobData {
   jobberId?: string;
   type: JobType;
@@ -48,12 +34,9 @@ export interface JobsContextProps {
   jobs: Job[];
   createNewJob: (data: CreateNewJobData) => void;
   fetchJob: (id: string) => void;
-  job: Job | null;
+  activeJob: Job | null;
   amountSecondsPassed: number;
   setSecondsPassed: (seconds: number) => void;
-  cycles: Cycle[];
-  createNewCycleJob: (data: CreateNewCycleJobData) => void;
-  activeCycle: boolean;
   updateJob: (key: string, data: Job) => void;
 }
 

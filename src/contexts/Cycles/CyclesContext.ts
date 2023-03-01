@@ -1,3 +1,5 @@
 import React from 'react';
 
-export const CyclesContext = React.createContext({});
+import { CyclesContextData } from '~/@types/cycles';
+
+export const CyclesContext = React.createContext({} as CyclesContextData);

@@ -9,12 +9,12 @@ import { InfoJob } from '~/components/Job/Info';
 import { NewCycleForm } from '~/components/Job/NewCycleForm';
 import { JobStatus } from '~/components/Job/Status';
 import { Title } from '~/components/Title';
-import { formatTime, formatDate } from '~/helpers/utils';
+import { formatTime } from '~/helpers/utils';
 import { useJobsContext } from '~/hooks/useJobsContext';
 
 export const DetailsJobPage = () => {
   const { id } = useParams();
-  const { job, fetchJob } = useJobsContext();
+  const { activeJob, fetchJob } = useJobsContext();
 
   React.useEffect(() => {
     if (id) fetchJob(id);
@@ -23,7 +23,7 @@ export const DetailsJobPage = () => {
   return (
     <Container title="Detalhes do Job" to="/jobs">
       <Box as="section" bg="white" px="8" py="12" borderRadius="5px">
-        {job && (
+        {activeJob && (
           <>
             <Flex alignItems="center" justifyContent="space-between" gap="8">
               <Box w="100%" maxW="640px">
@@ -31,70 +31,70 @@ export const DetailsJobPage = () => {
 
                 <VStack spacing="6" mt="8" align="flex-start">
                   <Flex align="center" justify="space-between" w="100%">
-                    {job.jobberId && (
-                      <InfoJob title="ID:">{job?.jobberId}</InfoJob>
+                    {activeJob.jobberId && (
+                      <InfoJob title="ID:">{activeJob?.jobberId}</InfoJob>
                     )}
 
-                    <InfoJob title="Título:">{job?.title}</InfoJob>
+                    <InfoJob title="Título:">{activeJob?.title}</InfoJob>
                   </Flex>
 
                   <Flex align="center" justify="space-between" w="100%">
                     <InfoJob title="Tempo Estimado:">
                       {formatTime(
-                        job.hourEstimate ?? 0,
-                        job.minutesEstimate ?? 0,
+                        activeJob.hourEstimate ?? 0,
+                        activeJob.minutesEstimate ?? 0,
                       )}
                     </InfoJob>
 
                     <InfoJob title="Tempo utilizado:">
-                      {`${job?.hourEstimate}h${job?.minutesEstimate}m`}
+                      {`${activeJob?.hourEstimate}h${activeJob?.minutesEstimate}m`}
                     </InfoJob>
                   </Flex>
 
                   <Flex align="center" justify="space-between" w="100%">
-                    {job.type === 'budget' && (
+                    {activeJob.type === 'budget' && (
                       <InfoJob title="Tipo:">Orçamento</InfoJob>
                     )}
 
-                    {job.type === 'development' && (
+                    {activeJob.type === 'development' && (
                       <InfoJob title="Tipo:">Desenvolvimento</InfoJob>
                     )}
 
-                    {job.type === 'other' && (
+                    {activeJob.type === 'other' && (
                       <InfoJob title="Tipo:">Outro</InfoJob>
                     )}
 
-                    {job.status === 'opened' && (
+                    {activeJob.status === 'opened' && (
                       <JobStatus statusColor="blue">Em aberto</JobStatus>
                     )}
 
-                    {job.status === 'developing' && (
+                    {activeJob.status === 'developing' && (
                       <JobStatus statusColor="yellow">Em andamento</JobStatus>
                     )}
 
-                    {job.status === 'paused' && (
+                    {activeJob.status === 'paused' && (
                       <JobStatus statusColor="red">Em espera</JobStatus>
                     )}
 
-                    {job.status === 'done' && (
+                    {activeJob.status === 'done' && (
                       <JobStatus statusColor="green">Concluído</JobStatus>
                     )}
                   </Flex>
 
                   <Flex align="center" justify="space-between" w="100%">
-                    <InfoJob title="Criado em:">
-                      {formatDate(job.createdAt)}
-                    </InfoJob>
+                    {/* <InfoJob title="Criado em:">
+                      {formatDate(activeJob.createdAt)}
+                    </InfoJob> */}
 
-                    <InfoJob title="Última atualização:">
-                      {formatDate(job.updatedAt)}
-                    </InfoJob>
+                    {/* <InfoJob title="Última atualização:">
+                      {formatDate(activeJob.updatedAt)}
+                    </InfoJob> */}
                   </Flex>
 
                   <Box>
                     <Text fontWeight="bold">Descrição:</Text>
 
-                    <Text fontSize="md">{job?.description}</Text>
+                    <Text fontSize="md">{activeJob?.description}</Text>
                   </Box>
                 </VStack>
               </Box>

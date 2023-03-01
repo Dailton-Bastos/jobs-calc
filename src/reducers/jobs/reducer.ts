@@ -1,19 +1,17 @@
 import { produce } from 'immer';
 
-import { Job, Cycle } from '~/@types/job';
+import { Job } from '~/@types/job';
 
 import { Action, ActionTypes } from './actions';
 
 interface JobsState {
   jobs: Job[];
-  currentJobId: string | null;
-  cycles: Cycle[];
+  activeJob: Job | null;
 }
 
 export const initialJobsState: JobsState = {
   jobs: [],
-  currentJobId: null,
-  cycles: [],
+  activeJob: null,
 };
 
 export const jobsReducer = (state: JobsState, action: Action): JobsState => {
@@ -23,20 +21,18 @@ export const jobsReducer = (state: JobsState, action: Action): JobsState => {
     case ActionTypes.CREATE_INITIAL_STATE:
       return produce(state, (draft) => {
         draft.jobs = payload.jobs;
-        draft.cycles = payload.cycles;
+        draft.activeJob = null;
       });
 
     case ActionTypes.ADD_NEW_JOB:
       return produce(state, (draft) => {
         draft.jobs.push(payload.newJob);
-        draft.currentJobId = payload.newJob.id;
+        draft.activeJob = payload.newJob;
       });
 
-    case ActionTypes.ADD_NEW_CYCLE_JOB:
+    case ActionTypes.SET_ACTIVE_JOB:
       return produce(state, (draft) => {
-        // draft.jobs.push(payload.newJob);
-        // draft.currentJobId = payload.newJob.id;
-        draft.cycles.push(payload.newCycle);
+        draft.activeJob = payload.activeJob;
       });
 
     default:

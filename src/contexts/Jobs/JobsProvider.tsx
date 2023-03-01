@@ -21,15 +21,13 @@ import {
   Job,
   JobType,
   JobsProviderProps,
-  Cycle,
-  CreateNewCycleJobData,
 } from '~/@types/job';
 import { db, serverTimestamp } from '~/config/firebase';
 import { useAuth } from '~/hooks/useAuth';
 import {
-  addNewCycleJobActions,
   addNewJobActions,
   createInitialStateActions,
+  setActiveJobActions,
 } from '~/reducers/jobs/actions';
 import { initialJobsState, jobsReducer } from '~/reducers/jobs/reducer';
 
@@ -37,11 +35,15 @@ import { JobsContext } from './JobsContext';
 
 export const JobsProvider = ({ children }: JobsProviderProps) => {
   const [jobsState, dispatch] = React.useReducer(jobsReducer, initialJobsState);
-  const [job, setJob] = React.useState<Job | null>(null);
+
+  const { jobs, activeJob } = jobsState;
 
   const [amountSecondsPassed, setAmountSecondsPassed] = React.useState(() => {
-    if (job?.startDate) {
-      return differenceInSeconds(new Date(), new Date(Number(job?.startDate)));
+    if (activeJob?.startDate) {
+      return differenceInSeconds(
+        new Date(),
+        new Date(Number(activeJob?.startDate)),
+      );
     }
 
     return 0;
@@ -50,23 +52,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
   const { user } = useAuth();
   const userId = user?.uid;
 
-  const { jobs, cycles } = jobsState;
-
   const navigate = useNavigate();
-
-  const activeCycle = React.useMemo(() => {
-    return !!job?.startDate;
-  }, [job]);
-
-  const createNewCycleJob = React.useCallback((data: CreateNewCycleJobData) => {
-    const newCycle: Cycle = { id: null, ...data };
-
-    const reference: ThenableReference = push(ref(db, 'cycles'), newCycle);
-
-    if (reference.key) {
-      dispatch(addNewCycleJobActions(newCycle));
-    }
-  }, []);
 
   const createNewJob = React.useCallback(
     (data: CreateNewJobData) => {
@@ -90,24 +76,15 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
         updatedAt: serverTimestamp() as FirestoreTimestamp,
       };
 
-      const reference: ThenableReference = push(ref(db, 'jobs'), newJob);
+      const { key }: ThenableReference = push(ref(db, 'jobs'), newJob);
 
-      if (!reference.key) return;
+      if (!key) return;
 
-      const newCycle: Cycle = {
-        id: null,
-        jobId: reference.key,
-        userId,
-        startDate,
-      };
+      dispatch(addNewJobActions(newJob, key));
 
-      dispatch(addNewJobActions(newJob));
-
-      createNewCycleJob(newCycle);
-
-      navigate(`/jobs/${reference.key}`);
+      navigate(`/jobs/${key}`);
     },
-    [userId, navigate, createNewCycleJob],
+    [userId, navigate],
   );
 
   const updateJob = React.useCallback((key: string, data: Job) => {
@@ -121,39 +98,21 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
   const createInitialState = React.useCallback(async () => {
     if (!userId) return;
 
-    const jobsData = get(
+    const snapshot = await get(
       query(child(ref(db), 'jobs'), orderByChild('userId'), equalTo(userId)),
     );
 
-    const cyclesData = get(
-      query(child(ref(db), 'cycles'), orderByChild('userId'), equalTo(userId)),
-    );
-
-    const [snapshotJobs, snapshotCycles] = await Promise.all([
-      jobsData,
-      cyclesData,
-    ]);
-
     const jobsList: Job[] = [];
-    const cyclesList: Cycle[] = [];
 
-    if (snapshotJobs && snapshotJobs.exists()) {
-      const data = snapshotJobs.val();
+    if (snapshot && snapshot.exists()) {
+      const data = snapshot.val();
 
       for (const property in data) {
         jobsList.push({ id: property, ...data[property] });
       }
     }
 
-    if (snapshotCycles && snapshotCycles.exists()) {
-      const data = snapshotCycles.val();
-
-      for (const property in data) {
-        cyclesList.push({ id: property, ...data[property] });
-      }
-    }
-
-    dispatch(createInitialStateActions(jobsList, cyclesList));
+    dispatch(createInitialStateActions(jobsList));
   }, [userId]);
 
   const fetchJob = React.useCallback((key: string) => {
@@ -163,10 +122,9 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       if (snapshot && snapshot.exists()) {
         const data: Job = snapshot.val();
 
-        setJob({
-          ...data,
-          id: snapshot.key,
-        });
+        if (!snapshot.key) return;
+
+        dispatch(setActiveJobActions({ ...data, id: snapshot.key }));
       }
     });
   }, []);
@@ -184,24 +142,18 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       jobs,
       createNewJob,
       fetchJob,
-      job,
+      activeJob,
       amountSecondsPassed,
       setSecondsPassed,
-      cycles,
-      createNewCycleJob,
-      activeCycle,
       updateJob,
     }),
     [
       jobs,
       createNewJob,
       fetchJob,
-      job,
+      activeJob,
       amountSecondsPassed,
       setSecondsPassed,
-      cycles,
-      createNewCycleJob,
-      activeCycle,
       updateJob,
     ],
   );
