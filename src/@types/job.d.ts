@@ -1,5 +1,7 @@
 import { Timestamp } from 'firebase/firestore';
 
+import { Cycle } from './cycles';
+
 export type JobStatus = 'opened' | 'developing' | 'done' | 'paused';
 export type JobType = 'other' | 'budget' | 'development';
 export type FirestoreTimestamp = Timestamp;
@@ -35,6 +37,7 @@ export interface JobsContextProps {
   createNewJob: (data: CreateNewJobData) => void;
   fetchJob: (id: string) => void;
   activeJob: Job | null;
+  cycle: Cycle | null;
   amountSecondsPassed: number;
   setSecondsPassed: (seconds: number) => void;
   updateJob: (key: string, data: Job) => void;

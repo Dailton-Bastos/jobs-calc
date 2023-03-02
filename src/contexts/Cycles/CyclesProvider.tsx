@@ -20,6 +20,7 @@ import {
 } from '~/@types/cycles';
 import { db } from '~/config/firebase';
 import { useAuth } from '~/hooks/useAuth';
+import { useJobsContext } from '~/hooks/useJobsContext';
 import {
   addNewCycleJobActions,
   createInitialStateActions,
@@ -37,6 +38,8 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
   const { cycles } = cyclesState;
   const { user } = useAuth();
   const userId = user?.uid;
+
+  const { cycle } = useJobsContext();
 
   const createNewCycleJob = React.useCallback(
     (data: CreateNewCycleJobData) => {
@@ -92,6 +95,12 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     }),
     [cycles, createNewCycleJob],
   );
+
+  React.useEffect(() => {
+    if (cycle) {
+      dispatch(addNewCycleJobActions(cycle));
+    }
+  }, [cycle]);
 
   React.useEffect(() => {
     createInitialState();

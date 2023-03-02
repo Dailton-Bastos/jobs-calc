@@ -37,6 +37,7 @@ import { JobsContext } from './JobsContext';
 
 export const JobsProvider = ({ children }: JobsProviderProps) => {
   const [jobsState, dispatch] = React.useReducer(jobsReducer, initialJobsState);
+  const [cycle, setCycle] = React.useState<Cycle | null>(null);
 
   const { jobs, activeJob } = jobsState;
 
@@ -78,28 +79,36 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
         updatedAt: serverTimestamp() as FirestoreTimestamp,
       };
 
-      const { key }: ThenableReference = push(ref(db, 'jobs'), newJob);
+      const { key: jobKey }: ThenableReference = push(ref(db, 'jobs'), newJob);
 
-      if (!key) return;
+      if (!jobKey) return;
 
       dispatch(
         addNewJobActions({
           ...newJob,
-          id: key,
+          id: jobKey,
         }),
       );
 
       const newCycle: Cycle = {
         id: null,
-        jobId: key,
+        jobId: jobKey,
         userId: userId,
         isActive: true,
         startDate: serverTimestamp() as Timestamp,
       };
 
-      push(ref(db, 'cycles'), newCycle);
+      const { key: cycleKey } = push(ref(db, 'cycles'), newCycle);
 
-      navigate(`/jobs/${key}`);
+      if (cycleKey) {
+        setCycle({
+          ...newCycle,
+          id: cycleKey,
+          startDate: new Date().getTime(),
+        });
+      }
+
+      navigate(`/jobs/${jobKey}`);
     },
     [userId, navigate],
   );
@@ -158,6 +167,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
     () => ({
       jobs,
       createNewJob,
+      cycle,
       fetchJob,
       activeJob,
       amountSecondsPassed,
@@ -167,6 +177,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
     [
       jobs,
       createNewJob,
+      cycle,
       fetchJob,
       activeJob,
       amountSecondsPassed,
