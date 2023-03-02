@@ -11,12 +11,12 @@ import {
   ThenableReference,
   serverTimestamp,
 } from 'firebase/database';
-import { Timestamp } from 'firebase/firestore';
 
 import {
   CreateNewCycleJobData,
   Cycle,
   CyclesProviderProps,
+  FirestoreTimestamp,
 } from '~/@types/cycles';
 import { db } from '~/config/firebase';
 import { useAuth } from '~/hooks/useAuth';
@@ -45,23 +45,27 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     (data: CreateNewCycleJobData) => {
       if (!user) return;
 
+      const dateInServerTimestamp = serverTimestamp() as FirestoreTimestamp;
+
       const newCycle: Cycle = {
         id: null,
         jobId: data.jobId,
         userId: user.uid,
         isActive: true,
-        startDate: serverTimestamp() as Timestamp,
+        startDate: dateInServerTimestamp,
       };
 
       const { key }: ThenableReference = push(ref(db, 'cycles'), newCycle);
 
       if (!key) return;
 
+      const dateInTimestamp = new Date().getTime();
+
       dispatch(
         addNewCycleJobActions({
           ...newCycle,
           id: key,
-          startDate: new Date().getTime(),
+          startDate: dateInTimestamp,
         }),
       );
     },

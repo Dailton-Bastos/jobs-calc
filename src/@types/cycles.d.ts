@@ -1,5 +1,7 @@
 import { Timestamp } from 'firebase/firestore';
 
+export type FirestoreTimestamp = Timestamp;
+
 export interface CyclesProviderProps {
   children: React.ReactNode;
 }
@@ -13,8 +15,8 @@ export interface Cycle {
   jobId: string;
   userId: string;
   isActive: boolean;
-  startDate: Timestamp | number;
-  fineshedDate?: Timestamp;
+  startDate: FirestoreTimestamp | number;
+  fineshedDate?: FirestoreTimestamp;
 }
 
 export interface CyclesContextData {

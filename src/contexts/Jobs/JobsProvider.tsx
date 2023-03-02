@@ -14,7 +14,6 @@ import {
   onValue,
   ThenableReference,
 } from 'firebase/database';
-import { Timestamp } from 'firebase/firestore';
 
 import { Cycle } from '~/@types/cycles';
 import {
@@ -61,7 +60,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
     (data: CreateNewJobData) => {
       if (!userId) return;
 
-      const startDate = serverTimestamp() as FirestoreTimestamp;
+      const dateInServerTimestamp = serverTimestamp() as FirestoreTimestamp;
 
       const newJob: Job = {
         id: null,
@@ -74,19 +73,24 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
         minutesEstimate: data.minutesEstimate,
         totalMinutesAmount: data.totalMinutesAmount,
         description: data.description,
-        startDate,
-        createdAt: serverTimestamp() as FirestoreTimestamp,
-        updatedAt: serverTimestamp() as FirestoreTimestamp,
+        startDate: dateInServerTimestamp,
+        createdAt: dateInServerTimestamp,
+        updatedAt: dateInServerTimestamp,
       };
 
       const { key: jobKey }: ThenableReference = push(ref(db, 'jobs'), newJob);
 
       if (!jobKey) return;
 
+      const dateInTimestamp = new Date().getTime();
+
       dispatch(
         addNewJobActions({
           ...newJob,
           id: jobKey,
+          startDate: dateInTimestamp,
+          createdAt: dateInTimestamp,
+          updatedAt: dateInTimestamp,
         }),
       );
 
@@ -95,7 +99,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
         jobId: jobKey,
         userId: userId,
         isActive: true,
-        startDate: serverTimestamp() as Timestamp,
+        startDate: dateInServerTimestamp,
       };
 
       const { key: cycleKey } = push(ref(db, 'cycles'), newCycle);
@@ -104,7 +108,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
         setCycle({
           ...newCycle,
           id: cycleKey,
-          startDate: new Date().getTime(),
+          startDate: dateInTimestamp,
         });
       }
 

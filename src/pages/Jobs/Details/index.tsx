@@ -9,7 +9,7 @@ import { InfoJob } from '~/components/Job/Info';
 import { NewCycleForm } from '~/components/Job/NewCycleForm';
 import { JobStatus } from '~/components/Job/Status';
 import { Title } from '~/components/Title';
-import { formatTime } from '~/helpers/utils';
+import { formatTime, formatDate } from '~/helpers/utils';
 import { useJobsContext } from '~/hooks/useJobsContext';
 
 export const DetailsJobPage = () => {
@@ -82,13 +82,17 @@ export const DetailsJobPage = () => {
                   </Flex>
 
                   <Flex align="center" justify="space-between" w="100%">
-                    {/* <InfoJob title="Criado em:">
-                      {formatDate(activeJob.createdAt)}
-                    </InfoJob> */}
+                    {activeJob?.createdAt && (
+                      <InfoJob title="Criado em:">
+                        {formatDate(activeJob.createdAt)}
+                      </InfoJob>
+                    )}
 
-                    {/* <InfoJob title="Última atualização:">
-                      {formatDate(activeJob.updatedAt)}
-                    </InfoJob> */}
+                    {activeJob?.updatedAt && (
+                      <InfoJob title="Última atualização:">
+                        {formatDate(activeJob.updatedAt)}
+                      </InfoJob>
+                    )}
                   </Flex>
 
                   <Box>
