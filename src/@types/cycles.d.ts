@@ -1,19 +1,20 @@
+import { Timestamp } from 'firebase/firestore';
+
 export interface CyclesProviderProps {
   children: React.ReactNode;
 }
 
 export interface CreateNewCycleJobData {
-  userId: string;
   jobId: string;
-  startDate: FirestoreTimestamp;
 }
 
 export interface Cycle {
   id: string | null;
   jobId: string;
   userId: string;
-  startDate: FirestoreTimestamp;
-  fineshedDate?: FirestoreTimestamp;
+  isActive: boolean;
+  startDate: Timestamp | number;
+  fineshedDate?: Timestamp;
 }
 
 export interface CyclesContextData {
@@ -23,4 +24,5 @@ export interface CyclesContextData {
 
 export interface CyclesState {
   cycles: Cycle[];
+  isActive: boolean;
 }

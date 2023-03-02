@@ -6,6 +6,7 @@ import { Action, ActionTypes } from './actions';
 
 export const initialCyclesState: CyclesState = {
   cycles: [],
+  isActive: false,
 };
 
 export const CyclesReducer = (state: CyclesState, action: Action) => {
@@ -15,6 +16,7 @@ export const CyclesReducer = (state: CyclesState, action: Action) => {
     case ActionTypes.ADD_NEW_CYCLE_JOB: {
       return produce(state, (draft) => {
         draft.cycles.push(payload.newCycle);
+        draft.isActive = true;
       });
     }
 

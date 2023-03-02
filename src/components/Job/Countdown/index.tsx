@@ -39,7 +39,7 @@ export const Countdown = () => {
       setSecondsPassed(secondsDifference);
     }
 
-    if (activeJob) {
+    if (activeJob?.startDate) {
       interval = setInterval(countdown, 1000);
     }
 
@@ -47,7 +47,7 @@ export const Countdown = () => {
   }, [activeJob, setSecondsPassed, totalSeconds]);
 
   React.useEffect(() => {
-    startCountdown();
+    // startCountdown();
   }, [startCountdown]);
 
   return (

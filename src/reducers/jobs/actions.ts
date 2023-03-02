@@ -17,7 +17,6 @@ export type Action =
       type: ActionTypes.ADD_NEW_JOB;
       payload: {
         newJob: Job;
-        key: string;
       };
     }
   | {
@@ -34,10 +33,10 @@ export const createInitialStateActions = (jobs: Job[]) => {
   };
 };
 
-export const addNewJobActions = (newJob: Job, key: string) => {
+export const addNewJobActions = (newJob: Job) => {
   return {
     type: ActionTypes.ADD_NEW_JOB as const,
-    payload: { newJob, key },
+    payload: { newJob },
   };
 };
 

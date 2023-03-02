@@ -1,40 +1,17 @@
 import React from 'react';
 import { RiPauseMiniFill, RiPlayMiniLine } from 'react-icons/ri';
-import { useParams } from 'react-router-dom';
 
 import { Box, Flex, IconButton } from '@chakra-ui/react';
-import { serverTimestamp } from 'firebase/database';
 
-import { Cycle } from '~/@types/cycles';
-import { FirestoreTimestamp } from '~/@types/job';
-import { useAuth } from '~/hooks/useAuth';
-import { useCyclesContext } from '~/hooks/useCyclesContext';
 import { useJobsContext } from '~/hooks/useJobsContext';
 
 export const NewCycleForm = () => {
   const { activeJob } = useJobsContext();
-  const { createNewCycleJob } = useCyclesContext();
-
-  const { user } = useAuth();
-  const { id } = useParams();
-
-  const handleCreateNewCycleJob = React.useCallback(() => {
-    if (!user) return;
-
-    const newCycle: Cycle = {
-      id: null,
-      userId: user.uid,
-      jobId: id ?? '',
-      startDate: serverTimestamp() as FirestoreTimestamp,
-    };
-
-    createNewCycleJob(newCycle);
-  }, [createNewCycleJob, id, user]);
 
   return (
     <Flex align="center" justify="center">
       <Box mt="6">
-        {activeJob ? (
+        {activeJob?.startDate ? (
           <IconButton
             aria-label="Parar"
             variant="outline"
@@ -49,7 +26,6 @@ export const NewCycleForm = () => {
             colorScheme="green"
             size="lg"
             icon={<RiPlayMiniLine size={28} />}
-            onClick={handleCreateNewCycleJob}
           />
         )}
       </Box>

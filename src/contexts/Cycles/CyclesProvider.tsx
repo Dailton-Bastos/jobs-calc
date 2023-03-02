@@ -1,6 +1,12 @@
 import React from 'react';
 
-import { ref, push, ThenableReference } from 'firebase/database';
+import {
+  ref,
+  push,
+  ThenableReference,
+  serverTimestamp,
+} from 'firebase/database';
+import { Timestamp } from 'firebase/firestore';
 
 import {
   CreateNewCycleJobData,
@@ -8,6 +14,7 @@ import {
   CyclesProviderProps,
 } from '~/@types/cycles';
 import { db } from '~/config/firebase';
+import { useAuth } from '~/hooks/useAuth';
 import { addNewCycleJobActions } from '~/reducers/cycles/actions';
 import { CyclesReducer, initialCyclesState } from '~/reducers/cycles/reducer';
 
@@ -20,16 +27,34 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
   );
 
   const { cycles } = cyclesState;
+  const { user } = useAuth();
 
-  const createNewCycleJob = React.useCallback((data: CreateNewCycleJobData) => {
-    const newCycle: Cycle = { id: null, ...data };
+  const createNewCycleJob = React.useCallback(
+    (data: CreateNewCycleJobData) => {
+      if (!user) return;
 
-    const reference: ThenableReference = push(ref(db, 'cycles'), newCycle);
+      const newCycle: Cycle = {
+        id: null,
+        jobId: data.jobId,
+        userId: user.uid,
+        isActive: true,
+        startDate: serverTimestamp() as Timestamp,
+      };
 
-    if (reference.key) {
-      dispatch(addNewCycleJobActions(newCycle));
-    }
-  }, []);
+      const { key }: ThenableReference = push(ref(db, 'cycles'), newCycle);
+
+      if (!key) return;
+
+      dispatch(
+        addNewCycleJobActions({
+          ...newCycle,
+          id: key,
+          startDate: new Date().getTime(),
+        }),
+      );
+    },
+    [user],
+  );
 
   const values = React.useMemo(
     () => ({

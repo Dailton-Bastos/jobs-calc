@@ -14,7 +14,9 @@ import {
   onValue,
   ThenableReference,
 } from 'firebase/database';
+import { Timestamp } from 'firebase/firestore';
 
+import { Cycle } from '~/@types/cycles';
 import {
   CreateNewJobData,
   FirestoreTimestamp,
@@ -80,7 +82,22 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
 
       if (!key) return;
 
-      dispatch(addNewJobActions(newJob, key));
+      dispatch(
+        addNewJobActions({
+          ...newJob,
+          id: key,
+        }),
+      );
+
+      const newCycle: Cycle = {
+        id: null,
+        jobId: key,
+        userId: userId,
+        isActive: true,
+        startDate: serverTimestamp() as Timestamp,
+      };
+
+      push(ref(db, 'cycles'), newCycle);
 
       navigate(`/jobs/${key}`);
     },
