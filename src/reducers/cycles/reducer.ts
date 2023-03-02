@@ -20,6 +20,11 @@ export const CyclesReducer = (state: CyclesState, action: Action) => {
       });
     }
 
+    case ActionTypes.CREATE_INITIAL_STATE:
+      return produce(state, (draft) => {
+        draft.cycles = payload.cycles;
+      });
+
     default:
       return state;
   }

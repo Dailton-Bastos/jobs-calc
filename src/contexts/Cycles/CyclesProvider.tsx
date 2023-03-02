@@ -3,6 +3,11 @@ import React from 'react';
 import {
   ref,
   push,
+  child,
+  get,
+  query,
+  orderByChild,
+  equalTo,
   ThenableReference,
   serverTimestamp,
 } from 'firebase/database';
@@ -15,7 +20,10 @@ import {
 } from '~/@types/cycles';
 import { db } from '~/config/firebase';
 import { useAuth } from '~/hooks/useAuth';
-import { addNewCycleJobActions } from '~/reducers/cycles/actions';
+import {
+  addNewCycleJobActions,
+  createInitialStateActions,
+} from '~/reducers/cycles/actions';
 import { CyclesReducer, initialCyclesState } from '~/reducers/cycles/reducer';
 
 import { CyclesContext } from './CyclesContext';
@@ -28,6 +36,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
   const { cycles } = cyclesState;
   const { user } = useAuth();
+  const userId = user?.uid;
 
   const createNewCycleJob = React.useCallback(
     (data: CreateNewCycleJobData) => {
@@ -56,6 +65,26 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     [user],
   );
 
+  const createInitialState = React.useCallback(async () => {
+    if (!userId) return;
+
+    const snapshot = await get(
+      query(child(ref(db), 'cycles'), orderByChild('userId'), equalTo(userId)),
+    );
+
+    const cyclesList: Cycle[] = [];
+
+    if (snapshot && snapshot.exists()) {
+      const data = snapshot.val();
+
+      for (const property in data) {
+        cyclesList.push({ id: property, ...data[property] });
+      }
+    }
+
+    dispatch(createInitialStateActions(cyclesList));
+  }, [userId]);
+
   const values = React.useMemo(
     () => ({
       cycles,
@@ -63,6 +92,10 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     }),
     [cycles, createNewCycleJob],
   );
+
+  React.useEffect(() => {
+    createInitialState();
+  }, [createInitialState]);
 
   return (
     <CyclesContext.Provider value={values}>{children}</CyclesContext.Provider>
