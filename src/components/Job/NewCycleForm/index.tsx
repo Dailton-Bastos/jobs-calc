@@ -4,11 +4,20 @@ import { RiPauseMiniFill, RiPlayMiniLine } from 'react-icons/ri';
 import { Box, Flex, IconButton } from '@chakra-ui/react';
 
 import { useCyclesContext } from '~/hooks/useCyclesContext';
+import { useJobsContext } from '~/hooks/useJobsContext';
 
 export const NewCycleForm = () => {
-  const { finishCurrentCycle, activeCycle } = useCyclesContext();
+  const { createNewCycleJob, finishCurrentCycle, activeCycle } =
+    useCyclesContext();
+  const { activeJob } = useJobsContext();
 
-  const handleFInishCurrentCycle = React.useCallback(() => {
+  const handleCreateNewCycle = React.useCallback(() => {
+    if (activeJob?.id) {
+      createNewCycleJob({ jobId: activeJob.id });
+    }
+  }, [activeJob, createNewCycleJob]);
+
+  const handleFinishCurrentCycle = React.useCallback(() => {
     if (activeCycle) {
       finishCurrentCycle(activeCycle);
     }
@@ -25,7 +34,7 @@ export const NewCycleForm = () => {
             colorScheme="red"
             size="lg"
             icon={<RiPauseMiniFill size={28} />}
-            onClick={handleFInishCurrentCycle}
+            onClick={handleFinishCurrentCycle}
           />
         ) : (
           <IconButton
@@ -34,6 +43,7 @@ export const NewCycleForm = () => {
             colorScheme="green"
             size="lg"
             icon={<RiPlayMiniLine size={28} />}
+            onClick={handleCreateNewCycle}
           />
         )}
       </Box>

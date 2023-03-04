@@ -76,8 +76,15 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
           startDate: dateInTimestamp,
         }),
       );
+
+      if (activeJob) {
+        updateJob({
+          ...activeJob,
+          startDate: new Date().getTime(),
+        });
+      }
     },
-    [user],
+    [user, activeJob, updateJob],
   );
 
   const createInitialState = React.useCallback(async () => {

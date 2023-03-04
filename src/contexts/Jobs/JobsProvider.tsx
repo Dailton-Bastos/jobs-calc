@@ -121,15 +121,20 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
   const updateJob = React.useCallback((job: Job) => {
     if (!job.id) return;
 
+    const dateInServerTimestamp = serverTimestamp() as FirestoreTimestamp;
+    const dateInTimestamp = new Date().getTime();
+
     set(ref(db, `jobs/${job.id}`), {
       ...job,
-      updatedAt: serverTimestamp() as FirestoreTimestamp,
+      startDate: job?.startDate ? dateInServerTimestamp : null,
+      updatedAt: dateInTimestamp,
     });
 
     dispatch(
       updateJobActions({
         ...job,
-        updatedAt: new Date().getTime(),
+        startDate: job?.startDate ? dateInTimestamp : null,
+        updatedAt: dateInTimestamp,
       }),
     );
   }, []);
