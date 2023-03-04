@@ -4,10 +4,12 @@ import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import { differenceInSeconds } from 'date-fns';
 
 import 'react-circular-progressbar/dist/styles.css';
+import { useCyclesContext } from '~/hooks/useCyclesContext';
 import { useJobsContext } from '~/hooks/useJobsContext';
 
 export const Countdown = () => {
   const { activeJob, amountSecondsPassed, setSecondsPassed } = useJobsContext();
+  const { activeCycle } = useCyclesContext();
 
   const totalSeconds = activeJob ? activeJob?.totalMinutesAmount * 60 : 0;
   const currentSeconds = activeJob ? totalSeconds - amountSecondsPassed : 0;
@@ -39,12 +41,12 @@ export const Countdown = () => {
       setSecondsPassed(secondsDifference);
     }
 
-    if (activeJob?.startDate) {
+    if (activeCycle) {
       interval = setInterval(countdown, 1000);
     }
 
     return () => clearInterval(interval);
-  }, [activeJob, setSecondsPassed, totalSeconds]);
+  }, [activeJob, setSecondsPassed, totalSeconds, activeCycle]);
 
   React.useEffect(() => {
     startCountdown();

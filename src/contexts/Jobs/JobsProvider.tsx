@@ -29,6 +29,7 @@ import {
   addNewJobActions,
   createInitialStateActions,
   setActiveJobActions,
+  updateJobActions,
 } from '~/reducers/jobs/actions';
 import { initialJobsState, jobsReducer } from '~/reducers/jobs/reducer';
 
@@ -117,12 +118,20 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
     [userId, navigate],
   );
 
-  const updateJob = React.useCallback((key: string, data: Job) => {
-    if (!key) return;
+  const updateJob = React.useCallback((job: Job) => {
+    if (!job.id) return;
 
-    set(ref(db, `jobs/${key}`), {
-      ...data,
+    set(ref(db, `jobs/${job.id}`), {
+      ...job,
+      updatedAt: serverTimestamp() as FirestoreTimestamp,
     });
+
+    dispatch(
+      updateJobActions({
+        ...job,
+        updatedAt: new Date().getTime(),
+      }),
+    );
   }, []);
 
   const createInitialState = React.useCallback(async () => {

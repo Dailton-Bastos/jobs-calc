@@ -41,8 +41,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
   const { user } = useAuth();
   const userId = user?.uid;
 
-  const { newCycle } = useJobsContext();
-  const { activeJob } = useJobsContext();
+  const { newCycle, activeJob, updateJob } = useJobsContext();
 
   const activeCycle = React.useMemo(() => {
     return cycles.find((cycle) => {
@@ -113,11 +112,18 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
   const finishCurrentCycle = React.useCallback(
     (cycle: Cycle) => {
+      if (!activeJob) return;
+
       updateCycle(cycle);
+
+      updateJob({
+        ...activeJob,
+        startDate: null,
+      });
 
       dispatch(finishCurrentCycleActions(cycle));
     },
-    [updateCycle],
+    [updateCycle, updateJob, activeJob],
   );
 
   const values = React.useMemo(

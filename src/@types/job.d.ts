@@ -42,7 +42,7 @@ export interface JobsContextProps {
   newCycle: Cycle | null;
   amountSecondsPassed: number;
   setSecondsPassed: (seconds: number) => void;
-  updateJob: (key: string, data: Job) => void;
+  updateJob: (job: Job) => void;
 }
 
 export interface JobsProviderProps {

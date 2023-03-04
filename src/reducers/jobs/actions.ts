@@ -4,6 +4,7 @@ export enum ActionTypes {
   ADD_NEW_JOB = 'ADD_NEW_JOB',
   CREATE_INITIAL_STATE = 'CREATE_INITIAL_STATE',
   SET_ACTIVE_JOB = 'SET_ACTIVE_JOB',
+  UPDATE_JOB = 'UPDATE_JOB',
 }
 
 export type Action =
@@ -23,6 +24,12 @@ export type Action =
       type: ActionTypes.SET_ACTIVE_JOB;
       payload: {
         activeJob: Job | null;
+      };
+    }
+  | {
+      type: ActionTypes.UPDATE_JOB;
+      payload: {
+        job: Job;
       };
     };
 
@@ -46,5 +53,12 @@ export const setActiveJobActions = (job: Job | null) => {
     payload: {
       activeJob: job,
     },
+  };
+};
+
+export const updateJobActions = (job: Job) => {
+  return {
+    type: ActionTypes.UPDATE_JOB as const,
+    payload: { job },
   };
 };

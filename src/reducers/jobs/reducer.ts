@@ -35,6 +35,18 @@ export const jobsReducer = (state: JobsState, action: Action): JobsState => {
         draft.activeJob = payload.activeJob;
       });
 
+    case ActionTypes.UPDATE_JOB: {
+      const currentJobIndex = state.jobs.findIndex((job) => {
+        return job.id === payload.job.id;
+      });
+
+      if (currentJobIndex < 0) return state;
+
+      return produce(state, (draft) => {
+        draft.jobs[currentJobIndex] = payload.job;
+      });
+    }
+
     default:
       return state;
   }
