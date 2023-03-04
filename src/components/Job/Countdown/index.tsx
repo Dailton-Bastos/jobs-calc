@@ -47,7 +47,7 @@ export const Countdown = () => {
   }, [activeJob, setSecondsPassed, totalSeconds]);
 
   React.useEffect(() => {
-    // startCountdown();
+    startCountdown();
   }, [startCountdown]);
 
   return (

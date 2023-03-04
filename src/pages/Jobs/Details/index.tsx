@@ -14,11 +14,15 @@ import { useJobsContext } from '~/hooks/useJobsContext';
 
 export const DetailsJobPage = () => {
   const { id } = useParams();
-  const { activeJob, fetchJob } = useJobsContext();
+  const { jobs, activeJob, updateActiveJob } = useJobsContext();
 
   React.useEffect(() => {
-    if (id) fetchJob(id);
-  }, [fetchJob, id]);
+    const job = jobs?.find((item) => item.id === id);
+
+    if (job) {
+      updateActiveJob(job);
+    }
+  }, [jobs, updateActiveJob, id]);
 
   return (
     <Container title="Detalhes do Job" to="/jobs">

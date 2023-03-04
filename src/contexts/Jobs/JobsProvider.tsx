@@ -159,6 +159,10 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
     });
   }, []);
 
+  const updateActiveJob = React.useCallback((job: Job) => {
+    dispatch(setActiveJobActions(job));
+  }, []);
+
   const setSecondsPassed = React.useCallback((seconds: number) => {
     setAmountSecondsPassed(seconds);
   }, []);
@@ -174,6 +178,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       cycle,
       fetchJob,
       activeJob,
+      updateActiveJob,
       amountSecondsPassed,
       setSecondsPassed,
       updateJob,
@@ -184,6 +189,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       cycle,
       fetchJob,
       activeJob,
+      updateActiveJob,
       amountSecondsPassed,
       setSecondsPassed,
       updateJob,
