@@ -39,7 +39,7 @@ export interface JobsContextProps {
   fetchJob: (id: string) => void;
   activeJob: Job | null;
   updateActiveJob: (job: Job) => void;
-  cycle: Cycle | null;
+  newCycle: Cycle | null;
   amountSecondsPassed: number;
   setSecondsPassed: (seconds: number) => void;
   updateJob: (key: string, data: Job) => void;

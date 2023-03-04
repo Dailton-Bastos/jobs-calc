@@ -5,6 +5,7 @@ import {
   push,
   child,
   get,
+  set,
   query,
   orderByChild,
   equalTo,
@@ -12,7 +13,7 @@ import {
   serverTimestamp,
 } from 'firebase/database';
 
-import {
+import type {
   CreateNewCycleJobData,
   Cycle,
   CyclesProviderProps,
@@ -24,6 +25,7 @@ import { useJobsContext } from '~/hooks/useJobsContext';
 import {
   addNewCycleJobActions,
   createInitialStateActions,
+  finishCurrentCycleActions,
 } from '~/reducers/cycles/actions';
 import { CyclesReducer, initialCyclesState } from '~/reducers/cycles/reducer';
 
@@ -39,7 +41,14 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
   const { user } = useAuth();
   const userId = user?.uid;
 
-  const { cycle } = useJobsContext();
+  const { newCycle } = useJobsContext();
+  const { activeJob } = useJobsContext();
+
+  const activeCycle = React.useMemo(() => {
+    return cycles.find((cycle) => {
+      return cycle.isActive && cycle.jobId === activeJob?.id;
+    });
+  }, [activeJob, cycles]);
 
   const createNewCycleJob = React.useCallback(
     (data: CreateNewCycleJobData) => {
@@ -47,7 +56,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
       const dateInServerTimestamp = serverTimestamp() as FirestoreTimestamp;
 
-      const newCycle: Cycle = {
+      const cycle: Cycle = {
         id: null,
         jobId: data.jobId,
         userId: user.uid,
@@ -55,7 +64,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
         startDate: dateInServerTimestamp,
       };
 
-      const { key }: ThenableReference = push(ref(db, 'cycles'), newCycle);
+      const { key }: ThenableReference = push(ref(db, 'cycles'), cycle);
 
       if (!key) return;
 
@@ -63,7 +72,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
       dispatch(
         addNewCycleJobActions({
-          ...newCycle,
+          ...cycle,
           id: key,
           startDate: dateInTimestamp,
         }),
@@ -92,19 +101,40 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     dispatch(createInitialStateActions(cyclesList));
   }, [userId]);
 
+  const updateCycle = React.useCallback(async (cycle: Cycle) => {
+    if (!cycle.id) return;
+
+    return set(ref(db, `cycles/${cycle.id}`), {
+      ...cycle,
+      isActive: false,
+      fineshedDate: serverTimestamp() as FirestoreTimestamp,
+    });
+  }, []);
+
+  const finishCurrentCycle = React.useCallback(
+    (cycle: Cycle) => {
+      updateCycle(cycle);
+
+      dispatch(finishCurrentCycleActions(cycle));
+    },
+    [updateCycle],
+  );
+
   const values = React.useMemo(
     () => ({
       cycles,
       createNewCycleJob,
+      finishCurrentCycle,
+      activeCycle,
     }),
-    [cycles, createNewCycleJob],
+    [cycles, createNewCycleJob, finishCurrentCycle, activeCycle],
   );
 
   React.useEffect(() => {
-    if (cycle) {
-      dispatch(addNewCycleJobActions(cycle));
+    if (newCycle) {
+      dispatch(addNewCycleJobActions(newCycle));
     }
-  }, [cycle]);
+  }, [newCycle]);
 
   React.useEffect(() => {
     createInitialState();

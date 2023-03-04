@@ -3,6 +3,7 @@ import { Cycle } from '~/@types/cycles';
 export enum ActionTypes {
   ADD_NEW_CYCLE_JOB = 'ADD_NEW_CYCLE_JOB',
   CREATE_INITIAL_STATE = 'CREATE_INITIAL_STATE',
+  FINISH_CURRENT_CYCLE = 'FINISH_CURRENT_CYCLE',
 }
 
 export type Action =
@@ -10,6 +11,12 @@ export type Action =
       type: ActionTypes.ADD_NEW_CYCLE_JOB;
       payload: {
         newCycle: Cycle;
+      };
+    }
+  | {
+      type: ActionTypes.FINISH_CURRENT_CYCLE;
+      payload: {
+        cycle: Cycle;
       };
     }
   | {
@@ -25,6 +32,13 @@ export const addNewCycleJobActions = (newCycle: Cycle) => {
     payload: {
       newCycle,
     },
+  };
+};
+
+export const finishCurrentCycleActions = (cycle: Cycle) => {
+  return {
+    type: ActionTypes.FINISH_CURRENT_CYCLE as const,
+    payload: { cycle },
   };
 };
 

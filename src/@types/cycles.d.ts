@@ -16,15 +16,16 @@ export interface Cycle {
   userId: string;
   isActive: boolean;
   startDate: FirestoreTimestamp | number;
-  fineshedDate?: FirestoreTimestamp;
+  fineshedDate?: FirestoreTimestamp | number;
 }
 
 export interface CyclesContextData {
   cycles: Cycle[];
   createNewCycleJob: (data: CreateNewCycleJobData) => void;
+  finishCurrentCycle: (cycle: Cycle) => void;
+  activeCycle: Cycle | undefined;
 }
 
 export interface CyclesState {
   cycles: Cycle[];
-  isActive: boolean;
 }

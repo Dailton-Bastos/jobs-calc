@@ -6,7 +6,6 @@ import { Action, ActionTypes } from './actions';
 
 export const initialCyclesState: CyclesState = {
   cycles: [],
-  isActive: false,
 };
 
 export const CyclesReducer = (state: CyclesState, action: Action) => {
@@ -16,7 +15,19 @@ export const CyclesReducer = (state: CyclesState, action: Action) => {
     case ActionTypes.ADD_NEW_CYCLE_JOB: {
       return produce(state, (draft) => {
         draft.cycles.push(payload.newCycle);
-        draft.isActive = true;
+      });
+    }
+
+    case ActionTypes.FINISH_CURRENT_CYCLE: {
+      const currentCycleIndex = state.cycles.findIndex((cycle) => {
+        return cycle.isActive && cycle.id === payload.cycle.id;
+      });
+
+      if (currentCycleIndex < 0) return state;
+
+      return produce(state, (draft) => {
+        draft.cycles[currentCycleIndex].fineshedDate = new Date().getTime();
+        draft.cycles[currentCycleIndex].isActive = false;
       });
     }
 

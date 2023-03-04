@@ -36,7 +36,7 @@ import { JobsContext } from './JobsContext';
 
 export const JobsProvider = ({ children }: JobsProviderProps) => {
   const [jobsState, dispatch] = React.useReducer(jobsReducer, initialJobsState);
-  const [cycle, setCycle] = React.useState<Cycle | null>(null);
+  const [newCycle, setNewCycle] = React.useState<Cycle | null>(null);
 
   const { jobs, activeJob } = jobsState;
 
@@ -94,7 +94,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
         }),
       );
 
-      const newCycle: Cycle = {
+      const cycle: Cycle = {
         id: null,
         jobId: jobKey,
         userId: userId,
@@ -102,11 +102,11 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
         startDate: dateInServerTimestamp,
       };
 
-      const { key: cycleKey } = push(ref(db, 'cycles'), newCycle);
+      const { key: cycleKey } = push(ref(db, 'cycles'), cycle);
 
       if (cycleKey) {
-        setCycle({
-          ...newCycle,
+        setNewCycle({
+          ...cycle,
           id: cycleKey,
           startDate: dateInTimestamp,
         });
@@ -175,7 +175,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
     () => ({
       jobs,
       createNewJob,
-      cycle,
+      newCycle,
       fetchJob,
       activeJob,
       updateActiveJob,
@@ -186,7 +186,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
     [
       jobs,
       createNewJob,
-      cycle,
+      newCycle,
       fetchJob,
       activeJob,
       updateActiveJob,
