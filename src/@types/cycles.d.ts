@@ -23,9 +23,10 @@ export interface CyclesContextData {
   cycles: Cycle[];
   createNewCycleJob: (data: CreateNewCycleJobData) => void;
   finishCurrentCycle: (cycle: Cycle) => void;
-  activeCycle: Cycle | undefined;
+  activeCycle: Cycle | null;
 }
 
 export interface CyclesState {
   cycles: Cycle[];
+  activeCycle: Cycle | null;
 }

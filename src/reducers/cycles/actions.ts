@@ -23,6 +23,7 @@ export type Action =
       type: ActionTypes.CREATE_INITIAL_STATE;
       payload: {
         cycles: Cycle[];
+        activeCycle: Cycle | null;
       };
     };
 
@@ -42,9 +43,15 @@ export const finishCurrentCycleActions = (cycle: Cycle) => {
   };
 };
 
-export const createInitialStateActions = (cycles: Cycle[]) => {
+export const createInitialStateActions = (
+  cycles: Cycle[],
+  activeCycle: Cycle | null,
+) => {
   return {
     type: ActionTypes.CREATE_INITIAL_STATE as const,
-    payload: { cycles },
+    payload: {
+      cycles,
+      activeCycle,
+    },
   };
 };

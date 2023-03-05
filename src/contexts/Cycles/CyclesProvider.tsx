@@ -37,17 +37,11 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     initialCyclesState,
   );
 
-  const { cycles } = cyclesState;
+  const { cycles, activeCycle } = cyclesState;
   const { user } = useAuth();
   const userId = user?.uid;
 
   const { newCycle, activeJob, updateJob } = useJobsContext();
-
-  const activeCycle = React.useMemo(() => {
-    return cycles.find((cycle) => {
-      return cycle.isActive && cycle.jobId === activeJob?.id;
-    });
-  }, [activeJob, cycles]);
 
   const createNewCycleJob = React.useCallback(
     (data: CreateNewCycleJobData) => {
@@ -104,8 +98,13 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       }
     }
 
-    dispatch(createInitialStateActions(cyclesList));
-  }, [userId]);
+    const activeCurrentJobCycle =
+      cyclesList.find((cycle) => {
+        return cycle.isActive && cycle.jobId === activeJob?.id;
+      }) ?? null;
+
+    dispatch(createInitialStateActions(cyclesList, activeCurrentJobCycle));
+  }, [userId, activeJob]);
 
   const updateCycle = React.useCallback(async (cycle: Cycle) => {
     if (!cycle.id) return;
@@ -133,16 +132,6 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     [updateCycle, updateJob, activeJob],
   );
 
-  const values = React.useMemo(
-    () => ({
-      cycles,
-      createNewCycleJob,
-      finishCurrentCycle,
-      activeCycle,
-    }),
-    [cycles, createNewCycleJob, finishCurrentCycle, activeCycle],
-  );
-
   React.useEffect(() => {
     if (newCycle) {
       dispatch(addNewCycleJobActions(newCycle));
@@ -152,6 +141,16 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
   React.useEffect(() => {
     createInitialState();
   }, [createInitialState]);
+
+  const values = React.useMemo(
+    () => ({
+      cycles,
+      createNewCycleJob,
+      finishCurrentCycle,
+      activeCycle,
+    }),
+    [cycles, createNewCycleJob, finishCurrentCycle, activeCycle],
+  );
 
   return (
     <CyclesContext.Provider value={values}>{children}</CyclesContext.Provider>
