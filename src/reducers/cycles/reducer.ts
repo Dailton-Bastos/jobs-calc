@@ -6,7 +6,7 @@ import { Action, ActionTypes } from './actions';
 
 export const initialCyclesState: CyclesState = {
   cycles: [],
-  activeCycle: null,
+  activeCycleId: null,
 };
 
 export const CyclesReducer = (state: CyclesState, action: Action) => {
@@ -16,7 +16,7 @@ export const CyclesReducer = (state: CyclesState, action: Action) => {
     case ActionTypes.ADD_NEW_CYCLE_JOB: {
       return produce(state, (draft) => {
         draft.cycles.push(payload.newCycle);
-        draft.activeCycle = payload.newCycle;
+        draft.activeCycleId = payload.newCycle.id;
       });
     }
 
@@ -36,7 +36,7 @@ export const CyclesReducer = (state: CyclesState, action: Action) => {
     case ActionTypes.CREATE_INITIAL_STATE:
       return produce(state, (draft) => {
         draft.cycles = payload.cycles;
-        draft.activeCycle = payload.activeCycle;
+        draft.activeCycleId = payload.activeCycle?.id ?? null;
       });
 
     default:

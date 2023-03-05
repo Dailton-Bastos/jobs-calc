@@ -37,7 +37,10 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     initialCyclesState,
   );
 
-  const { cycles, activeCycle } = cyclesState;
+  const { cycles, activeCycleId } = cyclesState;
+
+  const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId);
+
   const { user } = useAuth();
   const userId = user?.uid;
 
@@ -98,12 +101,16 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       }
     }
 
-    const activeCurrentJobCycle =
-      cyclesList.find((cycle) => {
-        return cycle.isActive && cycle.jobId === activeJob?.id;
-      }) ?? null;
+    const currentActiveCycle = cyclesList.find((cycle) => {
+      return cycle.isActive && cycle.jobId === activeJob?.id;
+    });
 
-    dispatch(createInitialStateActions(cyclesList, activeCurrentJobCycle));
+    const initialStateData = {
+      cycles: cyclesList,
+      activeCycle: currentActiveCycle,
+    };
+
+    dispatch(createInitialStateActions(initialStateData));
   }, [userId, activeJob]);
 
   const updateCycle = React.useCallback(async (cycle: Cycle) => {
@@ -148,8 +155,9 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       createNewCycleJob,
       finishCurrentCycle,
       activeCycle,
+      activeCycleId,
     }),
-    [cycles, createNewCycleJob, finishCurrentCycle, activeCycle],
+    [cycles, createNewCycleJob, finishCurrentCycle, activeCycle, activeCycleId],
   );
 
   return (

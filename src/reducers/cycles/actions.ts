@@ -6,6 +6,11 @@ export enum ActionTypes {
   FINISH_CURRENT_CYCLE = 'FINISH_CURRENT_CYCLE',
 }
 
+interface InitialStateData {
+  cycles: Cycle[];
+  activeCycle: Cycle | undefined;
+}
+
 export type Action =
   | {
       type: ActionTypes.ADD_NEW_CYCLE_JOB;
@@ -21,10 +26,7 @@ export type Action =
     }
   | {
       type: ActionTypes.CREATE_INITIAL_STATE;
-      payload: {
-        cycles: Cycle[];
-        activeCycle: Cycle | null;
-      };
+      payload: InitialStateData;
     };
 
 export const addNewCycleJobActions = (newCycle: Cycle) => {
@@ -43,15 +45,9 @@ export const finishCurrentCycleActions = (cycle: Cycle) => {
   };
 };
 
-export const createInitialStateActions = (
-  cycles: Cycle[],
-  activeCycle: Cycle | null,
-) => {
+export const createInitialStateActions = (data: InitialStateData) => {
   return {
     type: ActionTypes.CREATE_INITIAL_STATE as const,
-    payload: {
-      cycles,
-      activeCycle,
-    },
+    payload: data,
   };
 };

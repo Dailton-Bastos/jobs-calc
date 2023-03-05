@@ -21,12 +21,13 @@ export interface Cycle {
 
 export interface CyclesContextData {
   cycles: Cycle[];
+  activeCycle: Cycle | undefined;
+  activeCycleId: string | null;
   createNewCycleJob: (data: CreateNewCycleJobData) => void;
   finishCurrentCycle: (cycle: Cycle) => void;
-  activeCycle: Cycle | null;
 }
 
 export interface CyclesState {
   cycles: Cycle[];
-  activeCycle: Cycle | null;
+  activeCycleId: string | null;
 }
