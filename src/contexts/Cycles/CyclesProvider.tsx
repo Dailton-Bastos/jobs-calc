@@ -146,7 +146,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
         startDate: null,
       });
 
-      dispatch(finishCurrentCycleActions(cycle));
+      dispatch(finishCurrentCycleActions());
     },
     [updateCycle, updateJob, activeJob],
   );

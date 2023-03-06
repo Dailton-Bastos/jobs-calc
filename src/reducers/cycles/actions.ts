@@ -20,9 +20,7 @@ export type Action =
     }
   | {
       type: ActionTypes.FINISH_CURRENT_CYCLE;
-      payload: {
-        cycle: Cycle;
-      };
+      payload: null;
     }
   | {
       type: ActionTypes.CREATE_INITIAL_STATE;
@@ -38,10 +36,10 @@ export const addNewCycleJobActions = (newCycle: Cycle) => {
   };
 };
 
-export const finishCurrentCycleActions = (cycle: Cycle) => {
+export const finishCurrentCycleActions = () => {
   return {
     type: ActionTypes.FINISH_CURRENT_CYCLE as const,
-    payload: { cycle },
+    payload: null,
   };
 };
 

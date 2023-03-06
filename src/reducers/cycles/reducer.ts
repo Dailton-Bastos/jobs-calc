@@ -22,7 +22,7 @@ export const CyclesReducer = (state: CyclesState, action: Action) => {
 
     case ActionTypes.FINISH_CURRENT_CYCLE: {
       const currentCycleIndex = state.cycles.findIndex((cycle) => {
-        return cycle.isActive && cycle.id === payload.cycle.id;
+        return cycle.isActive && cycle.id === state.activeCycleId;
       });
 
       if (currentCycleIndex < 0) return state;
@@ -30,6 +30,7 @@ export const CyclesReducer = (state: CyclesState, action: Action) => {
       return produce(state, (draft) => {
         draft.cycles[currentCycleIndex].fineshedDate = new Date().getTime();
         draft.cycles[currentCycleIndex].isActive = false;
+        draft.activeCycleId = null;
       });
     }
 
