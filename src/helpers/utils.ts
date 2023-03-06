@@ -81,3 +81,21 @@ export const jobSelectTypes = [
     value: 'other',
   },
 ];
+
+export const secondsToTime = (totalInSeconds: number) => {
+  const hours = Math.floor(totalInSeconds / 3600)
+    .toString()
+    .padStart(2, '0');
+
+  const minutes = Math.floor((totalInSeconds % 3600) / 60)
+    .toString()
+    .padStart(2, '0');
+
+  const seconds = Math.floor(totalInSeconds % 60)
+    .toString()
+    .padStart(2, '0');
+
+  const formattedTime = `${hours}:${minutes}:${seconds}`;
+
+  return { hours, minutes, seconds, formattedTime };
+};

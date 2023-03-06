@@ -4,22 +4,22 @@ import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import { differenceInSeconds } from 'date-fns';
 
 import 'react-circular-progressbar/dist/styles.css';
+import { secondsToTime } from '~/helpers/utils';
 import { useCyclesContext } from '~/hooks/useCyclesContext';
 import { useJobsContext } from '~/hooks/useJobsContext';
 
 export const Countdown = () => {
-  const { activeJob, amountSecondsPassed, setSecondsPassed } = useJobsContext();
-  const { activeCycle } = useCyclesContext();
+  const { activeJob } = useJobsContext();
 
-  const totalSeconds = activeJob ? activeJob?.totalMinutesAmount * 60 : 0;
-  const currentSeconds = activeJob ? totalSeconds - amountSecondsPassed : 0;
+  const { activeCycle, amountSecondsPassed, setSecondsPassed } =
+    useCyclesContext();
 
-  const minutesHour = Math.floor(currentSeconds / (60 * 60));
-  const minutesAmount = Math.floor(currentSeconds / 60);
-  const secondsAmount = currentSeconds % 60;
+  const totalSeconds =
+    activeCycle && activeJob ? activeJob?.totalMinutesAmount * 60 : 0;
 
-  const minutes = minutesAmount.toString().padStart(2, '0');
-  const seconds = secondsAmount.toString().padStart(2, '0');
+  const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0;
+
+  const { formattedTime } = secondsToTime(currentSeconds);
 
   const percentage = Math.round((currentSeconds / totalSeconds) * 100);
 
@@ -55,7 +55,7 @@ export const Countdown = () => {
   return (
     <CircularProgressbar
       value={percentage}
-      text={`${minutesHour}:${minutes}:${seconds}`}
+      text={formattedTime}
       styles={buildStyles({
         textColor: '#5A5A66',
         pathColor: percentage > 30 ? '#36B336' : '#EB3B35',
