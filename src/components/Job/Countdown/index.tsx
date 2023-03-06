@@ -6,6 +6,7 @@ import { differenceInSeconds } from 'date-fns';
 import 'react-circular-progressbar/dist/styles.css';
 import { secondsToTime } from '~/helpers/utils';
 import { useCyclesContext } from '~/hooks/useCyclesContext';
+import { useJobsContext } from '~/hooks/useJobsContext';
 
 export const Countdown = () => {
   const {
@@ -15,10 +16,16 @@ export const Countdown = () => {
     setSecondsPassed,
   } = useCyclesContext();
 
+  const { activeJob } = useJobsContext();
+
   const { formattedTime } = secondsToTime(activeCycleCurrentSeconds);
 
+  const totalSecondsAmount = activeJob ? activeJob.totalSecondsAmount : 0;
+
   const percentage = Math.round(
-    (activeCycleCurrentSeconds / activeCycleTotalSeconds) * 100,
+    (activeCycleCurrentSeconds /
+      (totalSecondsAmount - activeCycleTotalSeconds)) *
+      100,
   );
 
   React.useEffect(() => {
