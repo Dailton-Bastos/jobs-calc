@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { differenceInSeconds } from 'date-fns';
 import {
   ref,
   push,
@@ -40,17 +39,6 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
   const [newCycle, setNewCycle] = React.useState<Cycle | null>(null);
 
   const { jobs, activeJob } = jobsState;
-
-  const [amountSecondsPassed, setAmountSecondsPassed] = React.useState(() => {
-    if (activeJob?.startDate) {
-      return differenceInSeconds(
-        new Date(),
-        new Date(Number(activeJob?.startDate)),
-      );
-    }
-
-    return 0;
-  });
 
   const { user } = useAuth();
   const userId = user?.uid;
@@ -177,10 +165,6 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
     dispatch(setActiveJobActions(job));
   }, []);
 
-  const setSecondsPassed = React.useCallback((seconds: number) => {
-    setAmountSecondsPassed(seconds);
-  }, []);
-
   React.useEffect(() => {
     createInitialState();
   }, [createInitialState]);
@@ -193,8 +177,6 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       fetchJob,
       activeJob,
       updateActiveJob,
-      amountSecondsPassed,
-      setSecondsPassed,
       updateJob,
     }),
     [
@@ -204,8 +186,6 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       fetchJob,
       activeJob,
       updateActiveJob,
-      amountSecondsPassed,
-      setSecondsPassed,
       updateJob,
     ],
   );

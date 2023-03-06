@@ -24,6 +24,8 @@ export interface CyclesContextData {
   activeCycle: Cycle | undefined;
   activeCycleId: string | null;
   createNewCycleJob: (data: CreateNewCycleJobData) => void;
+  amountSecondsPassed: number;
+  setSecondsPassed: (seconds: number) => void;
   finishCurrentCycle: (cycle: Cycle) => void;
 }
 

@@ -40,8 +40,6 @@ export interface JobsContextProps {
   activeJob: Job | null;
   updateActiveJob: (job: Job) => void;
   newCycle: Cycle | null;
-  amountSecondsPassed: number;
-  setSecondsPassed: (seconds: number) => void;
   updateJob: (job: Job) => void;
 }
 

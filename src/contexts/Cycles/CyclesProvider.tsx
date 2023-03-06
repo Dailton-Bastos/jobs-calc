@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { differenceInSeconds } from 'date-fns';
 import {
   ref,
   push,
@@ -40,6 +41,17 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
   const { cycles, activeCycleId } = cyclesState;
 
   const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId);
+
+  const [amountSecondsPassed, setAmountSecondsPassed] = React.useState(() => {
+    if (activeCycle?.startDate) {
+      return differenceInSeconds(
+        new Date(),
+        new Date(Number(activeCycle?.startDate)),
+      );
+    }
+
+    return 0;
+  });
 
   const { user } = useAuth();
   const userId = user?.uid;
@@ -139,6 +151,10 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     [updateCycle, updateJob, activeJob],
   );
 
+  const setSecondsPassed = React.useCallback((seconds: number) => {
+    setAmountSecondsPassed(seconds);
+  }, []);
+
   React.useEffect(() => {
     if (newCycle) {
       dispatch(addNewCycleJobActions(newCycle));
@@ -156,8 +172,18 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       finishCurrentCycle,
       activeCycle,
       activeCycleId,
+      amountSecondsPassed,
+      setSecondsPassed,
     }),
-    [cycles, createNewCycleJob, finishCurrentCycle, activeCycle, activeCycleId],
+    [
+      cycles,
+      createNewCycleJob,
+      finishCurrentCycle,
+      activeCycle,
+      activeCycleId,
+      amountSecondsPassed,
+      setSecondsPassed,
+    ],
   );
 
   return (
