@@ -5,7 +5,7 @@ import { Cycle } from './cycles';
 export type JobStatus = 'opened' | 'developing' | 'done' | 'paused';
 export type JobType = 'other' | 'budget' | 'development';
 export type FirestoreTimestamp = Timestamp;
-type DateType = FirestoreTimestamp | number | null;
+type DateType = number | null;
 
 export interface CreateNewJobData {
   jobberId?: string;
@@ -28,7 +28,6 @@ export interface Job {
   hourEstimate: number;
   minutesEstimate: number;
   totalMinutesAmount: number;
-  startDate: DateType;
   createdAt: DateType;
   updatedAt: DateType;
 }

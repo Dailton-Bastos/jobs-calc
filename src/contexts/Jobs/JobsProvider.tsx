@@ -17,12 +17,11 @@ import {
 import { Cycle } from '~/@types/cycles';
 import {
   CreateNewJobData,
-  FirestoreTimestamp,
   Job,
   JobType,
   JobsProviderProps,
 } from '~/@types/job';
-import { db, serverTimestamp } from '~/config/firebase';
+import { db } from '~/config/firebase';
 import { useAuth } from '~/hooks/useAuth';
 import {
   addNewJobActions,
@@ -49,7 +48,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
     (data: CreateNewJobData) => {
       if (!userId) return;
 
-      const dateInServerTimestamp = serverTimestamp() as FirestoreTimestamp;
+      const dateInTimestamp = new Date().getTime();
 
       const newJob: Job = {
         id: null,
@@ -62,22 +61,18 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
         minutesEstimate: data.minutesEstimate,
         totalMinutesAmount: data.totalMinutesAmount,
         description: data.description,
-        startDate: dateInServerTimestamp,
-        createdAt: dateInServerTimestamp,
-        updatedAt: dateInServerTimestamp,
+        createdAt: dateInTimestamp,
+        updatedAt: dateInTimestamp,
       };
 
       const { key: jobKey }: ThenableReference = push(ref(db, 'jobs'), newJob);
 
       if (!jobKey) return;
 
-      const dateInTimestamp = new Date().getTime();
-
       dispatch(
         addNewJobActions({
           ...newJob,
           id: jobKey,
-          startDate: dateInTimestamp,
           createdAt: dateInTimestamp,
           updatedAt: dateInTimestamp,
         }),
@@ -88,7 +83,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
         jobId: jobKey,
         userId: userId,
         isActive: true,
-        startDate: dateInServerTimestamp,
+        startDate: dateInTimestamp,
       };
 
       const { key: cycleKey } = push(ref(db, 'cycles'), cycle);
@@ -109,19 +104,16 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
   const updateJob = React.useCallback((job: Job) => {
     if (!job.id) return;
 
-    const dateInServerTimestamp = serverTimestamp() as FirestoreTimestamp;
     const dateInTimestamp = new Date().getTime();
 
     set(ref(db, `jobs/${job.id}`), {
       ...job,
-      startDate: job?.startDate ? dateInServerTimestamp : null,
       updatedAt: dateInTimestamp,
     });
 
     dispatch(
       updateJobActions({
         ...job,
-        startDate: job?.startDate ? dateInTimestamp : null,
         updatedAt: dateInTimestamp,
       }),
     );

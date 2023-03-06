@@ -3,9 +3,7 @@
 import { format, intervalToDuration } from 'date-fns';
 import pt from 'date-fns/locale/pt-BR';
 
-import { FirestoreTimestamp } from '~/@types/job';
-
-type DateType = FirestoreTimestamp | number | null;
+type DateType = number | null;
 
 export function formatTime(hour: number, minutes: number) {
   const formattedHour = Number(hour).toString().padStart(2, '0');
@@ -15,6 +13,8 @@ export function formatTime(hour: number, minutes: number) {
 }
 
 export function formatDate(unix: DateType) {
+  if (!unix) return 'Data inválida';
+
   return format(new Date(Number(unix)), "dd MMM yyyy, 'às 'HH:mm'", {
     locale: pt,
   });

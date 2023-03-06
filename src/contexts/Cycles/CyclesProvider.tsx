@@ -87,10 +87,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       );
 
       if (activeJob) {
-        updateJob({
-          ...activeJob,
-          startDate: new Date().getTime(),
-        });
+        updateJob(activeJob);
       }
     },
     [user, activeJob, updateJob],
@@ -141,10 +138,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
       updateCycle(cycle);
 
-      updateJob({
-        ...activeJob,
-        startDate: null,
-      });
+      updateJob(activeJob);
 
       dispatch(finishCurrentCycleActions());
     },
