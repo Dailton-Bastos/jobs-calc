@@ -15,8 +15,8 @@ export interface Cycle {
   jobId: string;
   userId: string;
   isActive: boolean;
-  startDate: FirestoreTimestamp | number;
-  fineshedDate?: FirestoreTimestamp | number;
+  startDate: number;
+  fineshedDate?: number;
 }
 
 export interface CyclesContextData {
@@ -26,6 +26,8 @@ export interface CyclesContextData {
   createNewCycleJob: (data: CreateNewCycleJobData) => void;
   amountSecondsPassed: number;
   setSecondsPassed: (seconds: number) => void;
+  activeCycleCurrentSeconds: number;
+  activeCycleTotalSeconds: number;
   finishCurrentCycle: (cycle: Cycle) => void;
 }
 

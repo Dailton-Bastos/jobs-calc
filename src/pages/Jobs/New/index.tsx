@@ -12,7 +12,7 @@ import { Select } from '~/components/Form/Select';
 import { Textarea } from '~/components/Form/Textarea';
 import { JobEstimate } from '~/components/Job/Estimate';
 import { Title } from '~/components/Title';
-import { jobSelectTypes } from '~/helpers/utils';
+import { getTotalTimeInSeconds, jobSelectTypes } from '~/helpers/utils';
 import { useJobsContext } from '~/hooks/useJobsContext';
 import {
   jobTypeBudgetAction,
@@ -88,7 +88,11 @@ export const NewJobPage = () => {
         type: data.type as JobType,
         hourEstimate,
         minutesEstimate,
-        totalMinutesAmount: hourEstimate * 60 + minutesEstimate,
+        totalSecondsAmount: getTotalTimeInSeconds(
+          hourEstimate,
+          minutesEstimate,
+          0,
+        ),
       });
 
       reset();

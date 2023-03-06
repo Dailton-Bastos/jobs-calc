@@ -6,51 +6,43 @@ import { differenceInSeconds } from 'date-fns';
 import 'react-circular-progressbar/dist/styles.css';
 import { secondsToTime } from '~/helpers/utils';
 import { useCyclesContext } from '~/hooks/useCyclesContext';
-import { useJobsContext } from '~/hooks/useJobsContext';
 
 export const Countdown = () => {
-  const { activeJob } = useJobsContext();
+  const {
+    activeCycle,
+    activeCycleTotalSeconds,
+    activeCycleCurrentSeconds,
+    setSecondsPassed,
+  } = useCyclesContext();
 
-  const { activeCycle, amountSecondsPassed, setSecondsPassed } =
-    useCyclesContext();
+  const { formattedTime } = secondsToTime(activeCycleCurrentSeconds);
 
-  const totalSeconds =
-    activeCycle && activeJob ? activeJob?.totalMinutesAmount * 60 : 0;
+  const percentage = Math.round(
+    (activeCycleCurrentSeconds / activeCycleTotalSeconds) * 100,
+  );
 
-  const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0;
-
-  const { formattedTime } = secondsToTime(currentSeconds);
-
-  const percentage = Math.round((currentSeconds / totalSeconds) * 100);
-
-  const startCountdown = React.useCallback(() => {
+  React.useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
 
-    function countdown() {
-      const secondsDifference = differenceInSeconds(
-        new Date(),
-        new Date(Number(activeCycle?.startDate)),
-      );
-
-      if (secondsDifference >= totalSeconds) {
-        setSecondsPassed(totalSeconds);
-
-        return clearInterval(interval);
-      }
-
-      setSecondsPassed(secondsDifference);
-    }
-
     if (activeCycle) {
-      interval = setInterval(countdown, 1000);
+      interval = setInterval(() => {
+        const secondsDifference = differenceInSeconds(
+          new Date(),
+          new Date(Number(activeCycle?.startDate)),
+        );
+
+        if (secondsDifference >= activeCycleTotalSeconds) {
+          setSecondsPassed(activeCycleTotalSeconds);
+
+          return clearInterval(interval);
+        }
+
+        setSecondsPassed(secondsDifference);
+      }, 1000);
     }
 
     return () => clearInterval(interval);
-  }, [setSecondsPassed, totalSeconds, activeCycle]);
-
-  React.useEffect(() => {
-    startCountdown();
-  }, [startCountdown]);
+  }, [activeCycle, setSecondsPassed, activeCycleTotalSeconds]);
 
   return (
     <CircularProgressbar

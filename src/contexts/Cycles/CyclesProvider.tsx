@@ -44,10 +44,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
   const [amountSecondsPassed, setAmountSecondsPassed] = React.useState(() => {
     if (activeCycle?.startDate) {
-      return differenceInSeconds(
-        new Date(),
-        new Date(Number(activeCycle?.startDate)),
-      );
+      return differenceInSeconds(new Date(), new Date(activeCycle?.startDate));
     }
 
     return 0;
@@ -58,25 +55,30 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
   const { newCycle, activeJob, updateJob } = useJobsContext();
 
+  const activeCycleTotalSeconds = React.useMemo(() => {
+    return activeJob ? activeJob?.totalSecondsRemaining : 0;
+  }, [activeJob]);
+
+  const activeCycleCurrentSeconds =
+    activeCycleTotalSeconds - amountSecondsPassed;
+
   const createNewCycleJob = React.useCallback(
     (data: CreateNewCycleJobData) => {
       if (!user) return;
 
-      const dateInServerTimestamp = serverTimestamp() as FirestoreTimestamp;
+      const dateInTimestamp = new Date().getTime();
 
       const cycle: Cycle = {
         id: null,
         jobId: data.jobId,
         userId: user.uid,
         isActive: true,
-        startDate: dateInServerTimestamp,
+        startDate: dateInTimestamp,
       };
 
       const { key }: ThenableReference = push(ref(db, 'cycles'), cycle);
 
       if (!key) return;
-
-      const dateInTimestamp = new Date().getTime();
 
       dispatch(
         addNewCycleJobActions({
@@ -136,13 +138,18 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     (cycle: Cycle) => {
       if (!activeJob) return;
 
+      setAmountSecondsPassed(0);
+
       updateCycle(cycle);
 
-      updateJob(activeJob);
+      updateJob({
+        ...activeJob,
+        totalSecondsRemaining: activeCycleCurrentSeconds,
+      });
 
       dispatch(finishCurrentCycleActions());
     },
-    [updateCycle, updateJob, activeJob],
+    [updateCycle, updateJob, activeJob, activeCycleCurrentSeconds],
   );
 
   const setSecondsPassed = React.useCallback((seconds: number) => {
@@ -168,6 +175,8 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       activeCycleId,
       amountSecondsPassed,
       setSecondsPassed,
+      activeCycleTotalSeconds,
+      activeCycleCurrentSeconds,
     }),
     [
       cycles,
@@ -177,6 +186,8 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       activeCycleId,
       amountSecondsPassed,
       setSecondsPassed,
+      activeCycleTotalSeconds,
+      activeCycleCurrentSeconds,
     ],
   );
 

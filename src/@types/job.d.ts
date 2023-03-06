@@ -13,7 +13,7 @@ export interface CreateNewJobData {
   title: string;
   hourEstimate: number;
   minutesEstimate: number;
-  totalMinutesAmount: number;
+  totalSecondsAmount: number;
   description?: string;
 }
 
@@ -27,7 +27,8 @@ export interface Job {
   status: JobStatus;
   hourEstimate: number;
   minutesEstimate: number;
-  totalMinutesAmount: number;
+  totalSecondsAmount: number;
+  totalSecondsRemaining: number;
   createdAt: DateType;
   updatedAt: DateType;
 }
