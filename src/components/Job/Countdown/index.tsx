@@ -23,9 +23,7 @@ export const Countdown = () => {
   const totalSecondsAmount = activeJob ? activeJob.totalSecondsAmount : 0;
 
   const percentage = Math.round(
-    (activeCycleCurrentSeconds /
-      (totalSecondsAmount - activeCycleTotalSeconds)) *
-      100,
+    (activeCycleCurrentSeconds / totalSecondsAmount) * 100,
   );
 
   React.useEffect(() => {
