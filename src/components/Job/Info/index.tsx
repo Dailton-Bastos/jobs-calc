@@ -1,17 +1,26 @@
 import { GridItem, Text } from '@chakra-ui/react';
 
+import { STATUS_COLORS } from '~/helpers/utils';
+
 interface Props {
   title: string;
+  statusColor?: keyof typeof STATUS_COLORS;
   children: string;
 }
 
-export const InfoJob = ({ title, children }: Props) => {
+export const InfoJob = ({
+  title,
+  statusColor = 'initial',
+  children,
+}: Props) => {
   return (
     <GridItem w="100%">
       <Text fontWeight="bold" mb="2">
         {title}
       </Text>
-      <Text fontSize="md">{children}</Text>
+      <Text fontSize="md" color={STATUS_COLORS[statusColor]}>
+        {children}
+      </Text>
     </GridItem>
   );
 };

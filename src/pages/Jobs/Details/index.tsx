@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 
 import { Flex, Box, VStack, Text } from '@chakra-ui/react';
 
+import { CycleByDate, GroupByDate } from '~/@types/cycles';
 import { Container } from '~/components/Container';
 import { Countdown } from '~/components/Job/Countdown';
 import { Cycles } from '~/components/Job/Cycles';
@@ -10,12 +11,48 @@ import { InfoJob } from '~/components/Job/Info';
 import { NewCycleForm } from '~/components/Job/NewCycleForm';
 import { JobStatus } from '~/components/Job/Status';
 import { Title } from '~/components/Title';
-import { formatTime, formatDate } from '~/helpers/utils';
+import {
+  formatTime,
+  formatDate,
+  secondsToTime,
+  groupBy,
+} from '~/helpers/utils';
+import { useCyclesContext } from '~/hooks/useCyclesContext';
 import { useJobsContext } from '~/hooks/useJobsContext';
 
 export const DetailsJobPage = () => {
   const { id } = useParams();
+  const [cyclesByDate, setCyclesByDate] = React.useState<CycleByDate[]>([]);
+
   const { jobs, activeJob, updateActiveJob } = useJobsContext();
+  const { filteredCycles, formatCyclesByDate } = useCyclesContext();
+
+  const totalCyclesHours = React.useMemo(() => {
+    return cyclesByDate?.reduce((acc: number, cycle: CycleByDate) => {
+      acc += cycle?.totalCycleInSeconds;
+
+      return acc;
+    }, 0);
+  }, [cyclesByDate]);
+
+  const { hours: totalHours, minutes: totalMinutes } =
+    secondsToTime(totalCyclesHours);
+
+  const TOTAL_HOURS = React.useMemo(() => {
+    return `${totalHours}h:${totalMinutes}m`;
+  }, [totalHours, totalMinutes]);
+
+  const totalSecondsAmount = activeJob?.totalSecondsAmount ?? 0;
+
+  const statusColor = totalCyclesHours > totalSecondsAmount ? 'red' : 'green';
+
+  React.useEffect(() => {
+    const groupByDate: GroupByDate = groupBy(filteredCycles, 'date');
+
+    const { cycles } = formatCyclesByDate(groupByDate);
+
+    setCyclesByDate(cycles);
+  }, [filteredCycles, formatCyclesByDate]);
 
   React.useEffect(() => {
     const job = jobs?.find((item) => item.id === id);
@@ -51,8 +88,8 @@ export const DetailsJobPage = () => {
                       )}
                     </InfoJob>
 
-                    <InfoJob title="Tempo utilizado:">
-                      {`${activeJob?.hourEstimate}h${activeJob?.minutesEstimate}m`}
+                    <InfoJob title="Tempo utilizado:" statusColor={statusColor}>
+                      {TOTAL_HOURS}
                     </InfoJob>
                   </Flex>
 
@@ -129,7 +166,7 @@ export const DetailsJobPage = () => {
             <Box mt="12">
               <Title>Apontamentos</Title>
 
-              <Cycles />
+              <Cycles totalHours={TOTAL_HOURS} cyclesByDate={cyclesByDate} />
             </Box>
           </>
         )}

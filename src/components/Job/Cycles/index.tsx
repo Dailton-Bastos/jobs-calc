@@ -14,45 +14,21 @@ import {
   Td,
 } from '@chakra-ui/react';
 
-import { CycleByDate, GroupByDate } from '~/@types/cycles';
-import { groupBy, secondsToTime } from '~/helpers/utils';
-import { useCyclesContext } from '~/hooks/useCyclesContext';
+import { CycleByDate } from '~/@types/cycles';
 
-export const Cycles = () => {
-  const [cyclesByDate, setCyclesByDate] = React.useState<CycleByDate[]>([]);
+interface Props {
+  totalHours: string;
+  cyclesByDate: CycleByDate[];
+}
 
-  const { filteredCycles, formatCyclesByDate } = useCyclesContext();
-
-  const totalCyclesHours = React.useMemo(() => {
-    return cyclesByDate?.reduce((acc: number, cycle: CycleByDate) => {
-      acc += cycle?.totalCycleInSeconds;
-
-      return acc;
-    }, 0);
-  }, [cyclesByDate]);
-
-  const { hours: totalHours, minutes: totalMinutes } =
-    secondsToTime(totalCyclesHours);
-
-  const TOTAL_HOURS = React.useMemo(() => {
-    return `${totalHours}h:${totalMinutes}m`;
-  }, [totalHours, totalMinutes]);
-
-  React.useEffect(() => {
-    const groupByDate: GroupByDate = groupBy(filteredCycles, 'date');
-
-    const { cycles } = formatCyclesByDate(groupByDate);
-
-    setCyclesByDate(cycles);
-  }, [filteredCycles, formatCyclesByDate]);
-
+export const Cycles = ({ totalHours, cyclesByDate }: Props) => {
   return (
     <TableContainer mt="10">
       <Table colorScheme="blackAlpha">
         <TableCaption>
           <Flex gap="2" align="center" justify="flex-end">
             <Text fontWeight="bold">Total de horas:</Text>
-            <Text>{TOTAL_HOURS}</Text>
+            <Text>{totalHours}</Text>
           </Flex>
         </TableCaption>
         <Thead>

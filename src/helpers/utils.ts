@@ -99,3 +99,11 @@ export const secondsToTime = (totalInSeconds: number) => {
 
   return { hours, minutes, seconds, formattedTime };
 };
+
+export const STATUS_COLORS = {
+  yellow: 'yellow.500',
+  red: 'red.500',
+  green: 'green.500',
+  blue: 'blue.500',
+  initial: '-moz-initial',
+} as const;

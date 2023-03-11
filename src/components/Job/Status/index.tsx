@@ -1,11 +1,6 @@
 import { Box, Flex, GridItem, Text } from '@chakra-ui/react';
 
-const STATUS_COLORS = {
-  yellow: 'yellow.500',
-  red: 'red.500',
-  green: 'green.500',
-  blue: 'blue.500',
-} as const;
+import { STATUS_COLORS } from '~/helpers/utils';
 
 interface Props {
   children: string;
