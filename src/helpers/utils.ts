@@ -38,7 +38,7 @@ export function formatIntervalDuration(dateStart: Date, dateEnd: Date) {
 
 export function groupBy(array: any[], key: string) {
   return array.reduce(
-    (acc: Record<string, any[]>, item: Record<string, any>) => {
+    (acc: Record<string, unknown[]>, item: Record<string, any>) => {
       if (!acc[item[key]]) acc[item[key]] = [];
 
       acc[item[key]].push(item);

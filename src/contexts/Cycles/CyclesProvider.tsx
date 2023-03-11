@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { differenceInSeconds } from 'date-fns';
+import { differenceInSeconds, format } from 'date-fns';
 import {
   ref,
   push,
@@ -18,9 +18,13 @@ import type {
   CreateNewCycleJobData,
   Cycle,
   CyclesProviderProps,
+  FilteredCycle,
   FirestoreTimestamp,
+  GroupByDate,
+  CycleByDate,
 } from '~/@types/cycles';
 import { db } from '~/config/firebase';
+import { secondsToTime, uuid } from '~/helpers/utils';
 import { useAuth } from '~/hooks/useAuth';
 import { useJobsContext } from '~/hooks/useJobsContext';
 import {
@@ -51,7 +55,6 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
   });
 
   const { user } = useAuth();
-  const userId = user?.uid;
 
   const { newCycle, activeJob, updateJob } = useJobsContext();
 
@@ -96,10 +99,14 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
   );
 
   const createInitialState = React.useCallback(async () => {
-    if (!userId) return;
+    if (!activeJob) return;
 
     const snapshot = await get(
-      query(child(ref(db), 'cycles'), orderByChild('userId'), equalTo(userId)),
+      query(
+        child(ref(db), 'cycles'),
+        orderByChild('jobId'),
+        equalTo(activeJob.id),
+      ),
     );
 
     const cyclesList: Cycle[] = [];
@@ -108,7 +115,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       const data = snapshot.val();
 
       for (const property in data) {
-        cyclesList.push({ id: property, ...data[property] });
+        cyclesList.push(data[property]);
       }
     }
 
@@ -122,7 +129,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     };
 
     dispatch(createInitialStateActions(initialStateData));
-  }, [userId, activeJob]);
+  }, [activeJob]);
 
   const updateCycle = React.useCallback(async (cycle: Cycle) => {
     if (!cycle.id) return;
@@ -156,6 +163,74 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     setAmountSecondsPassed(seconds);
   }, []);
 
+  const filteredCycles = React.useMemo(() => {
+    return cycles.reduce(
+      (accumulator: FilteredCycle[], currentValue: Cycle) => {
+        const fineshedDate = currentValue?.fineshedDate
+          ? format(new Date(currentValue.fineshedDate), "kk':'mm")
+          : '';
+
+        const totalCycleInSeconds = currentValue?.fineshedDate
+          ? differenceInSeconds(
+              new Date(currentValue.fineshedDate),
+              new Date(currentValue.startDate),
+            )
+          : 0;
+
+        const { hours, minutes, seconds } = secondsToTime(totalCycleInSeconds);
+
+        const totalCycle = `${hours}h:${minutes}m:${seconds}s`;
+
+        const cycle: FilteredCycle = {
+          id: currentValue.id,
+          date: format(new Date(currentValue.startDate), 'dd/MM/yyyy'),
+          startDate: format(new Date(currentValue.startDate), "kk':'mm"),
+          fineshedDate,
+          totalCycle,
+          totalCycleInSeconds,
+          isActive: currentValue?.fineshedDate ? false : true,
+        };
+
+        accumulator.push(cycle);
+
+        return accumulator;
+      },
+      [],
+    );
+  }, [cycles]);
+
+  const formatCyclesByDate = React.useCallback((groupByDate: GroupByDate) => {
+    const data: CycleByDate[] = Object.keys(groupByDate)?.map((key: string) => {
+      const totalCyleDate = groupByDate[key]?.reduce(
+        (acc: number, cycle: FilteredCycle) => {
+          acc += cycle?.totalCycleInSeconds;
+          return acc;
+        },
+        0,
+      );
+
+      const { hours, minutes } = secondsToTime(totalCyleDate);
+
+      return {
+        id: uuid(),
+        date: groupByDate[key][0]?.date,
+        totalHoursByDate: `${hours}h:${minutes}m`,
+        totalCycleInSeconds: totalCyleDate,
+        cycles: groupByDate[key]?.map((cycle) => {
+          return {
+            id: uuid(),
+            startDate: cycle?.startDate,
+            fineshedDate: cycle?.fineshedDate,
+            totalCycle: cycle?.totalCycle,
+            isActive: cycle?.isActive,
+          };
+        }),
+      };
+    });
+
+    return { cycles: data };
+  }, []);
+
   React.useEffect(() => {
     if (newCycle) {
       dispatch(addNewCycleJobActions(newCycle));
@@ -177,6 +252,8 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       setSecondsPassed,
       activeCycleTotalSeconds,
       activeCycleCurrentSeconds,
+      filteredCycles,
+      formatCyclesByDate,
     }),
     [
       cycles,
@@ -188,6 +265,8 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       setSecondsPassed,
       activeCycleTotalSeconds,
       activeCycleCurrentSeconds,
+      filteredCycles,
+      formatCyclesByDate,
     ],
   );
 

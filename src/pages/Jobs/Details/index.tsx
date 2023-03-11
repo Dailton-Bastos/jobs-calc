@@ -5,6 +5,7 @@ import { Flex, Box, VStack, Text } from '@chakra-ui/react';
 
 import { Container } from '~/components/Container';
 import { Countdown } from '~/components/Job/Countdown';
+import { Cycles } from '~/components/Job/Cycles';
 import { InfoJob } from '~/components/Job/Info';
 import { NewCycleForm } from '~/components/Job/NewCycleForm';
 import { JobStatus } from '~/components/Job/Status';
@@ -125,11 +126,11 @@ export const DetailsJobPage = () => {
               </Flex>
             </Flex>
 
-            {/* <Box mt="12">
+            <Box mt="12">
               <Title>Apontamentos</Title>
 
-              <JobReports reports={jobReports} totalHourJob={totalHourJob} />
-            </Box> */}
+              <Cycles />
+            </Box>
           </>
         )}
       </Box>

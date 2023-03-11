@@ -19,6 +19,34 @@ export interface Cycle {
   fineshedDate?: number;
 }
 
+interface FilteredCycle {
+  id: string | null;
+  date: string;
+  startDate: string;
+  fineshedDate: string;
+  totalCycle: string;
+  totalCycleInSeconds: number;
+  isActive: boolean;
+}
+
+interface CycleByDate {
+  id: string | null;
+  date: string;
+  totalHoursByDate: string;
+  totalCycleInSeconds: number;
+  cycles: Array<{
+    id: string;
+    startDate: string;
+    fineshedDate: string;
+    totalCycle: string;
+    isActive: boolean;
+  }>;
+}
+
+export interface GroupByDate {
+  [date: string]: FilteredCycle[];
+}
+
 export interface CyclesContextData {
   cycles: Cycle[];
   activeCycle: Cycle | undefined;
@@ -29,6 +57,8 @@ export interface CyclesContextData {
   activeCycleCurrentSeconds: number;
   activeCycleTotalSeconds: number;
   finishCurrentCycle: (cycle: Cycle) => void;
+  filteredCycles: FilteredCycle[];
+  formatCyclesByDate: (groupByDate: GroupByDate) => { cycles: CycleByDate[] };
 }
 
 export interface CyclesState {
