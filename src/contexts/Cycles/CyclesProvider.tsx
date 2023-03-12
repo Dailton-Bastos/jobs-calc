@@ -83,13 +83,13 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
       if (!key) return;
 
-      dispatch(
-        addNewCycleJobActions({
-          ...cycle,
-          id: key,
-          startDate: dateInTimestamp,
-        }),
-      );
+      const newCycleData = {
+        ...cycle,
+        id: key,
+        startDate: dateInTimestamp,
+      };
+
+      dispatch(addNewCycleJobActions(newCycleData));
 
       if (activeJob) {
         updateJob(activeJob);
@@ -115,7 +115,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       const data = snapshot.val();
 
       for (const property in data) {
-        cyclesList.push(data[property]);
+        cyclesList.push({ id: property, ...data[property] });
       }
     }
 
