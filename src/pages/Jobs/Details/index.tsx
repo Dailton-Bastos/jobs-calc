@@ -157,7 +157,7 @@ export const DetailsJobPage = () => {
                 w="100%"
                 maxW="352px"
               >
-                <Countdown />
+                <Countdown totalCyclesHours={totalCyclesHours} />
 
                 <NewCycleForm />
               </Flex>
