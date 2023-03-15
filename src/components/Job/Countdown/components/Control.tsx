@@ -6,7 +6,7 @@ import { Box, Flex, IconButton } from '@chakra-ui/react';
 import { useCyclesContext } from '~/hooks/useCyclesContext';
 import { useJobsContext } from '~/hooks/useJobsContext';
 
-export const NewCycleForm = () => {
+export const Control = () => {
   const { createNewCycleJob, finishCurrentCycle, activeCycle } =
     useCyclesContext();
   const { activeJob } = useJobsContext();
@@ -31,7 +31,7 @@ export const NewCycleForm = () => {
             aria-label="Parar"
             title="Finalizar"
             variant="outline"
-            colorScheme="red"
+            colorScheme="gray"
             size="lg"
             icon={<RiPauseMiniFill size={28} />}
             onClick={handleFinishCurrentCycle}
@@ -40,7 +40,7 @@ export const NewCycleForm = () => {
           <IconButton
             aria-label="Iniciar"
             variant="outline"
-            colorScheme="green"
+            colorScheme="gray"
             size="lg"
             icon={<RiPlayMiniLine size={28} />}
             onClick={handleCreateNewCycle}

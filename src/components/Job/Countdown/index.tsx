@@ -1,12 +1,15 @@
 import React from 'react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 
+import { Flex } from '@chakra-ui/react';
 import { differenceInSeconds } from 'date-fns';
 
 import 'react-circular-progressbar/dist/styles.css';
 import { secondsToTime } from '~/helpers/utils';
 import { useCyclesContext } from '~/hooks/useCyclesContext';
 import { useJobsContext } from '~/hooks/useJobsContext';
+
+import { Control } from './components/Control';
 
 interface Props {
   totalCyclesHours: number;
@@ -30,6 +33,20 @@ export const Countdown = ({ totalCyclesHours }: Props) => {
   const percentage = Math.round(
     (activeCycleCurrentSeconds / totalSecondsAmount) * 100,
   );
+
+  const countdownStyles = React.useMemo(() => {
+    const redColor = '#EB3B35';
+    const greenColor = '#36B336';
+    const grayColor = '#5A5A66';
+    const grayLigthColor = '#E1E3E5';
+
+    return {
+      textColor: percentage <= 0 ? redColor : grayColor,
+      pathColor: percentage >= 30 ? greenColor : redColor,
+      trailColor: percentage <= 0 ? redColor : grayLigthColor,
+      textSize: 16,
+    };
+  }, [percentage]);
 
   const countdownValue = React.useCallback(() => {
     const totalCount =
@@ -66,16 +83,26 @@ export const Countdown = ({ totalCyclesHours }: Props) => {
   }, [countdownValue]);
 
   return (
-    <CircularProgressbar
-      value={percentage}
-      text={countdownText}
-      styles={buildStyles({
-        textColor: percentage <= 0 ? '#EB3B35' : '#5A5A66',
-        pathColor: percentage >= 30 ? '#36B336' : '#EB3B35',
-        trailColor: percentage <= 0 ? '#EB3B35' : '#E1E3E5',
-        textSize: 16,
-      })}
-      strokeWidth={5}
-    />
+    <Flex
+      direction="column"
+      alignItems="center"
+      justifyContent="center"
+      bg="white"
+      boxShadow="lg"
+      borderRadius="5px"
+      py="6"
+      px="12"
+      w="100%"
+      maxW="352px"
+    >
+      <CircularProgressbar
+        value={percentage}
+        text={countdownText}
+        strokeWidth={5}
+        styles={buildStyles(countdownStyles)}
+      />
+
+      <Control />
+    </Flex>
   );
 };

@@ -8,7 +8,6 @@ import { Container } from '~/components/Container';
 import { Countdown } from '~/components/Job/Countdown';
 import { Cycles } from '~/components/Job/Cycles';
 import { InfoJob } from '~/components/Job/Info';
-import { NewCycleForm } from '~/components/Job/NewCycleForm';
 import { JobStatus } from '~/components/Job/Status';
 import { Title } from '~/components/Title';
 import {
@@ -145,22 +144,7 @@ export const DetailsJobPage = () => {
                 </VStack>
               </Box>
 
-              <Flex
-                direction="column"
-                alignItems="center"
-                justifyContent="center"
-                bg="white"
-                boxShadow="lg"
-                borderRadius="5px"
-                py="6"
-                px="12"
-                w="100%"
-                maxW="352px"
-              >
-                <Countdown totalCyclesHours={totalCyclesHours} />
-
-                <NewCycleForm />
-              </Flex>
+              <Countdown totalCyclesHours={totalCyclesHours} />
             </Flex>
 
             <Box mt="12">
