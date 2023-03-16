@@ -24,7 +24,7 @@ export const DetailsJobPage = () => {
   const [cyclesByDate, setCyclesByDate] = React.useState<CycleByDate[]>([]);
 
   const { jobs, activeJob, updateActiveJob } = useJobsContext();
-  const { filteredCycles, formatCyclesByDate } = useCyclesContext();
+  const { filteredCyclesByJob, formatCyclesByDate } = useCyclesContext();
 
   const totalCyclesHours = React.useMemo(() => {
     return cyclesByDate?.reduce((acc: number, cycle: CycleByDate) => {
@@ -46,12 +46,12 @@ export const DetailsJobPage = () => {
   const statusColor = totalCyclesHours > totalSecondsAmount ? 'red' : 'green';
 
   React.useEffect(() => {
-    const groupByDate: GroupByDate = groupBy(filteredCycles, 'date');
+    const groupByDate: GroupByDate = groupBy(filteredCyclesByJob, 'date');
 
     const { cycles } = formatCyclesByDate(groupByDate);
 
     setCyclesByDate(cycles);
-  }, [filteredCycles, formatCyclesByDate]);
+  }, [filteredCyclesByJob, formatCyclesByDate]);
 
   React.useEffect(() => {
     const job = jobs?.find((item) => item.id === id);

@@ -12,7 +12,7 @@
     "cycles": {
       ".read": "auth != null",
       ".write": "auth != null",
-      ".indexOn": "jobId",
+      ".indexOn": ["jobId", "userId"],
       "$uid": {
         ".write": "auth != null && (!data.exists())"
       }

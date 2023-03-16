@@ -48,7 +48,7 @@ export interface GroupByDate {
 }
 
 export interface CyclesContextData {
-  cycles: Cycle[];
+  cyclesByUser: Cycle[];
   activeCycle: Cycle | undefined;
   activeCycleId: string | null;
   createNewCycleJob: (data: CreateNewCycleJobData) => void;
@@ -57,11 +57,11 @@ export interface CyclesContextData {
   activeCycleCurrentSeconds: number;
   activeCycleTotalSeconds: number;
   finishCurrentCycle: (cycle: Cycle) => void;
-  filteredCycles: FilteredCycle[];
+  filteredCyclesByJob: FilteredCycle[];
   formatCyclesByDate: (groupByDate: GroupByDate) => { cycles: CycleByDate[] };
 }
 
 export interface CyclesState {
-  cycles: Cycle[];
+  cyclesByUser: Cycle[];
   activeCycleId: string | null;
 }

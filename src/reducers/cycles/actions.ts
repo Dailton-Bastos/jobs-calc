@@ -7,7 +7,7 @@ export enum ActionTypes {
 }
 
 interface InitialStateData {
-  cycles: Cycle[];
+  cyclesByUser: Cycle[];
   activeCycle: Cycle | undefined;
 }
 
