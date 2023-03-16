@@ -14,14 +14,15 @@ import {
   Td,
 } from '@chakra-ui/react';
 
-import { CycleByDate } from '~/@types/cycles';
+import { useCyclesContext } from '~/hooks/useCyclesContext';
 
 interface Props {
   totalHours: string;
-  cyclesByDate: CycleByDate[];
 }
 
-export const Cycles = ({ totalHours, cyclesByDate }: Props) => {
+export const Cycles = ({ totalHours }: Props) => {
+  const { cyclesByDate } = useCyclesContext();
+
   return (
     <TableContainer mt="10">
       <Table colorScheme="blackAlpha">

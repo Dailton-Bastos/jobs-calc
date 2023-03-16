@@ -2,29 +2,15 @@ import React from 'react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 
 import { Flex } from '@chakra-ui/react';
-import { differenceInSeconds } from 'date-fns';
 
 import 'react-circular-progressbar/dist/styles.css';
-import { secondsToTime } from '~/helpers/utils';
 import { useCyclesContext } from '~/hooks/useCyclesContext';
 import { useJobsContext } from '~/hooks/useJobsContext';
 
 import { Control } from './components/Control';
 
-interface Props {
-  totalCyclesHours: number;
-}
-
-export const Countdown = ({ totalCyclesHours }: Props) => {
-  const [countdownText, setCountdownText] = React.useState('00:00:00');
-
-  const {
-    activeCycle,
-    activeCycleTotalSeconds,
-    activeCycleCurrentSeconds,
-    setSecondsPassed,
-    amountSecondsPassed,
-  } = useCyclesContext();
+export const Countdown = () => {
+  const { activeCycleCurrentSeconds, countdownText } = useCyclesContext();
 
   const { activeJob } = useJobsContext();
 
@@ -47,40 +33,6 @@ export const Countdown = ({ totalCyclesHours }: Props) => {
       textSize: 16,
     };
   }, [percentage]);
-
-  const countdownValue = React.useCallback(() => {
-    const totalCount =
-      activeCycleCurrentSeconds >= 1
-        ? activeCycleCurrentSeconds
-        : totalCyclesHours + amountSecondsPassed;
-
-    const { formattedTime } = secondsToTime(totalCount);
-
-    setCountdownText(formattedTime);
-  }, [activeCycleCurrentSeconds, totalCyclesHours, amountSecondsPassed]);
-
-  React.useEffect(() => {
-    let interval: ReturnType<typeof setInterval>;
-
-    if (activeCycle) {
-      interval = setInterval(() => {
-        const secondsDifference = differenceInSeconds(
-          new Date(),
-          new Date(Number(activeCycle?.startDate)),
-        );
-
-        setSecondsPassed(secondsDifference);
-      }, 1000);
-    } else {
-      setSecondsPassed(0);
-    }
-
-    return () => clearInterval(interval);
-  }, [activeCycle, setSecondsPassed, activeCycleTotalSeconds]);
-
-  React.useEffect(() => {
-    countdownValue();
-  }, [countdownValue]);
 
   return (
     <Flex

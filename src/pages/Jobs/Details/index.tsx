@@ -3,36 +3,21 @@ import { useParams } from 'react-router-dom';
 
 import { Flex, Box, VStack, Text } from '@chakra-ui/react';
 
-import { CycleByDate, GroupByDate } from '~/@types/cycles';
 import { Container } from '~/components/Container';
 import { Countdown } from '~/components/Job/Countdown';
 import { Cycles } from '~/components/Job/Cycles';
 import { InfoJob } from '~/components/Job/Info';
 import { JobStatus } from '~/components/Job/Status';
 import { Title } from '~/components/Title';
-import {
-  formatTime,
-  formatDate,
-  secondsToTime,
-  groupBy,
-} from '~/helpers/utils';
+import { formatTime, formatDate, secondsToTime } from '~/helpers/utils';
 import { useCyclesContext } from '~/hooks/useCyclesContext';
 import { useJobsContext } from '~/hooks/useJobsContext';
 
 export const DetailsJobPage = () => {
   const { id } = useParams();
-  const [cyclesByDate, setCyclesByDate] = React.useState<CycleByDate[]>([]);
 
   const { jobs, activeJob, updateActiveJob } = useJobsContext();
-  const { filteredCyclesByJob, formatCyclesByDate } = useCyclesContext();
-
-  const totalCyclesHours = React.useMemo(() => {
-    return cyclesByDate?.reduce((acc: number, cycle: CycleByDate) => {
-      acc += cycle?.totalCycleInSeconds;
-
-      return acc;
-    }, 0);
-  }, [cyclesByDate]);
+  const { totalCyclesHours } = useCyclesContext();
 
   const { hours: totalHours, minutes: totalMinutes } =
     secondsToTime(totalCyclesHours);
@@ -44,14 +29,6 @@ export const DetailsJobPage = () => {
   const totalSecondsAmount = activeJob?.totalSecondsAmount ?? 0;
 
   const statusColor = totalCyclesHours > totalSecondsAmount ? 'red' : 'green';
-
-  React.useEffect(() => {
-    const groupByDate: GroupByDate = groupBy(filteredCyclesByJob, 'date');
-
-    const { cycles } = formatCyclesByDate(groupByDate);
-
-    setCyclesByDate(cycles);
-  }, [filteredCyclesByJob, formatCyclesByDate]);
 
   React.useEffect(() => {
     const job = jobs?.find((item) => item.id === id);
@@ -144,13 +121,13 @@ export const DetailsJobPage = () => {
                 </VStack>
               </Box>
 
-              <Countdown totalCyclesHours={totalCyclesHours} />
+              <Countdown />
             </Flex>
 
             <Box mt="12">
               <Title>Apontamentos</Title>
 
-              <Cycles totalHours={TOTAL_HOURS} cyclesByDate={cyclesByDate} />
+              <Cycles totalHours={TOTAL_HOURS} />
             </Box>
           </>
         )}

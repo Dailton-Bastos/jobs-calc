@@ -59,6 +59,9 @@ export interface CyclesContextData {
   finishCurrentCycle: (cycle: Cycle) => void;
   filteredCyclesByJob: FilteredCycle[];
   formatCyclesByDate: (groupByDate: GroupByDate) => { cycles: CycleByDate[] };
+  totalCyclesHours: number;
+  cyclesByDate: CycleByDate[];
+  countdownText: string;
 }
 
 export interface CyclesState {

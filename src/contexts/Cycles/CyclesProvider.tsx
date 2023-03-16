@@ -24,7 +24,7 @@ import type {
   CycleByDate,
 } from '~/@types/cycles';
 import { db } from '~/config/firebase';
-import { secondsToTime, uuid } from '~/helpers/utils';
+import { groupBy, secondsToTime, uuid } from '~/helpers/utils';
 import { useAuth } from '~/hooks/useAuth';
 import { useJobsContext } from '~/hooks/useJobsContext';
 import {
@@ -37,6 +37,9 @@ import { CyclesReducer, initialCyclesState } from '~/reducers/cycles/reducer';
 import { CyclesContext } from './CyclesContext';
 
 export const CyclesProvider = ({ children }: CyclesProviderProps) => {
+  const [countdownText, setCountdownText] = React.useState('00:00:00');
+  const [cyclesByDate, setCyclesByDate] = React.useState<CycleByDate[]>([]);
+
   const [cyclesState, dispatch] = React.useReducer(
     CyclesReducer,
     initialCyclesState,
@@ -56,9 +59,18 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     return 0;
   });
 
+  const totalCyclesHours = React.useMemo(() => {
+    return cyclesByDate?.reduce((acc: number, cycle: CycleByDate) => {
+      acc += cycle?.totalCycleInSeconds;
+
+      return acc;
+    }, 0);
+  }, [cyclesByDate]);
+
   const { user } = useAuth();
 
-  const { newCycle, activeJob, updateJob } = useJobsContext();
+  const { newCycle, activeJob, updateJob, jobs, updateActiveJob } =
+    useJobsContext();
 
   const activeCycleTotalSeconds = React.useMemo(() => {
     return activeJob ? activeJob?.totalSecondsRemaining : 0;
@@ -228,11 +240,64 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     return { cycles: data };
   }, []);
 
+  const countdownValue = React.useCallback(() => {
+    const totalCount =
+      activeCycleCurrentSeconds >= 1
+        ? activeCycleCurrentSeconds
+        : totalCyclesHours + amountSecondsPassed;
+
+    const { formattedTime } = secondsToTime(totalCount);
+
+    setCountdownText(formattedTime);
+  }, [activeCycleCurrentSeconds, totalCyclesHours, amountSecondsPassed]);
+
+  // Start Countdow
+  React.useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+
+    if (activeCycle) {
+      interval = setInterval(() => {
+        const secondsDifference = differenceInSeconds(
+          new Date(),
+          new Date(Number(activeCycle?.startDate)),
+        );
+
+        setSecondsPassed(secondsDifference);
+      }, 1000);
+    } else {
+      setSecondsPassed(0);
+    }
+
+    return () => clearInterval(interval);
+  }, [activeCycle, setSecondsPassed, activeCycleTotalSeconds]);
+
+  // Change Countdown Text
+  React.useEffect(() => {
+    countdownValue();
+  }, [countdownValue]);
+
+  // Cycles by Date
+  React.useEffect(() => {
+    const groupByDate: GroupByDate = groupBy(filteredCyclesByJob, 'date');
+
+    const { cycles } = formatCyclesByDate(groupByDate);
+
+    setCyclesByDate(cycles);
+  }, [filteredCyclesByJob, formatCyclesByDate]);
+
   React.useEffect(() => {
     if (newCycle) {
       dispatch(addNewCycleJobActions(newCycle));
     }
   }, [newCycle]);
+
+  React.useEffect(() => {
+    const job = jobs?.find((item) => item?.id === activeCycle?.jobId);
+
+    if (job) {
+      updateActiveJob(job);
+    }
+  }, [jobs, activeCycle, updateActiveJob]);
 
   React.useEffect(() => {
     createInitialState();
@@ -251,6 +316,9 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       activeCycleCurrentSeconds,
       filteredCyclesByJob,
       formatCyclesByDate,
+      totalCyclesHours,
+      cyclesByDate,
+      countdownText,
     }),
     [
       cyclesByUser,
@@ -264,6 +332,9 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       activeCycleCurrentSeconds,
       filteredCyclesByJob,
       formatCyclesByDate,
+      totalCyclesHours,
+      cyclesByDate,
+      countdownText,
     ],
   );
 
