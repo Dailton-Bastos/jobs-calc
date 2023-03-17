@@ -47,6 +47,13 @@ export interface GroupByDate {
   [date: string]: FilteredCycle[];
 }
 
+export interface ActiveCycleInfo {
+  cycleId: string;
+  jobId: string;
+  title: string;
+  countdown: string;
+}
+
 export interface CyclesContextData {
   cyclesByUser: Cycle[];
   activeCycle: Cycle | undefined;
@@ -62,6 +69,7 @@ export interface CyclesContextData {
   totalCyclesHours: number;
   cyclesByDate: CycleByDate[];
   countdownText: string;
+  activeCycleInfo: ActiveCycleInfo | null;
 }
 
 export interface CyclesState {

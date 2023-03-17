@@ -10,7 +10,8 @@ import { useJobsContext } from '~/hooks/useJobsContext';
 import { Control } from './components/Control';
 
 export const Countdown = () => {
-  const { activeCycleCurrentSeconds, countdownText } = useCyclesContext();
+  const { activeCycleCurrentSeconds, countdownText, activeCycleInfo } =
+    useCyclesContext();
 
   const { activeJob } = useJobsContext();
 
@@ -34,6 +35,9 @@ export const Countdown = () => {
     };
   }, [percentage]);
 
+  const hideCountdownControl =
+    activeCycleInfo && activeCycleInfo.jobId !== activeJob?.id;
+
   return (
     <Flex
       direction="column"
@@ -54,7 +58,7 @@ export const Countdown = () => {
         styles={buildStyles(countdownStyles)}
       />
 
-      <Control />
+      {!hideCountdownControl && <Control />}
     </Flex>
   );
 };
