@@ -52,6 +52,7 @@ export interface ActiveCycleInfo {
   jobId: string;
   title: string;
   countdown: string;
+  highlight: boolean;
 }
 
 export interface CyclesContextData {

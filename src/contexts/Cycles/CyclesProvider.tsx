@@ -103,11 +103,19 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
     const job = jobs?.find((item) => item.id === activeCycle?.jobId);
 
+    const totalSecondsRemaining = job?.totalSecondsRemaining ?? 0;
+    const totalSecondsAmount = job?.totalSecondsAmount ?? 0;
+
+    const percentage = Math.round(
+      (totalSecondsRemaining / totalSecondsAmount) * 100,
+    );
+
     return {
       cycleId: activeCycle?.id ?? '',
       jobId: job?.id ?? '',
       title: job?.title ?? '',
       countdown: countdownTextActiveCycle,
+      highlight: percentage <= 0,
     };
   }, [activeCycle, jobs, countdownTextActiveCycle]);
 

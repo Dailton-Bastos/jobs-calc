@@ -4,9 +4,11 @@ import { useFormContext } from 'react-hook-form';
 import { Flex, Text } from '@chakra-ui/react';
 
 import { SubmitButton } from '~/components/Form/SubmitButton';
+import { useCyclesContext } from '~/hooks/useCyclesContext';
 
 export const JobEstimate = () => {
   const { formState, watch } = useFormContext();
+  const { activeCycleInfo } = useCyclesContext();
 
   const { isSubmitting } = formState;
 
@@ -51,7 +53,11 @@ export const JobEstimate = () => {
         justifyContent="space-between"
         width="100%"
       >
-        <SubmitButton isLoading={isSubmitting} maxW="100%">
+        <SubmitButton
+          isLoading={isSubmitting}
+          maxW="100%"
+          disabled={!!activeCycleInfo}
+        >
           Salvar
         </SubmitButton>
       </Flex>

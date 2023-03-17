@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 
 import { Flex, Box, VStack, Text } from '@chakra-ui/react';
 
+import { ActiveCycleInfo } from '~/components/ActiveCycleInfo';
 import { Container } from '~/components/Container';
 import { Countdown } from '~/components/Job/Countdown';
 import { Cycles } from '~/components/Job/Cycles';
@@ -17,7 +18,7 @@ export const DetailsJobPage = () => {
   const { id } = useParams();
 
   const { jobs, activeJob, updateActiveJob } = useJobsContext();
-  const { totalCyclesHours } = useCyclesContext();
+  const { totalCyclesHours, activeCycleInfo } = useCyclesContext();
 
   const { hours: totalHours, minutes: totalMinutes } =
     secondsToTime(totalCyclesHours);
@@ -30,6 +31,9 @@ export const DetailsJobPage = () => {
 
   const statusColor = totalCyclesHours > totalSecondsAmount ? 'red' : 'green';
 
+  const showActiveCycleInfo =
+    activeCycleInfo && activeJob && activeJob.id !== activeCycleInfo.jobId;
+
   React.useEffect(() => {
     const job = jobs?.find((item) => item.id === id);
 
@@ -40,98 +44,105 @@ export const DetailsJobPage = () => {
 
   return (
     <Container title="Detalhes do Job" to="/jobs">
-      <Box as="section" bg="white" px="8" py="12" borderRadius="5px">
-        {activeJob && (
-          <>
-            <Flex alignItems="center" justifyContent="space-between" gap="8">
-              <Box w="100%" maxW="640px">
-                <Title>Descrição</Title>
+      <>
+        {showActiveCycleInfo && <ActiveCycleInfo />}
 
-                <VStack spacing="6" mt="8" align="flex-start">
-                  <Flex align="center" justify="space-between" w="100%">
-                    {activeJob.jobberId && (
-                      <InfoJob title="ID:">{activeJob?.jobberId}</InfoJob>
-                    )}
+        <Box as="section" bg="white" px="8" py="12" borderRadius="5px">
+          {activeJob && (
+            <>
+              <Flex alignItems="center" justifyContent="space-between" gap="8">
+                <Box w="100%" maxW="640px">
+                  <Title>Descrição</Title>
 
-                    <InfoJob title="Título:">{activeJob?.title}</InfoJob>
-                  </Flex>
-
-                  <Flex align="center" justify="space-between" w="100%">
-                    <InfoJob title="Tempo Estimado:">
-                      {formatTime(
-                        activeJob.hourEstimate ?? 0,
-                        activeJob.minutesEstimate ?? 0,
+                  <VStack spacing="6" mt="8" align="flex-start">
+                    <Flex align="center" justify="space-between" w="100%">
+                      {activeJob.jobberId && (
+                        <InfoJob title="ID:">{activeJob?.jobberId}</InfoJob>
                       )}
-                    </InfoJob>
 
-                    <InfoJob title="Tempo utilizado:" statusColor={statusColor}>
-                      {TOTAL_HOURS}
-                    </InfoJob>
-                  </Flex>
+                      <InfoJob title="Título:">{activeJob?.title}</InfoJob>
+                    </Flex>
 
-                  <Flex align="center" justify="space-between" w="100%">
-                    {activeJob.type === 'budget' && (
-                      <InfoJob title="Tipo:">Orçamento</InfoJob>
-                    )}
-
-                    {activeJob.type === 'development' && (
-                      <InfoJob title="Tipo:">Desenvolvimento</InfoJob>
-                    )}
-
-                    {activeJob.type === 'other' && (
-                      <InfoJob title="Tipo:">Outro</InfoJob>
-                    )}
-
-                    {activeJob.status === 'opened' && (
-                      <JobStatus statusColor="blue">Em aberto</JobStatus>
-                    )}
-
-                    {activeJob.status === 'developing' && (
-                      <JobStatus statusColor="yellow">Em andamento</JobStatus>
-                    )}
-
-                    {activeJob.status === 'paused' && (
-                      <JobStatus statusColor="red">Em espera</JobStatus>
-                    )}
-
-                    {activeJob.status === 'done' && (
-                      <JobStatus statusColor="green">Concluído</JobStatus>
-                    )}
-                  </Flex>
-
-                  <Flex align="center" justify="space-between" w="100%">
-                    {activeJob?.createdAt && (
-                      <InfoJob title="Criado em:">
-                        {formatDate(activeJob.createdAt)}
+                    <Flex align="center" justify="space-between" w="100%">
+                      <InfoJob title="Tempo Estimado:">
+                        {formatTime(
+                          activeJob.hourEstimate ?? 0,
+                          activeJob.minutesEstimate ?? 0,
+                        )}
                       </InfoJob>
-                    )}
 
-                    {activeJob?.updatedAt && (
-                      <InfoJob title="Última atualização:">
-                        {formatDate(activeJob.updatedAt)}
+                      <InfoJob
+                        title="Tempo utilizado:"
+                        statusColor={statusColor}
+                      >
+                        {TOTAL_HOURS}
                       </InfoJob>
-                    )}
-                  </Flex>
+                    </Flex>
 
-                  <Box>
-                    <Text fontWeight="bold">Descrição:</Text>
+                    <Flex align="center" justify="space-between" w="100%">
+                      {activeJob.type === 'budget' && (
+                        <InfoJob title="Tipo:">Orçamento</InfoJob>
+                      )}
 
-                    <Text fontSize="md">{activeJob?.description}</Text>
-                  </Box>
-                </VStack>
+                      {activeJob.type === 'development' && (
+                        <InfoJob title="Tipo:">Desenvolvimento</InfoJob>
+                      )}
+
+                      {activeJob.type === 'other' && (
+                        <InfoJob title="Tipo:">Outro</InfoJob>
+                      )}
+
+                      {activeJob.status === 'opened' && (
+                        <JobStatus statusColor="blue">Em aberto</JobStatus>
+                      )}
+
+                      {activeJob.status === 'developing' && (
+                        <JobStatus statusColor="yellow">Em andamento</JobStatus>
+                      )}
+
+                      {activeJob.status === 'paused' && (
+                        <JobStatus statusColor="red">Em espera</JobStatus>
+                      )}
+
+                      {activeJob.status === 'done' && (
+                        <JobStatus statusColor="green">Concluído</JobStatus>
+                      )}
+                    </Flex>
+
+                    <Flex align="center" justify="space-between" w="100%">
+                      {activeJob?.createdAt && (
+                        <InfoJob title="Criado em:">
+                          {formatDate(activeJob.createdAt)}
+                        </InfoJob>
+                      )}
+
+                      {activeJob?.updatedAt && (
+                        <InfoJob title="Última atualização:">
+                          {formatDate(activeJob.updatedAt)}
+                        </InfoJob>
+                      )}
+                    </Flex>
+
+                    <Box>
+                      <Text fontWeight="bold">Descrição:</Text>
+
+                      <Text fontSize="md">{activeJob?.description}</Text>
+                    </Box>
+                  </VStack>
+                </Box>
+
+                <Countdown />
+              </Flex>
+
+              <Box mt="12">
+                <Title>Apontamentos</Title>
+
+                <Cycles totalHours={TOTAL_HOURS} />
               </Box>
-
-              <Countdown />
-            </Flex>
-
-            <Box mt="12">
-              <Title>Apontamentos</Title>
-
-              <Cycles totalHours={TOTAL_HOURS} />
-            </Box>
-          </>
-        )}
-      </Box>
+            </>
+          )}
+        </Box>
+      </>
     </Container>
   );
 };
