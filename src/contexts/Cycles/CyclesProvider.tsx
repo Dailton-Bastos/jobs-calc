@@ -123,15 +123,30 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     activeCycleTotalSeconds - amountSecondsPassed;
 
   const countdownValue = React.useCallback(() => {
-    const totalCount =
-      activeCycleCurrentSeconds >= 1
-        ? activeCycleCurrentSeconds
+    const amountSeconds =
+      activeCycle && activeCycle.jobId !== activeJob?.id
+        ? totalCyclesHours
         : totalCyclesHours + amountSecondsPassed;
+
+    const currentSeconds =
+      activeCycle && activeCycle.jobId !== activeJob?.id
+        ? activeCycleTotalSeconds
+        : activeCycleCurrentSeconds;
+
+    const totalCount =
+      activeCycleCurrentSeconds >= 1 ? currentSeconds : amountSeconds;
 
     const { formattedTime } = secondsToTime(totalCount);
 
     setCountdownText(formattedTime);
-  }, [activeCycleCurrentSeconds, totalCyclesHours, amountSecondsPassed]);
+  }, [
+    activeCycleCurrentSeconds,
+    totalCyclesHours,
+    activeCycleTotalSeconds,
+    amountSecondsPassed,
+    activeCycle,
+    activeJob,
+  ]);
 
   React.useEffect(() => {
     const job = jobs?.find((item) => item.id === activeCycle?.jobId);

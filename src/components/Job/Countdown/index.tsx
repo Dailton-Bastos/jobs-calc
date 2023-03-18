@@ -10,16 +10,23 @@ import { useJobsContext } from '~/hooks/useJobsContext';
 import { Control } from './components/Control';
 
 export const Countdown = () => {
-  const { activeCycleCurrentSeconds, countdownText, activeCycleInfo } =
-    useCyclesContext();
+  const {
+    activeCycleCurrentSeconds,
+    countdownText,
+    activeCycleInfo,
+    activeCycleTotalSeconds,
+  } = useCyclesContext();
 
   const { activeJob } = useJobsContext();
 
   const totalSecondsAmount = activeJob ? activeJob.totalSecondsAmount : 0;
 
-  const percentage = Math.round(
-    (activeCycleCurrentSeconds / totalSecondsAmount) * 100,
-  );
+  const currentPercentage =
+    activeCycleInfo && activeCycleInfo.jobId !== activeJob?.id
+      ? (activeCycleTotalSeconds / totalSecondsAmount) * 100
+      : (activeCycleCurrentSeconds / totalSecondsAmount) * 100;
+
+  const percentage = Math.round(currentPercentage);
 
   const countdownStyles = React.useMemo(() => {
     const redColor = '#EB3B35';
