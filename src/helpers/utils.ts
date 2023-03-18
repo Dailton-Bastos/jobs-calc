@@ -3,6 +3,8 @@
 import { format } from 'date-fns';
 import pt from 'date-fns/locale/pt-BR';
 
+import { FormattedJobCycle, JobCycles, JobCyclesByDate } from '~/@types/cycles';
+
 export function formatTime(hour: number, minutes: number) {
   const formattedHour = Number(hour).toString().padStart(2, '0');
   const formattedMinutes = Number(minutes).toString().padStart(2, '0');
@@ -61,22 +63,7 @@ export function uuid() {
   );
 }
 
-export const jobSelectTypes = [
-  {
-    name: 'Orçamento',
-    value: 'budget',
-  },
-  {
-    name: 'Desenvolvimento',
-    value: 'development',
-  },
-  {
-    name: 'Outro',
-    value: 'other',
-  },
-];
-
-export const secondsToTime = (totalInSeconds: number) => {
+export function secondsToTime(totalInSeconds: number) {
   const hours = Math.floor(totalInSeconds / 3600)
     .toString()
     .padStart(2, '0');
@@ -92,7 +79,54 @@ export const secondsToTime = (totalInSeconds: number) => {
   const formattedTime = `${hours}:${minutes}:${seconds}`;
 
   return { hours, minutes, seconds, formattedTime };
-};
+}
+
+export function formatJobCyclesByDate(cyclesByDate: JobCyclesByDate) {
+  const data: JobCycles[] = Object.keys(cyclesByDate)?.map((key: string) => {
+    const totalCyleDate = cyclesByDate[key]?.reduce(
+      (acc: number, cycle: FormattedJobCycle) => {
+        acc += cycle?.totalCycleInSeconds;
+        return acc;
+      },
+      0,
+    );
+
+    const { hours, minutes } = secondsToTime(totalCyleDate);
+
+    return {
+      id: uuid(),
+      date: cyclesByDate[key][0]?.date,
+      totalHoursByDate: `${hours}h:${minutes}m`,
+      totalCycleInSeconds: totalCyleDate,
+      cycles: cyclesByDate[key]?.map((cycle) => {
+        return {
+          id: uuid(),
+          startDate: cycle?.startDate,
+          fineshedDate: cycle?.fineshedDate,
+          totalCycle: cycle?.totalCycle,
+          isActive: cycle?.isActive,
+        };
+      }),
+    };
+  });
+
+  return { cycles: data };
+}
+
+export const jobSelectTypes = [
+  {
+    name: 'Orçamento',
+    value: 'budget',
+  },
+  {
+    name: 'Desenvolvimento',
+    value: 'development',
+  },
+  {
+    name: 'Outro',
+    value: 'other',
+  },
+];
 
 export const STATUS_COLORS = {
   yellow: 'yellow.500',

@@ -17,18 +17,18 @@ import type {
   CreateNewCycleJobData,
   Cycle,
   CyclesProviderProps,
-  FilteredCycle,
-  GroupByDate,
-  CycleByDate,
+  JobCycles,
   ActiveCycleInfo,
+  JobCyclesByDate,
+  FormattedJobCycle,
 } from '~/@types/cycles';
 import { db } from '~/config/firebase';
 import {
   formatDateWithoutHours,
   formatHour,
+  formatJobCyclesByDate,
   groupBy,
   secondsToTime,
-  uuid,
 } from '~/helpers/utils';
 import { useAuth } from '~/hooks/useAuth';
 import { useJobsContext } from '~/hooks/useJobsContext';
@@ -45,7 +45,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
   const [countdownText, setCountdownText] = React.useState('00:00:00');
   const [countdownTextActiveCycle, setCountdownTextActiveCycle] =
     React.useState('00:00:00');
-  const [cyclesByDate, setCyclesByDate] = React.useState<CycleByDate[]>([]);
+  const [cyclesByDate, setCyclesByDate] = React.useState<JobCycles[]>([]);
 
   const [cyclesState, dispatch] = React.useReducer(
     CyclesReducer,
@@ -72,7 +72,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
   });
 
   const totalCyclesHours = React.useMemo(() => {
-    return cyclesByDate?.reduce((acc: number, cycle: CycleByDate) => {
+    return cyclesByDate?.reduce((acc: number, cycle: JobCycles) => {
       acc += cycle?.totalCycleInSeconds;
 
       return acc;
@@ -268,7 +268,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       .filter((cycle) => {
         return cycle?.jobId === activeJob?.id;
       })
-      .reduce((accumulator: FilteredCycle[], currentValue: Cycle) => {
+      .reduce((accumulator: FormattedJobCycle[], currentValue: Cycle) => {
         const fineshedDate = currentValue?.fineshedDate
           ? formatHour(currentValue.fineshedDate)
           : '';
@@ -284,7 +284,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
         const totalCycle = `${hours}h:${minutes}m:${seconds}s`;
 
-        const cycle: FilteredCycle = {
+        const cycle: FormattedJobCycle = {
           id: currentValue.id,
           date: formatDateWithoutHours(currentValue.startDate),
           startDate: formatHour(currentValue.startDate),
@@ -299,38 +299,6 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
         return accumulator;
       }, []);
   }, [cyclesByUser, activeJob]);
-
-  const formatCyclesByDate = React.useCallback((groupByDate: GroupByDate) => {
-    const data: CycleByDate[] = Object.keys(groupByDate)?.map((key: string) => {
-      const totalCyleDate = groupByDate[key]?.reduce(
-        (acc: number, cycle: FilteredCycle) => {
-          acc += cycle?.totalCycleInSeconds;
-          return acc;
-        },
-        0,
-      );
-
-      const { hours, minutes } = secondsToTime(totalCyleDate);
-
-      return {
-        id: uuid(),
-        date: groupByDate[key][0]?.date,
-        totalHoursByDate: `${hours}h:${minutes}m`,
-        totalCycleInSeconds: totalCyleDate,
-        cycles: groupByDate[key]?.map((cycle) => {
-          return {
-            id: uuid(),
-            startDate: cycle?.startDate,
-            fineshedDate: cycle?.fineshedDate,
-            totalCycle: cycle?.totalCycle,
-            isActive: cycle?.isActive,
-          };
-        }),
-      };
-    });
-
-    return { cycles: data };
-  }, []);
 
   // Start Countdow
   React.useEffect(() => {
@@ -359,12 +327,12 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
   // Cycles by Date
   React.useEffect(() => {
-    const groupByDate: GroupByDate = groupBy(filteredCyclesByJob, 'date');
+    const groupByDate: JobCyclesByDate = groupBy(filteredCyclesByJob, 'date');
 
-    const { cycles } = formatCyclesByDate(groupByDate);
+    const { cycles } = formatJobCyclesByDate(groupByDate);
 
     setCyclesByDate(cycles);
-  }, [filteredCyclesByJob, formatCyclesByDate]);
+  }, [filteredCyclesByJob]);
 
   React.useEffect(() => {
     if (newCycle) {
@@ -396,7 +364,6 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       activeCycleTotalSeconds,
       activeCycleCurrentSeconds,
       filteredCyclesByJob,
-      formatCyclesByDate,
       totalCyclesHours,
       cyclesByDate,
       countdownText,
@@ -413,7 +380,6 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       activeCycleTotalSeconds,
       activeCycleCurrentSeconds,
       filteredCyclesByJob,
-      formatCyclesByDate,
       totalCyclesHours,
       cyclesByDate,
       countdownText,

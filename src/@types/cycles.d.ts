@@ -15,7 +15,7 @@ export interface Cycle {
   fineshedDate?: number;
 }
 
-interface FilteredCycle {
+interface FormattedJobCycle {
   id: string | null;
   date: string;
   startDate: string;
@@ -25,7 +25,7 @@ interface FilteredCycle {
   isActive: boolean;
 }
 
-interface CycleByDate {
+interface JobCycles {
   id: string | null;
   date: string;
   totalHoursByDate: string;
@@ -39,8 +39,8 @@ interface CycleByDate {
   }>;
 }
 
-export interface GroupByDate {
-  [date: string]: FilteredCycle[];
+export interface JobCyclesByDate {
+  [date: string]: FormattedJobCycle[];
 }
 
 export interface ActiveCycleInfo {
@@ -61,10 +61,9 @@ export interface CyclesContextData {
   activeCycleCurrentSeconds: number;
   activeCycleTotalSeconds: number;
   finishCurrentCycle: (cycle: Cycle) => void;
-  filteredCyclesByJob: FilteredCycle[];
-  formatCyclesByDate: (groupByDate: GroupByDate) => { cycles: CycleByDate[] };
+  filteredCyclesByJob: FormattedJobCycle[];
   totalCyclesHours: number;
-  cyclesByDate: CycleByDate[];
+  cyclesByDate: JobCycles[];
   countdownText: string;
   activeCycleInfo: ActiveCycleInfo | null;
 }
