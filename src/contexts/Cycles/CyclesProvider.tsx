@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { differenceInSeconds, format } from 'date-fns';
+import { differenceInSeconds } from 'date-fns';
 import {
   ref,
   push,
@@ -11,7 +11,6 @@ import {
   orderByChild,
   equalTo,
   ThenableReference,
-  serverTimestamp,
 } from 'firebase/database';
 
 import type {
@@ -19,13 +18,18 @@ import type {
   Cycle,
   CyclesProviderProps,
   FilteredCycle,
-  FirestoreTimestamp,
   GroupByDate,
   CycleByDate,
   ActiveCycleInfo,
 } from '~/@types/cycles';
 import { db } from '~/config/firebase';
-import { groupBy, secondsToTime, uuid } from '~/helpers/utils';
+import {
+  formatDateWithoutHours,
+  formatHour,
+  groupBy,
+  secondsToTime,
+  uuid,
+} from '~/helpers/utils';
 import { useAuth } from '~/hooks/useAuth';
 import { useJobsContext } from '~/hooks/useJobsContext';
 import {
@@ -228,10 +232,12 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
   const updateCycle = React.useCallback(async (cycle: Cycle) => {
     if (!cycle.id) return;
 
+    const dateInTimestamp = new Date().getTime();
+
     return set(ref(db, `cycles/${cycle.id}`), {
       ...cycle,
       isActive: false,
-      fineshedDate: serverTimestamp() as FirestoreTimestamp,
+      fineshedDate: dateInTimestamp,
     });
   }, []);
 
@@ -264,7 +270,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       })
       .reduce((accumulator: FilteredCycle[], currentValue: Cycle) => {
         const fineshedDate = currentValue?.fineshedDate
-          ? format(new Date(currentValue.fineshedDate), "kk':'mm")
+          ? formatHour(currentValue.fineshedDate)
           : '';
 
         const totalCycleInSeconds = currentValue?.fineshedDate
@@ -280,8 +286,8 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
         const cycle: FilteredCycle = {
           id: currentValue.id,
-          date: format(new Date(currentValue.startDate), 'dd/MM/yyyy'),
-          startDate: format(new Date(currentValue.startDate), "kk':'mm"),
+          date: formatDateWithoutHours(currentValue.startDate),
+          startDate: formatHour(currentValue.startDate),
           fineshedDate,
           totalCycle,
           totalCycleInSeconds,

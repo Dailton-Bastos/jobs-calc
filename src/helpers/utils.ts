@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable import/no-duplicates */
-import { format, intervalToDuration } from 'date-fns';
+import { format } from 'date-fns';
 import pt from 'date-fns/locale/pt-BR';
-
-type DateType = number | null;
 
 export function formatTime(hour: number, minutes: number) {
   const formattedHour = Number(hour).toString().padStart(2, '0');
@@ -12,28 +10,24 @@ export function formatTime(hour: number, minutes: number) {
   return `${formattedHour}h:${formattedMinutes}m`;
 }
 
-export function formatDate(unix: DateType) {
-  if (!unix) return 'Data inválida';
+export function formatDate(timestamp: number) {
+  if (!timestamp) return 'Data inválida';
 
-  return format(new Date(Number(unix)), "dd MMM yyyy, 'às 'HH:mm'", {
+  return format(new Date(timestamp), "dd MMM yyyy, 'às 'HH:mm'", {
     locale: pt,
   });
 }
 
-export function formatDateWithoutHour(date: Date) {
-  return format(new Date(date), 'dd/MM/yyyy', {
+export function formatDateWithoutHours(timestamp: number) {
+  return format(new Date(timestamp), 'dd/MM/yyyy', {
     locale: pt,
   });
 }
 
-export function formatHour(date: Date) {
-  return format(new Date(date), 'HH:mm', {
+export function formatHour(timestamp: number) {
+  return format(new Date(timestamp), 'HH:mm', {
     locale: pt,
   });
-}
-
-export function formatIntervalDuration(dateStart: Date, dateEnd: Date) {
-  return intervalToDuration({ start: dateStart, end: dateEnd });
 }
 
 export function groupBy(array: any[], key: string) {

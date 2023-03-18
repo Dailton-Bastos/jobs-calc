@@ -1,10 +1,8 @@
-import { Timestamp } from 'firebase/firestore';
-
 import { Cycle } from './cycles';
 
 export type JobStatus = 'opened' | 'developing' | 'done' | 'paused';
 export type JobType = 'other' | 'budget' | 'development';
-export type FirestoreTimestamp = Timestamp;
+
 type DateType = number | null;
 
 export interface CreateNewJobData {
@@ -45,58 +43,4 @@ export interface JobsContextProps {
 
 export interface JobsProviderProps {
   children: React.ReactNode;
-}
-
-export interface GetJobResponse {
-  job: JobDetail | null;
-}
-
-export interface FormattedJobType {
-  id: string;
-  date: string;
-  job_id: string;
-  reports: Array<{
-    duration: {
-      hours: string;
-      minutes: string;
-    };
-    hourEnd: string;
-    hourStart: string;
-  }>;
-  totalHours: number;
-  formattedTimer: string;
-}
-
-interface Duration {
-  duration: {
-    hours: number;
-    minutes: number;
-    seconds: number;
-  };
-  hourEnd: string;
-  hourStart: string;
-}
-
-export interface JobReports {
-  id: string;
-  date: string;
-  job_id: string;
-  reports: Duration[];
-  totalHours: number;
-}
-
-export interface JobReport {
-  date: string;
-  job_id: string;
-  report: Duration;
-}
-
-export interface GetJobReports {
-  reports: JobReport[];
-}
-
-export interface JobProgressProps {
-  estimateTotalSeconds: number;
-  uid: string;
-  totalHourJobUsed: number;
 }

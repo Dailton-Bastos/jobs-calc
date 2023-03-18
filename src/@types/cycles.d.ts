@@ -1,7 +1,3 @@
-import { Timestamp } from 'firebase/firestore';
-
-export type FirestoreTimestamp = Timestamp;
-
 export interface CyclesProviderProps {
   children: React.ReactNode;
 }
