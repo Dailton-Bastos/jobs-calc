@@ -2,7 +2,13 @@ import React from 'react';
 
 import { differenceInSeconds } from 'date-fns';
 
-import { Cycle, FormattedJobCycle, JobCycles } from '~/@types/cycles';
+import {
+  ActiveCycleInfo,
+  Cycle,
+  FormattedJobCycle,
+  JobCycles,
+} from '~/@types/cycles';
+import { Job } from '~/@types/job';
 import {
   formatDateWithoutHours,
   formatHour,
@@ -89,9 +95,34 @@ export const useCycle = () => {
     [],
   );
 
+  const getActiveCycleInfo = React.useCallback(
+    (job: Job | undefined, countdown: string): ActiveCycleInfo | null => {
+      if (!job) return null;
+
+      const totalSecondsRemaining = job?.totalSecondsRemaining ?? 0;
+      const totalSecondsAmount = job?.totalSecondsAmount ?? 0;
+
+      const percentage = Math.round(
+        (totalSecondsRemaining / totalSecondsAmount) * 100,
+      );
+
+      const activeCycleInfo = {
+        jobId: job?.id ?? '',
+        title: job?.title ?? '',
+        countdown,
+        highlight: percentage <= 0,
+      };
+
+      return activeCycleInfo;
+    },
+
+    [],
+  );
+
   return {
     formatJobCycles,
     getJobTotalHoursUsed,
     getTotalHoursUsedActiveCycleJob,
+    getActiveCycleInfo,
   };
 };

@@ -44,7 +44,6 @@ export interface JobCyclesByDate {
 }
 
 export interface ActiveCycleInfo {
-  cycleId: string;
   jobId: string;
   title: string;
   countdown: string;

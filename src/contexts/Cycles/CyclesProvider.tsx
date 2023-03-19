@@ -18,7 +18,6 @@ import type {
   Cycle,
   CyclesProviderProps,
   JobCycles,
-  ActiveCycleInfo,
   JobCyclesByDate,
 } from '~/@types/cycles';
 import { db } from '~/config/firebase';
@@ -56,6 +55,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     formatJobCycles,
     getJobTotalHoursUsed,
     getTotalHoursUsedActiveCycleJob,
+    getActiveCycleInfo,
   } = useCycle();
 
   const { cyclesByUser, activeCycleId } = cyclesState;
@@ -63,6 +63,12 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
   const activeCycle = React.useMemo(() => {
     return cyclesByUser.find((cycle) => cycle.id === activeCycleId);
   }, [activeCycleId, cyclesByUser]);
+
+  const activeCycleJob = React.useMemo(() => {
+    const job = jobs?.find((item) => item.id === activeCycle?.jobId);
+
+    return job;
+  }, [jobs, activeCycle]);
 
   const [amountSecondsPassed, setAmountSecondsPassed] = React.useState(() => {
     if (activeCycle?.startDate) {
@@ -80,31 +86,14 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
   const { totalHoursUsedActiveCycleJob } = getTotalHoursUsedActiveCycleJob(
     cyclesFromActiveCycleJob,
   );
+  const activeCycleInfo = getActiveCycleInfo(
+    activeCycleJob,
+    countdownTextActiveCycle,
+  );
 
   const activeCycleTotalSeconds = React.useMemo(() => {
     return activeJob ? activeJob?.totalSecondsRemaining : 0;
   }, [activeJob]);
-
-  const activeCycleInfo: ActiveCycleInfo | null = React.useMemo(() => {
-    if (!activeCycle) return null;
-
-    const job = jobs?.find((item) => item.id === activeCycle?.jobId);
-
-    const totalSecondsRemaining = job?.totalSecondsRemaining ?? 0;
-    const totalSecondsAmount = job?.totalSecondsAmount ?? 0;
-
-    const percentage = Math.round(
-      (totalSecondsRemaining / totalSecondsAmount) * 100,
-    );
-
-    return {
-      cycleId: activeCycle?.id ?? '',
-      jobId: job?.id ?? '',
-      title: job?.title ?? '',
-      countdown: countdownTextActiveCycle,
-      highlight: percentage <= 0,
-    };
-  }, [activeCycle, jobs, countdownTextActiveCycle]);
 
   const activeCycleCurrentSeconds =
     activeCycleTotalSeconds - amountSecondsPassed;
@@ -134,23 +123,6 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     activeCycle,
     activeJob,
   ]);
-
-  React.useEffect(() => {
-    const job = jobs?.find((item) => item.id === activeCycle?.jobId);
-
-    const totalSecondsRemaining = job?.totalSecondsRemaining ?? 0;
-
-    const jobCurrentSeconds = totalSecondsRemaining - amountSecondsPassed;
-
-    const totalCount =
-      jobCurrentSeconds >= 1
-        ? jobCurrentSeconds
-        : totalHoursUsedActiveCycleJob + amountSecondsPassed;
-
-    const { formattedTime } = secondsToTime(totalCount);
-
-    setCountdownTextActiveCycle(formattedTime);
-  }, [jobs, activeCycle, amountSecondsPassed, totalHoursUsedActiveCycleJob]);
 
   const createNewCycleJob = React.useCallback(
     (data: CreateNewCycleJobData) => {
@@ -271,6 +243,22 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     countdownValue();
   }, [countdownValue]);
 
+  // Countdown Text Active Cycle
+  React.useEffect(() => {
+    const totalSecondsRemaining = activeCycleJob?.totalSecondsRemaining ?? 0;
+
+    const jobCurrentSeconds = totalSecondsRemaining - amountSecondsPassed;
+
+    const totalCount =
+      jobCurrentSeconds >= 1
+        ? jobCurrentSeconds
+        : totalHoursUsedActiveCycleJob + amountSecondsPassed;
+
+    const { formattedTime } = secondsToTime(totalCount);
+
+    setCountdownTextActiveCycle(formattedTime);
+  }, [activeCycleJob, amountSecondsPassed, totalHoursUsedActiveCycleJob]);
+
   // Job Cycles Filtered by Date
   React.useEffect(() => {
     const activeJobId = activeJob?.id ?? '';
@@ -291,12 +279,10 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
   }, [newCycle]);
 
   React.useEffect(() => {
-    const job = jobs?.find((item) => item?.id === activeCycle?.jobId);
-
-    if (job) {
-      updateActiveJob(job);
+    if (activeCycleJob) {
+      updateActiveJob(activeCycleJob);
     }
-  }, [jobs, activeCycle, updateActiveJob]);
+  }, [activeCycleJob, updateActiveJob]);
 
   React.useEffect(() => {
     createInitialState();
