@@ -241,7 +241,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     const interval = setInterval(() => {
       const secondsDifference = differenceInSeconds(
         new Date(),
-        new Date(Number(activeCycle?.startDate)),
+        new Date(activeCycle?.startDate),
       );
 
       setAmountSecondsPassed(secondsDifference);
@@ -291,12 +291,9 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
   const values = React.useMemo(
     () => ({
-      cyclesByUser,
       createNewCycleJob,
       finishCurrentCycle,
       activeCycle,
-      activeCycleId,
-      amountSecondsPassed,
       activeCycleTotalSeconds,
       activeCycleCurrentSeconds,
       jobTotalHoursUsed,
@@ -305,12 +302,9 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       activeCycleInfo,
     }),
     [
-      cyclesByUser,
       createNewCycleJob,
       finishCurrentCycle,
       activeCycle,
-      activeCycleId,
-      amountSecondsPassed,
       activeCycleTotalSeconds,
       activeCycleCurrentSeconds,
       jobTotalHoursUsed,

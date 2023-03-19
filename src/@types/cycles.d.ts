@@ -51,11 +51,8 @@ export interface ActiveCycleInfo {
 }
 
 export interface CyclesContextData {
-  cyclesByUser: Cycle[];
   activeCycle: Cycle | undefined;
-  activeCycleId: string | null;
   createNewCycleJob: (data: CreateNewCycleJobData) => void;
-  amountSecondsPassed: number;
   activeCycleCurrentSeconds: number;
   activeCycleTotalSeconds: number;
   finishCurrentCycle: (cycle: Cycle) => void;
