@@ -61,9 +61,8 @@ export interface CyclesContextData {
   activeCycleCurrentSeconds: number;
   activeCycleTotalSeconds: number;
   finishCurrentCycle: (cycle: Cycle) => void;
-  filteredCyclesByJob: FormattedJobCycle[];
   totalCyclesHours: number;
-  cyclesByDate: JobCycles[];
+  jobCycles: JobCycles[];
   countdownText: string;
   activeCycleInfo: ActiveCycleInfo | null;
 }

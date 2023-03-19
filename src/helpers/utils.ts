@@ -110,7 +110,7 @@ export function formatJobCyclesByDate(cyclesByDate: JobCyclesByDate) {
     };
   });
 
-  return { cycles: data };
+  return { data };
 }
 
 export const jobSelectTypes = [

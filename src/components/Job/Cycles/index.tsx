@@ -21,7 +21,7 @@ interface Props {
 }
 
 export const Cycles = ({ totalHours }: Props) => {
-  const { cyclesByDate } = useCyclesContext();
+  const { jobCycles } = useCyclesContext();
 
   return (
     <TableContainer mt="10">
@@ -41,7 +41,7 @@ export const Cycles = ({ totalHours }: Props) => {
           </Tr>
         </Thead>
         <Tbody>
-          {cyclesByDate?.map((cycle) => (
+          {jobCycles?.map((cycle) => (
             <Tr key={cycle?.id}>
               <Td>{cycle?.date}</Td>
 
