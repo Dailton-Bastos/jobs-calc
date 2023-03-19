@@ -95,19 +95,20 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     return activeJob ? activeJob?.totalSecondsRemaining : 0;
   }, [activeJob]);
 
-  const activeCycleCurrentSeconds =
-    activeCycleTotalSeconds - amountSecondsPassed;
+  const activeCycleCurrentSeconds = React.useMemo(() => {
+    return activeCycleTotalSeconds - amountSecondsPassed;
+  }, [activeCycleTotalSeconds, amountSecondsPassed]);
 
   const countdownValue = React.useCallback(() => {
-    const amountSeconds =
-      activeCycle && activeCycle.jobId !== activeJob?.id
-        ? jobTotalHoursUsed
-        : jobTotalHoursUsed + amountSecondsPassed;
+    const isDifec = activeCycle && activeCycle.jobId !== activeJob?.id;
 
-    const currentSeconds =
-      activeCycle && activeCycle.jobId !== activeJob?.id
-        ? activeCycleTotalSeconds
-        : activeCycleCurrentSeconds;
+    const amountSeconds = isDifec
+      ? jobTotalHoursUsed
+      : jobTotalHoursUsed + amountSecondsPassed;
+
+    const currentSeconds = isDifec
+      ? activeCycleTotalSeconds
+      : activeCycleCurrentSeconds;
 
     const totalCount =
       activeCycleCurrentSeconds >= 1 ? currentSeconds : amountSeconds;
@@ -123,6 +124,21 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     activeCycle,
     activeJob,
   ]);
+
+  const countdownValueActiveCycle = React.useCallback(() => {
+    const totalSecondsRemaining = activeCycleJob?.totalSecondsRemaining ?? 0;
+
+    const jobCurrentSeconds = totalSecondsRemaining - amountSecondsPassed;
+
+    const totalCount =
+      jobCurrentSeconds >= 1
+        ? jobCurrentSeconds
+        : totalHoursUsedActiveCycleJob + amountSecondsPassed;
+
+    const { formattedTime } = secondsToTime(totalCount);
+
+    setCountdownTextActiveCycle(formattedTime);
+  }, [activeCycleJob, amountSecondsPassed, totalHoursUsedActiveCycleJob]);
 
   const createNewCycleJob = React.useCallback(
     (data: CreateNewCycleJobData) => {
@@ -245,19 +261,8 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
   // Countdown Text Active Cycle
   React.useEffect(() => {
-    const totalSecondsRemaining = activeCycleJob?.totalSecondsRemaining ?? 0;
-
-    const jobCurrentSeconds = totalSecondsRemaining - amountSecondsPassed;
-
-    const totalCount =
-      jobCurrentSeconds >= 1
-        ? jobCurrentSeconds
-        : totalHoursUsedActiveCycleJob + amountSecondsPassed;
-
-    const { formattedTime } = secondsToTime(totalCount);
-
-    setCountdownTextActiveCycle(formattedTime);
-  }, [activeCycleJob, amountSecondsPassed, totalHoursUsedActiveCycleJob]);
+    countdownValueActiveCycle();
+  }, [countdownValueActiveCycle]);
 
   // Job Cycles Filtered by Date
   React.useEffect(() => {
