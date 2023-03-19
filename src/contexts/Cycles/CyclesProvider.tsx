@@ -52,7 +52,11 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
   const { newCycle, activeJob, updateJob, jobs, updateActiveJob } =
     useJobsContext();
 
-  const { formatJobCycles } = useCycle();
+  const {
+    formatJobCycles,
+    getJobTotalHoursUsed,
+    getTotalHoursUsedActiveCycleJob,
+  } = useCycle();
 
   const { cyclesByUser, activeCycleId } = cyclesState;
 
@@ -68,32 +72,14 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     return 0;
   });
 
-  const totalCyclesHours = React.useMemo(() => {
-    return jobCycles?.reduce((acc: number, cycle: JobCycles) => {
-      acc += cycle?.totalCycleInSeconds;
+  const cyclesFromActiveCycleJob = cyclesByUser.filter((cycle) => {
+    return cycle?.jobId === activeCycle?.jobId;
+  });
 
-      return acc;
-    }, 0);
-  }, [jobCycles]);
-
-  const activeCycleTotalHours = React.useMemo(() => {
-    return cyclesByUser
-      .filter((cycle) => {
-        return cycle?.jobId === activeCycle?.jobId;
-      })
-      .reduce((accumulator: number, currentValue: Cycle) => {
-        const totalCycleInSeconds = currentValue?.fineshedDate
-          ? differenceInSeconds(
-              new Date(currentValue.fineshedDate),
-              new Date(currentValue.startDate),
-            )
-          : 0;
-
-        accumulator += totalCycleInSeconds;
-
-        return accumulator;
-      }, 0);
-  }, [activeCycle, cyclesByUser]);
+  const { jobTotalHoursUsed } = getJobTotalHoursUsed(jobCycles);
+  const { totalHoursUsedActiveCycleJob } = getTotalHoursUsedActiveCycleJob(
+    cyclesFromActiveCycleJob,
+  );
 
   const activeCycleTotalSeconds = React.useMemo(() => {
     return activeJob ? activeJob?.totalSecondsRemaining : 0;
@@ -126,8 +112,8 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
   const countdownValue = React.useCallback(() => {
     const amountSeconds =
       activeCycle && activeCycle.jobId !== activeJob?.id
-        ? totalCyclesHours
-        : totalCyclesHours + amountSecondsPassed;
+        ? jobTotalHoursUsed
+        : jobTotalHoursUsed + amountSecondsPassed;
 
     const currentSeconds =
       activeCycle && activeCycle.jobId !== activeJob?.id
@@ -142,7 +128,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     setCountdownText(formattedTime);
   }, [
     activeCycleCurrentSeconds,
-    totalCyclesHours,
+    jobTotalHoursUsed,
     activeCycleTotalSeconds,
     amountSecondsPassed,
     activeCycle,
@@ -159,12 +145,12 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     const totalCount =
       jobCurrentSeconds >= 1
         ? jobCurrentSeconds
-        : activeCycleTotalHours + amountSecondsPassed;
+        : totalHoursUsedActiveCycleJob + amountSecondsPassed;
 
     const { formattedTime } = secondsToTime(totalCount);
 
     setCountdownTextActiveCycle(formattedTime);
-  }, [jobs, activeCycle, amountSecondsPassed, activeCycleTotalHours]);
+  }, [jobs, activeCycle, amountSecondsPassed, totalHoursUsedActiveCycleJob]);
 
   const createNewCycleJob = React.useCallback(
     (data: CreateNewCycleJobData) => {
@@ -260,7 +246,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     setAmountSecondsPassed(seconds);
   }, []);
 
-  // Start Countdow
+  // Start Countdown
   React.useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
 
@@ -327,7 +313,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       setSecondsPassed,
       activeCycleTotalSeconds,
       activeCycleCurrentSeconds,
-      totalCyclesHours,
+      jobTotalHoursUsed,
       jobCycles,
       countdownText,
       activeCycleInfo,
@@ -342,7 +328,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       setSecondsPassed,
       activeCycleTotalSeconds,
       activeCycleCurrentSeconds,
-      totalCyclesHours,
+      jobTotalHoursUsed,
       jobCycles,
       countdownText,
       activeCycleInfo,

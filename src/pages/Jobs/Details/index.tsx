@@ -18,10 +18,10 @@ export const DetailsJobPage = () => {
   const { id } = useParams();
 
   const { jobs, activeJob, updateActiveJob } = useJobsContext();
-  const { totalCyclesHours, activeCycleInfo } = useCyclesContext();
+  const { jobTotalHoursUsed, activeCycleInfo } = useCyclesContext();
 
   const { hours: totalHours, minutes: totalMinutes } =
-    secondsToTime(totalCyclesHours);
+    secondsToTime(jobTotalHoursUsed);
 
   const TOTAL_HOURS = React.useMemo(() => {
     return `${totalHours}h:${totalMinutes}m`;
@@ -29,7 +29,7 @@ export const DetailsJobPage = () => {
 
   const totalSecondsAmount = activeJob?.totalSecondsAmount ?? 0;
 
-  const statusColor = totalCyclesHours > totalSecondsAmount ? 'red' : 'green';
+  const statusColor = jobTotalHoursUsed > totalSecondsAmount ? 'red' : 'green';
 
   const showActiveCycleInfo =
     activeCycleInfo && activeJob && activeJob.id !== activeCycleInfo.jobId;
