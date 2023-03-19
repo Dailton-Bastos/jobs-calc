@@ -230,29 +230,25 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     [updateCycle, updateJob, activeJob, activeCycleCurrentSeconds],
   );
 
-  const setSecondsPassed = React.useCallback((seconds: number) => {
-    setAmountSecondsPassed(seconds);
-  }, []);
-
   // Start Countdown
   React.useEffect(() => {
-    let interval: ReturnType<typeof setInterval>;
+    if (!activeCycle) {
+      setAmountSecondsPassed(0);
 
-    if (activeCycle) {
-      interval = setInterval(() => {
-        const secondsDifference = differenceInSeconds(
-          new Date(),
-          new Date(Number(activeCycle?.startDate)),
-        );
-
-        setSecondsPassed(secondsDifference);
-      }, 1000);
-    } else {
-      setSecondsPassed(0);
+      return;
     }
 
+    const interval = setInterval(() => {
+      const secondsDifference = differenceInSeconds(
+        new Date(),
+        new Date(Number(activeCycle?.startDate)),
+      );
+
+      setAmountSecondsPassed(secondsDifference);
+    }, 1000);
+
     return () => clearInterval(interval);
-  }, [activeCycle, setSecondsPassed, activeCycleTotalSeconds]);
+  }, [activeCycle, activeCycleTotalSeconds]);
 
   // Change Countdown Text
   React.useEffect(() => {
@@ -301,7 +297,6 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       activeCycle,
       activeCycleId,
       amountSecondsPassed,
-      setSecondsPassed,
       activeCycleTotalSeconds,
       activeCycleCurrentSeconds,
       jobTotalHoursUsed,
@@ -316,7 +311,6 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       activeCycle,
       activeCycleId,
       amountSecondsPassed,
-      setSecondsPassed,
       activeCycleTotalSeconds,
       activeCycleCurrentSeconds,
       jobTotalHoursUsed,
