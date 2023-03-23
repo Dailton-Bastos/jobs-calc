@@ -1,3 +1,5 @@
+import { JobInfo } from './job';
+
 export interface CyclesProviderProps {
   children: React.ReactNode;
 }
@@ -60,6 +62,7 @@ export interface CyclesContextData {
   jobCycles: JobCycles[];
   countdownText: string;
   activeCycleInfo: ActiveCycleInfo | null;
+  jobInfo: JobInfo | undefined;
 }
 
 export interface CyclesState {

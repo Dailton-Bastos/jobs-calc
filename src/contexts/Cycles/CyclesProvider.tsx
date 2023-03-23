@@ -20,8 +20,18 @@ import type {
   JobCycles,
   JobCyclesByDate,
 } from '~/@types/cycles';
+import { JobInfo } from '~/@types/job';
 import { db } from '~/config/firebase';
-import { formatJobCyclesByDate, groupBy, secondsToTime } from '~/helpers/utils';
+import {
+  formatJobCyclesByDate,
+  formatTime,
+  getJobReports,
+  getJobStatus,
+  getJobType,
+  groupBy,
+  secondsToTime,
+  getTime,
+} from '~/helpers/utils';
 import { useAuth } from '~/hooks/useAuth';
 import { useCycle } from '~/hooks/useCycle';
 import { useJobsContext } from '~/hooks/useJobsContext';
@@ -35,6 +45,8 @@ import { CyclesReducer, initialCyclesState } from '~/reducers/cycles/reducer';
 import { CyclesContext } from './CyclesContext';
 
 export const CyclesProvider = ({ children }: CyclesProviderProps) => {
+  const [jobInfo, setJobInfo] = React.useState<JobInfo>();
+
   const [countdownText, setCountdownText] = React.useState('00:00:00');
   const [countdownTextActiveCycle, setCountdownTextActiveCycle] =
     React.useState('00:00:00');
@@ -230,6 +242,49 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     [updateCycle, updateJob, activeJob, activeCycleCurrentSeconds],
   );
 
+  const getJobInfo = React.useCallback(() => {
+    if (activeJob) {
+      const activeJobId = activeJob?.id ?? '';
+
+      const listCycles = cyclesByUser.filter((cycle) => {
+        return cycle?.jobId === activeJobId;
+      });
+
+      const totalSecondsAmount = activeJob?.totalSecondsAmount ?? 0;
+      const hourEstimate = activeJob?.hourEstimate ?? 0;
+      const minutesEstimate = activeJob?.minutesEstimate ?? 0;
+      const { hours, minutes } = secondsToTime(jobTotalHoursUsed);
+
+      const { jobCyclesByDate } = getJobReports(listCycles);
+
+      const { time: createdAt } = getTime(activeJob.createdAt);
+      const { time: updatedAt } = getTime(activeJob.updatedAt);
+
+      const info: JobInfo = {
+        id: activeJobId,
+        jobberId: activeJob?.jobberId,
+        title: activeJob.title,
+        description: activeJob?.description,
+        estimatedTime: formatTime(hourEstimate, minutesEstimate),
+        usedTime: {
+          time: `${hours}h:${minutes}m`,
+          statusColor: jobTotalHoursUsed > totalSecondsAmount ? 'red' : 'gray',
+        },
+        type: getJobType(activeJob?.type),
+        status: getJobStatus(activeJob?.status),
+        cyclesByDate: jobCyclesByDate,
+        createdAt,
+        updatedAt,
+      };
+
+      setJobInfo(info);
+    }
+  }, [activeJob, cyclesByUser, jobTotalHoursUsed]);
+
+  React.useEffect(() => {
+    getJobInfo();
+  }, [getJobInfo]);
+
   // Start Countdown
   React.useEffect(() => {
     if (!activeCycle) {
@@ -300,6 +355,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       jobCycles,
       countdownText,
       activeCycleInfo,
+      jobInfo,
     }),
     [
       createNewCycleJob,
@@ -311,6 +367,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       jobCycles,
       countdownText,
       activeCycleInfo,
+      jobInfo,
     ],
   );
 

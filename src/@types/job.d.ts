@@ -1,9 +1,11 @@
+import { STATUS_COLORS } from '~/helpers/utils';
+
 import { Cycle } from './cycles';
 
 export type JobStatus = 'opened' | 'developing' | 'done' | 'paused';
 export type JobType = 'other' | 'budget' | 'development';
 
-type DateType = number | null;
+type DateType = number;
 
 export interface CreateNewJobData {
   jobberId?: string;
@@ -29,6 +31,57 @@ export interface Job {
   totalSecondsRemaining: number;
   createdAt: DateType;
   updatedAt: DateType;
+}
+
+interface CycleData {
+  id: string;
+  isActive: boolean;
+  startHour: string;
+  fineshedHour: string;
+  total: string;
+  totalCycleInSeconds: number;
+  createdAt: string;
+}
+
+interface Time {
+  title: string;
+  label: string;
+  dateTime: string;
+}
+
+interface CycleDataByCreatedAt {
+  id: string;
+  time: Time;
+  createdAt: string;
+}
+
+export interface JobByDate {
+  [date: string]: CycleDataByCreatedAt[];
+}
+
+interface CyclesByDate extends CycleDataByCreatedAt {
+  cycles: CycleData[];
+  cycleTotalTime: string;
+}
+
+export interface JobInfo {
+  id: string;
+  jobberId?: string;
+  title: string;
+  description?: string;
+  estimatedTime: string;
+  usedTime: {
+    time: string;
+    statusColor: keyof typeof STATUS_COLORS;
+  };
+  type: string;
+  status: {
+    type: string;
+    statusColor: keyof typeof STATUS_COLORS;
+  };
+  cyclesByDate: CyclesByDate[];
+  createdAt: Time;
+  updatedAt: Time;
 }
 
 export interface JobsContextProps {

@@ -5,7 +5,7 @@ import { STATUS_COLORS } from '~/helpers/utils';
 interface Props {
   title: string;
   statusColor?: keyof typeof STATUS_COLORS;
-  children: string;
+  children: React.ReactElement;
 }
 
 export const InfoJob = ({

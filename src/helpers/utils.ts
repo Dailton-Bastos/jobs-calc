@@ -1,9 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable import/no-duplicates */
-import { format } from 'date-fns';
+import { differenceInSeconds, format } from 'date-fns';
 import pt from 'date-fns/locale/pt-BR';
 
-import { FormattedJobCycle, JobCycles, JobCyclesByDate } from '~/@types/cycles';
+import {
+  Cycle,
+  FormattedJobCycle,
+  JobCycles,
+  JobCyclesByDate,
+} from '~/@types/cycles';
+import {
+  CycleData,
+  JobByDate,
+  JobStatus,
+  JobType,
+  CycleDataByCreatedAt,
+  CyclesByDate,
+} from '~/@types/job';
 
 export function formatTime(hour: number, minutes: number) {
   const formattedHour = Number(hour).toString().padStart(2, '0');
@@ -113,6 +126,180 @@ export function formatJobCyclesByDate(cyclesByDate: JobCyclesByDate) {
   return { data };
 }
 
+export function getJobType(type: JobType) {
+  switch (type) {
+    case 'development':
+      return 'Desenvolvimento';
+    case 'budget':
+      return 'Orçamento';
+
+    default:
+      return 'Outro';
+  }
+}
+
+export function getJobStatus(status: JobStatus) {
+  switch (status) {
+    case 'opened':
+      return {
+        type: 'Em aberto',
+        statusColor: 'blue' as const,
+      };
+
+    case 'paused':
+      return {
+        type: 'Em espera',
+        statusColor: 'red' as const,
+      };
+
+    case 'done':
+      return {
+        type: 'Concluído',
+        statusColor: 'green' as const,
+      };
+
+    default:
+      return {
+        type: 'Em andamento',
+        statusColor: 'yellow' as const,
+      };
+  }
+}
+
+export const getTime = (time: number) => {
+  const title = formatDate(time);
+
+  const label = format(new Date(time), "EEEE',' dd 'de' MMMM 'de' yyyy", {
+    locale: pt,
+  });
+
+  const dateTime = format(new Date(time), "yyyy'-'MM'-'dd HH':'mm':'ss", {
+    locale: pt,
+  });
+
+  return {
+    title,
+    label,
+    dateTime,
+
+    time: {
+      title,
+      label,
+      dateTime,
+    },
+  };
+};
+
+export function getJobCyles(listCycles: Cycle[]) {
+  const jobCyles = listCycles.reduce(
+    (accumulator: CycleData[], currentValue: Cycle) => {
+      const cycleId = currentValue?.id ?? uuid();
+      const isActive = currentValue.isActive;
+      const startHour = formatHour(currentValue.startDate);
+      const fineshedHour = currentValue?.fineshedDate
+        ? formatHour(currentValue.fineshedDate)
+        : '';
+
+      const totalCycleInSeconds = currentValue?.fineshedDate
+        ? differenceInSeconds(
+            new Date(currentValue.fineshedDate),
+            new Date(currentValue.startDate),
+          )
+        : 0;
+
+      const {
+        hours: totalHours,
+        minutes: totalMinutes,
+        seconds: totalSeconds,
+      } = secondsToTime(totalCycleInSeconds);
+
+      const total = `${totalHours}h:${totalMinutes}m:${totalSeconds}s`;
+
+      const cycle: CycleData = {
+        id: cycleId,
+        isActive,
+        startHour,
+        fineshedHour,
+        total,
+        totalCycleInSeconds,
+        createdAt: format(new Date(currentValue.startDate), "dd'/'MM'/'yyyy"),
+      };
+
+      accumulator.push(cycle);
+
+      return accumulator;
+    },
+    [],
+  );
+
+  return { jobCyles };
+}
+
+export function getJobReports(listCycles: Cycle[]) {
+  const cycles = listCycles.reduce(
+    (accumulator: CycleDataByCreatedAt[], currentValue: Cycle) => {
+      const cycleId = currentValue?.id ?? uuid();
+
+      const { label, dateTime } = getTime(currentValue.startDate);
+
+      const time = {
+        label,
+        title: format(new Date(currentValue.startDate), "dd'/'MM'/'yyyy", {
+          locale: pt,
+        }),
+        dateTime,
+      };
+
+      const createdAt = format(
+        new Date(currentValue.startDate),
+        "dd'/'MM'/'yyyy",
+      );
+
+      const report = {
+        id: cycleId,
+        time,
+        createdAt,
+      };
+
+      accumulator.push(report);
+
+      return accumulator;
+    },
+    [],
+  );
+
+  const cyclesByDate: JobByDate = groupBy(cycles, 'createdAt');
+
+  const { jobCyles } = getJobCyles(listCycles);
+
+  const jobCyclesByDate: CyclesByDate[] = Object.keys(cyclesByDate).map(
+    (key) => {
+      const data = jobCyles.filter(
+        (cycle) => cycle.createdAt === cyclesByDate[key][0].createdAt,
+      );
+
+      const totalHoursByDate = data?.reduce(
+        (total: number, cycle: CycleData) => {
+          total += cycle?.totalCycleInSeconds;
+
+          return total;
+        },
+        0,
+      );
+
+      const { hours, minutes } = secondsToTime(totalHoursByDate);
+
+      return {
+        ...cyclesByDate[key][0],
+        cycleTotalTime: `${hours}h:${minutes}m`,
+        cycles: data,
+      };
+    },
+  );
+
+  return { jobCyclesByDate };
+}
+
 export const jobSelectTypes = [
   {
     name: 'Orçamento',
@@ -132,6 +319,7 @@ export const STATUS_COLORS = {
   yellow: 'yellow.500',
   red: 'red.500',
   green: 'green.500',
+  gray: 'gray.500',
   blue: 'blue.500',
   initial: '-moz-initial',
 } as const;

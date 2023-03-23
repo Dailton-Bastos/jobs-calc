@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {
   Flex,
   VStack,
@@ -16,12 +14,10 @@ import {
 
 import { useCyclesContext } from '~/hooks/useCyclesContext';
 
-interface Props {
-  totalHours: string;
-}
+import { JobTime } from '../Time';
 
-export const Cycles = ({ totalHours }: Props) => {
-  const { jobCycles } = useCyclesContext();
+export const Cycles = () => {
+  const { jobInfo } = useCyclesContext();
 
   return (
     <TableContainer mt="10">
@@ -29,7 +25,7 @@ export const Cycles = ({ totalHours }: Props) => {
         <TableCaption>
           <Flex gap="2" align="center" justify="flex-end">
             <Text fontWeight="bold">Total de horas:</Text>
-            <Text>{totalHours}</Text>
+            <Text>{jobInfo?.usedTime.time}</Text>
           </Flex>
         </TableCaption>
         <Thead>
@@ -41,15 +37,23 @@ export const Cycles = ({ totalHours }: Props) => {
           </Tr>
         </Thead>
         <Tbody>
-          {jobCycles?.map((cycle) => (
-            <Tr key={cycle?.id}>
-              <Td>{cycle?.date}</Td>
+          {jobInfo?.cyclesByDate?.map((cycleByDate) => (
+            <Tr key={cycleByDate?.id}>
+              <Td>
+                <JobTime
+                  label={cycleByDate?.time.label}
+                  dateTime={cycleByDate?.time.dateTime}
+                >
+                  {cycleByDate?.time.title}
+                </JobTime>
+              </Td>
 
               <Td>
                 <VStack spacing="2" align="flex-start">
-                  {cycle?.cycles?.map((interval) => (
-                    <Text key={interval.id}>
-                      {interval?.startDate} - {interval?.fineshedDate}
+                  {cycleByDate?.cycles?.map((cycle) => (
+                    <Text key={cycle.id}>
+                      <Text as="time">{cycle.startHour}</Text> -{' '}
+                      <Text as="time">{cycle.fineshedHour}</Text>
                     </Text>
                   ))}
                 </VStack>
@@ -57,13 +61,13 @@ export const Cycles = ({ totalHours }: Props) => {
 
               <Td>
                 <VStack spacing="2" align="flex-start">
-                  {cycle?.cycles?.map((interval) => (
-                    <Text key={interval.id}>{interval.totalCycle}</Text>
+                  {cycleByDate?.cycles?.map((cycle) => (
+                    <Text key={cycle.id}>{cycle.total}</Text>
                   ))}
                 </VStack>
               </Td>
 
-              <Td>{cycle?.totalHoursByDate}</Td>
+              <Td>{cycleByDate.cycleTotalTime}</Td>
             </Tr>
           ))}
         </Tbody>
