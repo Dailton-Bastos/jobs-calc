@@ -11,6 +11,7 @@ import { Container } from '~/components/Container';
 import { Input } from '~/components/Form/Input';
 import { Select } from '~/components/Form/Select';
 import { Textarea } from '~/components/Form/Textarea';
+import { Head } from '~/components/Head';
 import { JobEstimate } from '~/components/Job/Estimate';
 import { Title } from '~/components/Title';
 import { getTotalTimeInSeconds, jobSelectTypes } from '~/helpers/utils';
@@ -102,81 +103,85 @@ export const NewJobPage = () => {
   );
 
   return (
-    <Container title="Adicionar Novo Job" to="/jobs">
-      <>
-        <ActiveCycleInfo />
+    <>
+      <Head title="Novo Job" />
 
-        <Box as="section">
-          <Flex
-            as="form"
-            alignItems="center"
-            justifyContent="space-between"
-            gap="8"
-            onSubmit={handleSubmit(handleCreateNewJob)}
-          >
-            <FormProvider {...newJobForm}>
-              <Box w="100%" maxW="640px">
-                <Title>Dados do Job</Title>
+      <Container title="Adicionar Novo Job" to="/jobs">
+        <>
+          <ActiveCycleInfo />
 
-                <Box mt="8">
-                  <VStack spacing="6" align="flex-start">
-                    <Select
-                      registerName="type"
-                      label="Tipo do Job*"
-                      options={jobSelectTypes}
-                      error={errors?.type}
-                    />
+          <Box as="section">
+            <Flex
+              as="form"
+              alignItems="center"
+              justifyContent="space-between"
+              gap="8"
+              onSubmit={handleSubmit(handleCreateNewJob)}
+            >
+              <FormProvider {...newJobForm}>
+                <Box w="100%" maxW="640px">
+                  <Title>Dados do Job</Title>
 
-                    <Grid gap="6" templateColumns="140px 1fr" w="100%">
-                      <GridItem w="100%">
-                        <Input
-                          registerName="jobberId"
-                          label="ID Jobber"
-                          isDisabled={isDisableJobberIdField}
-                          error={errors?.jobberId}
-                        />
-                      </GridItem>
-
-                      <GridItem w="100%">
-                        <Input
-                          registerName="title"
-                          label="Título do Job*"
-                          error={errors?.title}
-                        />
-                      </GridItem>
-                    </Grid>
-
-                    <Grid gap="6" templateColumns="repeat(2, 1fr)" w="100%">
-                      <Input
-                        registerName="hourEstimate"
-                        label="Tempo Estimado (h)"
-                        type="number"
-                        isDisabled={isDisableEstimateField}
-                        error={errors?.hourEstimate}
+                  <Box mt="8">
+                    <VStack spacing="6" align="flex-start">
+                      <Select
+                        registerName="type"
+                        label="Tipo do Job*"
+                        options={jobSelectTypes}
+                        error={errors?.type}
                       />
 
-                      <Input
-                        registerName="minutesEstimate"
-                        label="Tempo Estimado (min)"
-                        type="number"
-                        isDisabled={isDisableEstimateField}
-                        error={errors?.minutesEstimate}
-                      />
-                    </Grid>
+                      <Grid gap="6" templateColumns="140px 1fr" w="100%">
+                        <GridItem w="100%">
+                          <Input
+                            registerName="jobberId"
+                            label="ID Jobber"
+                            isDisabled={isDisableJobberIdField}
+                            error={errors?.jobberId}
+                          />
+                        </GridItem>
 
-                    <Textarea
-                      registerName="description"
-                      label="Descrição (Opcional)"
-                    />
-                  </VStack>
+                        <GridItem w="100%">
+                          <Input
+                            registerName="title"
+                            label="Título do Job*"
+                            error={errors?.title}
+                          />
+                        </GridItem>
+                      </Grid>
+
+                      <Grid gap="6" templateColumns="repeat(2, 1fr)" w="100%">
+                        <Input
+                          registerName="hourEstimate"
+                          label="Tempo Estimado (h)"
+                          type="number"
+                          isDisabled={isDisableEstimateField}
+                          error={errors?.hourEstimate}
+                        />
+
+                        <Input
+                          registerName="minutesEstimate"
+                          label="Tempo Estimado (min)"
+                          type="number"
+                          isDisabled={isDisableEstimateField}
+                          error={errors?.minutesEstimate}
+                        />
+                      </Grid>
+
+                      <Textarea
+                        registerName="description"
+                        label="Descrição (Opcional)"
+                      />
+                    </VStack>
+                  </Box>
                 </Box>
-              </Box>
 
-              <JobEstimate />
-            </FormProvider>
-          </Flex>
-        </Box>
-      </>
-    </Container>
+                <JobEstimate />
+              </FormProvider>
+            </Flex>
+          </Box>
+        </>
+      </Container>
+    </>
   );
 };

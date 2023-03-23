@@ -5,6 +5,7 @@ import { Flex, Box, VStack, Text } from '@chakra-ui/react';
 
 import { ActiveCycleInfo } from '~/components/ActiveCycleInfo';
 import { Container } from '~/components/Container';
+import { Head } from '~/components/Head';
 import { Countdown } from '~/components/Job/Countdown';
 import { Cycles } from '~/components/Job/Cycles';
 import { InfoJob } from '~/components/Job/Info';
@@ -19,7 +20,9 @@ export const DetailsJobPage = () => {
 
   const { jobs, activeJob, updateActiveJob } = useJobsContext();
 
-  const { activeCycleInfo, jobInfo } = useCyclesContext();
+  const { activeCycleInfo, jobInfo, countdownText } = useCyclesContext();
+
+  const pageTitle = `${countdownText} - ${activeJob?.title}`;
 
   const showActiveCycleInfo = activeJob?.id !== activeCycleInfo?.jobId;
 
@@ -32,93 +35,101 @@ export const DetailsJobPage = () => {
   }, [jobs, updateActiveJob, id]);
 
   return (
-    <Container title="Detalhes do Job" to="/jobs">
-      <>
-        {showActiveCycleInfo && <ActiveCycleInfo />}
+    <>
+      <Head title={pageTitle} />
 
-        <Box as="section" bg="white" px="8" py="12" borderRadius="5px">
-          {jobInfo && (
-            <>
-              <Flex alignItems="center" justifyContent="space-between" gap="8">
-                <Box w="100%" maxW="640px">
-                  <Title>Descrição</Title>
+      <Container title="Detalhes do Job" to="/jobs">
+        <>
+          {showActiveCycleInfo && <ActiveCycleInfo />}
 
-                  <VStack spacing="6" mt="8" align="flex-start">
-                    <Flex align="center" justify="space-between" w="100%">
-                      {jobInfo.jobberId && (
-                        <InfoJob title="Jobber ID:">
-                          <Text as="span">{jobInfo.jobberId}</Text>
+          <Box as="section" bg="white" px="8" py="12" borderRadius="5px">
+            {jobInfo && (
+              <>
+                <Flex
+                  alignItems="center"
+                  justifyContent="space-between"
+                  gap="8"
+                >
+                  <Box w="100%" maxW="640px">
+                    <Title>Descrição</Title>
+
+                    <VStack spacing="6" mt="8" align="flex-start">
+                      <Flex align="center" justify="space-between" w="100%">
+                        {jobInfo.jobberId && (
+                          <InfoJob title="Jobber ID:">
+                            <Text as="span">{jobInfo.jobberId}</Text>
+                          </InfoJob>
+                        )}
+
+                        <InfoJob title="Título:">
+                          <Text as="span">{activeJob?.title}</Text>
                         </InfoJob>
-                      )}
+                      </Flex>
 
-                      <InfoJob title="Título:">
-                        <Text as="span">{activeJob?.title}</Text>
-                      </InfoJob>
-                    </Flex>
+                      <Flex align="center" justify="space-between" w="100%">
+                        <InfoJob title="Tempo Estimado:">
+                          <Text as="span">{jobInfo.estimatedTime}</Text>
+                        </InfoJob>
 
-                    <Flex align="center" justify="space-between" w="100%">
-                      <InfoJob title="Tempo Estimado:">
-                        <Text as="span">{jobInfo.estimatedTime}</Text>
-                      </InfoJob>
-
-                      <InfoJob
-                        title="Tempo utilizado:"
-                        statusColor={jobInfo.usedTime.statusColor}
-                      >
-                        <Text as="span">{jobInfo.usedTime.time}</Text>
-                      </InfoJob>
-                    </Flex>
-
-                    <Flex align="center" justify="space-between" w="100%">
-                      <InfoJob title="Tipo:">
-                        <Text as="span">{jobInfo.type}</Text>
-                      </InfoJob>
-
-                      <JobStatus statusColor={jobInfo.status.statusColor}>
-                        {jobInfo.status.type}
-                      </JobStatus>
-                    </Flex>
-
-                    <Flex align="center" justify="space-between" w="100%">
-                      <InfoJob title="Criado em:">
-                        <JobTime
-                          label={jobInfo.createdAt.label}
-                          dateTime={jobInfo.createdAt.dateTime}
+                        <InfoJob
+                          title="Tempo utilizado:"
+                          statusColor={jobInfo.usedTime.statusColor}
                         >
-                          {jobInfo.createdAt.title}
-                        </JobTime>
-                      </InfoJob>
+                          <Text as="span">{jobInfo.usedTime.time}</Text>
+                        </InfoJob>
+                      </Flex>
 
-                      <InfoJob title="Última atualização:">
-                        <JobTime
-                          label={jobInfo.updatedAt.label}
-                          dateTime={jobInfo.updatedAt.dateTime}
-                        >
-                          {jobInfo.updatedAt.title}
-                        </JobTime>
-                      </InfoJob>
-                    </Flex>
+                      <Flex align="center" justify="space-between" w="100%">
+                        <InfoJob title="Tipo:">
+                          <Text as="span">{jobInfo.type}</Text>
+                        </InfoJob>
 
-                    <Box>
-                      <Text fontWeight="bold">Descrição:</Text>
+                        <JobStatus statusColor={jobInfo.status.statusColor}>
+                          {jobInfo.status.type}
+                        </JobStatus>
+                      </Flex>
 
-                      <Text fontSize="md">{jobInfo.description}</Text>
-                    </Box>
-                  </VStack>
+                      <Flex align="center" justify="space-between" w="100%">
+                        <InfoJob title="Criado em:">
+                          <JobTime
+                            label={jobInfo.createdAt.label}
+                            dateTime={jobInfo.createdAt.dateTime}
+                          >
+                            {jobInfo.createdAt.title}
+                          </JobTime>
+                        </InfoJob>
+
+                        <InfoJob title="Última atualização:">
+                          <JobTime
+                            label={jobInfo.updatedAt.label}
+                            dateTime={jobInfo.updatedAt.dateTime}
+                          >
+                            {jobInfo.updatedAt.title}
+                          </JobTime>
+                        </InfoJob>
+                      </Flex>
+
+                      <Box>
+                        <Text fontWeight="bold">Descrição:</Text>
+
+                        <Text fontSize="md">{jobInfo.description}</Text>
+                      </Box>
+                    </VStack>
+                  </Box>
+
+                  <Countdown />
+                </Flex>
+
+                <Box mt="12">
+                  <Title>Apontamentos</Title>
+
+                  <Cycles />
                 </Box>
-
-                <Countdown />
-              </Flex>
-
-              <Box mt="12">
-                <Title>Apontamentos</Title>
-
-                <Cycles />
-              </Box>
-            </>
-          )}
-        </Box>
-      </>
-    </Container>
+              </>
+            )}
+          </Box>
+        </>
+      </Container>
+    </>
   );
 };
