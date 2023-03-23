@@ -126,7 +126,7 @@ export const NewJobPage = () => {
                     <VStack spacing="6" align="flex-start">
                       <Select
                         registerName="type"
-                        label="Tipo do Job*"
+                        label="Tipo"
                         options={jobSelectTypes}
                         error={errors?.type}
                       />
@@ -135,7 +135,7 @@ export const NewJobPage = () => {
                         <GridItem w="100%">
                           <Input
                             registerName="jobberId"
-                            label="ID Jobber"
+                            label="Jobber ID"
                             isDisabled={isDisableJobberIdField}
                             error={errors?.jobberId}
                           />
@@ -144,7 +144,7 @@ export const NewJobPage = () => {
                         <GridItem w="100%">
                           <Input
                             registerName="title"
-                            label="Título do Job*"
+                            label="Título"
                             error={errors?.title}
                           />
                         </GridItem>
@@ -170,7 +170,7 @@ export const NewJobPage = () => {
 
                       <Textarea
                         registerName="description"
-                        label="Descrição (Opcional)"
+                        label="Briefing (Opcional)"
                       />
                     </VStack>
                   </Box>

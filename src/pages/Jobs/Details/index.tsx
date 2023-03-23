@@ -56,23 +56,23 @@ export const DetailsJobPage = () => {
                     <VStack spacing="6" mt="8" align="flex-start">
                       <Flex align="center" justify="space-between" w="100%">
                         {jobInfo.jobberId && (
-                          <InfoJob title="Jobber ID:">
+                          <InfoJob title="Jobber ID">
                             <Text as="span">{jobInfo.jobberId}</Text>
                           </InfoJob>
                         )}
 
-                        <InfoJob title="Título:">
+                        <InfoJob title="Título">
                           <Text as="span">{activeJob?.title}</Text>
                         </InfoJob>
                       </Flex>
 
                       <Flex align="center" justify="space-between" w="100%">
-                        <InfoJob title="Tempo Estimado:">
+                        <InfoJob title="Tempo Estimado">
                           <Text as="span">{jobInfo.estimatedTime}</Text>
                         </InfoJob>
 
                         <InfoJob
-                          title="Tempo utilizado:"
+                          title="Tempo utilizado"
                           statusColor={jobInfo.usedTime.statusColor}
                         >
                           <Text as="span">{jobInfo.usedTime.time}</Text>
@@ -80,7 +80,7 @@ export const DetailsJobPage = () => {
                       </Flex>
 
                       <Flex align="center" justify="space-between" w="100%">
-                        <InfoJob title="Tipo:">
+                        <InfoJob title="Tipo">
                           <Text as="span">{jobInfo.type}</Text>
                         </InfoJob>
 
@@ -90,7 +90,7 @@ export const DetailsJobPage = () => {
                       </Flex>
 
                       <Flex align="center" justify="space-between" w="100%">
-                        <InfoJob title="Criado em:">
+                        <InfoJob title="Criado em">
                           <JobTime
                             label={jobInfo.createdAt.label}
                             dateTime={jobInfo.createdAt.dateTime}
@@ -99,7 +99,7 @@ export const DetailsJobPage = () => {
                           </JobTime>
                         </InfoJob>
 
-                        <InfoJob title="Última atualização:">
+                        <InfoJob title="Última atualização">
                           <JobTime
                             label={jobInfo.updatedAt.label}
                             dateTime={jobInfo.updatedAt.dateTime}
@@ -110,7 +110,7 @@ export const DetailsJobPage = () => {
                       </Flex>
 
                       <Box>
-                        <Text fontWeight="bold">Descrição:</Text>
+                        <Text fontWeight="bold">Briefing</Text>
 
                         <Text fontSize="md">{jobInfo.description}</Text>
                       </Box>
