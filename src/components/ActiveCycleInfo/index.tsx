@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 
 import { Link as ChackraLink, Text, Flex } from '@chakra-ui/react';
 
+import { truncateString } from '~/helpers/utils';
 import { useCyclesContext } from '~/hooks/useCyclesContext';
 
 export const ActiveCycleInfo = () => {
@@ -14,10 +15,10 @@ export const ActiveCycleInfo = () => {
   return (
     <Flex justify="flex-end" py="2">
       <Flex align="center" justify="center" gap="2">
+        <Text color={countdownColor}>{activeCycleInfo.countdown}</Text> -{' '}
         <ChackraLink as={Link} to={`/jobs/${activeCycleInfo.jobId}`}>
-          {activeCycleInfo.title}
-        </ChackraLink>{' '}
-        - <Text color={countdownColor}>{activeCycleInfo.countdown}</Text>
+          {truncateString(activeCycleInfo.title, 35)}
+        </ChackraLink>
       </Flex>
     </Flex>
   );

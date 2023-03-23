@@ -76,6 +76,10 @@ export function uuid() {
   );
 }
 
+export function truncateString(text: string, maxLength: number) {
+  return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
+}
+
 export function secondsToTime(totalInSeconds: number) {
   const hours = Math.floor(totalInSeconds / 3600)
     .toString()

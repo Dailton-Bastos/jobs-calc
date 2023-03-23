@@ -17,29 +17,10 @@ import {
   Td,
 } from '@chakra-ui/react';
 
+import { truncateString } from '~/helpers/utils';
 import { useJobsContext } from '~/hooks/useJobsContext';
 
-// import { JobDetail } from '~/@types/job';
-// import { useAuth } from '~/hooks/useAuth';
-// import { handleGetJobs } from '~/hooks/useJob';
-
 export const RecentJobs = () => {
-  // const [recentsJobs, setRecentsJobs] = React.useState<JobDetail[]>([]);
-
-  // const { user } = useAuth();
-
-  // const uid = user?.uid as string;
-
-  // const handleRecentsJobs = React.useCallback(async () => {
-  //   const { allJobs } = await handleGetJobs(uid);
-
-  //   setRecentsJobs([]);
-  // }, []);
-
-  // React.useEffect(() => {
-  //   handleRecentsJobs();
-  // }, [handleRecentsJobs]);
-
   const { jobs } = useJobsContext();
 
   return (
@@ -82,7 +63,9 @@ export const RecentJobs = () => {
           <Tbody>
             {jobs?.map((job) => (
               <Tr key={job.id}>
-                <Td>{job.title}</Td>
+                <Td>
+                  <Text>{truncateString(job.title, 50)}</Text>
+                </Td>
 
                 <Td>{job.type}</Td>
 
@@ -106,35 +89,6 @@ export const RecentJobs = () => {
                 </Td>
               </Tr>
             ))}
-            {/* {recentsJobs &&
-              recentsJobs.map((job) => (
-                <Tr key={job.id}>
-                  <Td>{job.title}</Td>
-
-                  <Td>{job.type}</Td>
-
-                  <Td>
-                    <Text>{job.estimate}</Text>
-                  </Td>
-
-                  <Td>
-                    <Text color={job.status.color}>{job.status.title}</Text>
-                  </Td>
-
-                  <Td>
-                    <LinkChakra
-                      as={Link}
-                      to={`/jobs/${job.id}`}
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      p="2"
-                    >
-                      <RiEyeLine size={22} />
-                    </LinkChakra>
-                  </Td>
-                </Tr>
-              ))} */}
           </Tbody>
         </Table>
       </TableContainer>
