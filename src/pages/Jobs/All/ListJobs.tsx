@@ -1,3 +1,4 @@
+import { RiEyeLine } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 
 import {
@@ -13,33 +14,19 @@ import {
   Tbody,
   Tr,
   Th,
+  Td,
 } from '@chakra-ui/react';
 
-// import { JobDetail } from '~/@types/job';
-// import { useAuth } from '~/hooks/useAuth';
-// import { handleGetJobs } from '~/hooks/useJob';
+import { STATUS_COLORS } from '~/helpers/utils';
+import { useJobsContext } from '~/hooks/useJobsContext';
 
 export const ListJobs = () => {
-  // const [jobs, setJobs] = React.useState<JobDetail[]>([]);
-
-  // const { user } = useAuth();
-
-  // const uid = user?.uid as string;
-
-  // const handleRecentsJobs = React.useCallback(async () => {
-  //   const { allJobs } = await handleGetJobs(uid);
-
-  //   setJobs([]);
-  // }, []);
-
-  // React.useEffect(() => {
-  //   handleRecentsJobs();
-  // }, [handleRecentsJobs]);
+  const { myJobs } = useJobsContext();
 
   return (
     <Box w="100%" my="10">
       <Flex justify="space-between" align="center">
-        <Heading size="md">My Jobs</Heading>
+        <Heading size="md">Meus Jobs</Heading>
 
         <LinkChakra
           as={Link}
@@ -58,7 +45,7 @@ export const ListJobs = () => {
           }}
         >
           <Text color="white" fontWeight="bold">
-            Add new Job
+            Novo Job
           </Text>
         </LinkChakra>
       </Flex>
@@ -68,7 +55,7 @@ export const ListJobs = () => {
           <TableCaption>
             <Flex gap="2" align="center" justify="flex-end">
               <Text fontWeight="bold">Total de jobs:</Text>
-              {/* <Text>{jobs?.length}</Text> */}
+              <Text>{myJobs?.length}</Text>
             </Flex>
           </TableCaption>
           <Thead>
@@ -81,35 +68,49 @@ export const ListJobs = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {/* {jobs &&
-              jobs.map((job) => (
-                <Tr key={job.id}>
-                  <Td>{job.title}</Td>
+            {myJobs.map((job) => (
+              <Tr key={job.id}>
+                <Td>{job.title}</Td>
 
-                  <Td>{job.type}</Td>
+                <Td>{job.type}</Td>
 
-                  <Td>
-                    <Text>{job.estimate}</Text>
-                  </Td>
+                <Td>
+                  <Text>{job.estimatedTime}</Text>
+                </Td>
 
-                  <Td>
-                    <Text color={job.status.color}>{job.status.title}</Text>
-                  </Td>
+                <Td>
+                  <Flex gap="2" align="center" justify="flex-start">
+                    <Box
+                      w="8px"
+                      h="8px"
+                      borderRadius="50%"
+                      bg={STATUS_COLORS[job.status.statusColor]}
+                    />
 
-                  <Td>
-                    <LinkChakra
-                      as={Link}
-                      to={`/jobs/${job.id}`}
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      p="2"
+                    <Text
+                      fontSize="md"
+                      color={STATUS_COLORS[job.status.statusColor]}
                     >
-                      <RiEyeLine size={22} />
-                    </LinkChakra>
-                  </Td>
-                </Tr>
-              ))} */}
+                      {job.status.type}
+                    </Text>
+                  </Flex>
+                </Td>
+
+                <Td>
+                  <LinkChakra
+                    as={Link}
+                    to={`/jobs/${job.id}`}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    p="2"
+                    title="Visualizar"
+                  >
+                    <RiEyeLine size={22} />
+                  </LinkChakra>
+                </Td>
+              </Tr>
+            ))}
           </Tbody>
         </Table>
       </TableContainer>

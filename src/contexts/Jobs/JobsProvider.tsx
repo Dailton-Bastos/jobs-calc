@@ -18,10 +18,17 @@ import { Cycle } from '~/@types/cycles';
 import {
   CreateNewJobData,
   Job,
+  JobResum,
   JobType,
   JobsProviderProps,
 } from '~/@types/job';
 import { db } from '~/config/firebase';
+import {
+  getJobStatus,
+  getJobType,
+  secondsToTime,
+  truncateString,
+} from '~/helpers/utils';
 import { useAuth } from '~/hooks/useAuth';
 import {
   addNewJobActions,
@@ -36,6 +43,7 @@ import { JobsContext } from './JobsContext';
 export const JobsProvider = ({ children }: JobsProviderProps) => {
   const [jobsState, dispatch] = React.useReducer(jobsReducer, initialJobsState);
   const [newCycle, setNewCycle] = React.useState<Cycle | null>(null);
+  const [myJobs, setMyJobs] = React.useState<JobResum[]>([]);
 
   const { jobs, activeJob } = jobsState;
 
@@ -159,6 +167,22 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
   }, []);
 
   React.useEffect(() => {
+    const jobsReums: JobResum[] = jobs?.map((job) => {
+      const { hours, minutes } = secondsToTime(job.totalSecondsAmount);
+
+      return {
+        id: job?.id ?? '',
+        title: truncateString(job.title, 50),
+        estimatedTime: `${hours}h:${minutes}m`,
+        type: getJobType(job.type),
+        status: getJobStatus(job.status),
+      };
+    });
+
+    setMyJobs(jobsReums);
+  }, [jobs]);
+
+  React.useEffect(() => {
     createInitialState();
   }, [createInitialState]);
 
@@ -171,6 +195,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       activeJob,
       updateActiveJob,
       updateJob,
+      myJobs,
     }),
     [
       jobs,
@@ -180,6 +205,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       activeJob,
       updateActiveJob,
       updateJob,
+      myJobs,
     ],
   );
 

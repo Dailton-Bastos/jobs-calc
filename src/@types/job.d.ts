@@ -84,8 +84,20 @@ export interface JobInfo {
   updatedAt: Time;
 }
 
+interface JobResum {
+  id: string;
+  title: string;
+  type: string;
+  estimatedTime: string;
+  status: {
+    type: string;
+    statusColor: keyof typeof STATUS_COLORS;
+  };
+}
+
 export interface JobsContextProps {
   jobs: Job[];
+  myJobs: JobResum[];
   createNewJob: (data: CreateNewJobData) => void;
   fetchJob: (id: string) => void;
   activeJob: Job | null;
