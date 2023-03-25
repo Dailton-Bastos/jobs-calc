@@ -23,12 +23,7 @@ import {
   JobsProviderProps,
 } from '~/@types/job';
 import { db } from '~/config/firebase';
-import {
-  getJobStatus,
-  getJobType,
-  secondsToTime,
-  truncateString,
-} from '~/helpers/utils';
+import { getJobStatus, getJobType, secondsToTime } from '~/helpers/utils';
 import { useAuth } from '~/hooks/useAuth';
 import {
   addNewJobActions,
@@ -172,7 +167,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
 
       return {
         id: job?.id ?? '',
-        title: truncateString(job.title, 50),
+        title: job.title,
         estimatedTime: `${hours}h:${minutes}m`,
         type: getJobType(job.type),
         status: getJobStatus(job.status),

@@ -16,10 +16,11 @@ import {
   Tr,
   Th,
   Td,
+  Tooltip,
 } from '@chakra-ui/react';
 
 import { Pagination } from '~/components/Pagination';
-import { STATUS_COLORS } from '~/helpers/utils';
+import { STATUS_COLORS, truncateString } from '~/helpers/utils';
 import { useJobsContext } from '~/hooks/useJobsContext';
 
 const PageSize = 8;
@@ -83,7 +84,11 @@ export const ListJobs = () => {
           <Tbody>
             {currentTableData?.map((job) => (
               <Tr key={job.id}>
-                <Td>{job.title}</Td>
+                <Td>
+                  <Tooltip label={job.title} placement="top-start">
+                    {truncateString(job.title, 50)}
+                  </Tooltip>
+                </Td>
 
                 <Td>{job.type}</Td>
 
