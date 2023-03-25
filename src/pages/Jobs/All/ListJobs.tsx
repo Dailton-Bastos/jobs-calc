@@ -19,6 +19,7 @@ import {
   Tooltip,
 } from '@chakra-ui/react';
 
+import { Search } from '~/components/Job/Search';
 import { Pagination } from '~/components/Pagination';
 import { STATUS_COLORS, truncateString } from '~/helpers/utils';
 import { useJobsContext } from '~/hooks/useJobsContext';
@@ -27,6 +28,7 @@ const PageSize = 8;
 
 export const ListJobs = () => {
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [value, setValue] = React.useState('');
 
   const { myJobs } = useJobsContext();
 
@@ -37,10 +39,29 @@ export const ListJobs = () => {
     return myJobs?.slice(firstPageIndex, lastPageIndex);
   }, [myJobs, currentPage]);
 
+  const handleChange = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setValue(event.target.value);
+    },
+    [],
+  );
+
+  const handleCleanInput = React.useCallback(() => {
+    setValue('');
+  }, []);
+
   return (
     <Box w="100%" my="10">
-      <Flex justify="space-between" align="center">
-        <Heading size="md">Meus Jobs</Heading>
+      <Heading size="md" textAlign="center">
+        Meus Jobs
+      </Heading>
+
+      <Flex justify="space-between" align="center" mt="2" px="4">
+        <Search
+          value={value}
+          handleChange={handleChange}
+          cleanInput={handleCleanInput}
+        />
 
         <LinkChakra
           as={Link}
@@ -49,18 +70,21 @@ export const ListJobs = () => {
           alignItems="center"
           justifyContent="center"
           position="relative"
-          bg="orange.300"
+          borderWidth="1px"
+          borderColor="orange.300"
+          borderStyle="solid"
           borderRadius="md"
+          color="orange.300"
           p="3"
-          h="56px"
-          w="260px"
+          h="40px"
+          w="220px"
           _hover={{
             textDecoration: 'none',
+            bg: 'orange.300',
+            color: 'white',
           }}
         >
-          <Text color="white" fontWeight="bold">
-            Novo Job
-          </Text>
+          <Text fontWeight="bold">Novo Job</Text>
         </LinkChakra>
       </Flex>
 
