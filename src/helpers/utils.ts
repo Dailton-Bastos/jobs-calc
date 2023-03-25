@@ -304,6 +304,12 @@ export function getJobReports(listCycles: Cycle[]) {
   return { jobCyclesByDate };
 }
 
+export function range(start: number, end: number) {
+  const length = end - start + 1;
+
+  return Array.from({ length }, (_, index) => index + start);
+}
+
 export const jobSelectTypes = [
   {
     name: 'Orçamento',
@@ -327,3 +333,5 @@ export const STATUS_COLORS = {
   blue: 'blue.500',
   initial: '-moz-initial',
 } as const;
+
+export const DOTS = '...';

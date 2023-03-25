@@ -1,3 +1,4 @@
+import React from 'react';
 import { RiEyeLine } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 
@@ -17,11 +18,23 @@ import {
   Td,
 } from '@chakra-ui/react';
 
+import { Pagination } from '~/components/Pagination';
 import { STATUS_COLORS } from '~/helpers/utils';
 import { useJobsContext } from '~/hooks/useJobsContext';
 
+const PageSize = 8;
+
 export const ListJobs = () => {
+  const [currentPage, setCurrentPage] = React.useState(1);
+
   const { myJobs } = useJobsContext();
+
+  const currentTableData = React.useMemo(() => {
+    const firstPageIndex = (currentPage - 1) * PageSize;
+    const lastPageIndex = firstPageIndex + PageSize;
+
+    return myJobs?.slice(firstPageIndex, lastPageIndex);
+  }, [myJobs, currentPage]);
 
   return (
     <Box w="100%" my="10">
@@ -68,7 +81,7 @@ export const ListJobs = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {myJobs.map((job) => (
+            {currentTableData?.map((job) => (
               <Tr key={job.id}>
                 <Td>{job.title}</Td>
 
@@ -114,6 +127,14 @@ export const ListJobs = () => {
           </Tbody>
         </Table>
       </TableContainer>
+
+      <Pagination
+        currentPage={currentPage}
+        totalCount={myJobs?.length}
+        pageSize={PageSize}
+        siblingCount={1}
+        onPageChange={(page) => setCurrentPage(page)}
+      />
     </Box>
   );
 };
