@@ -6,7 +6,8 @@ import {
   Icon,
   Input,
   InputGroup,
-  InputRightElement,
+  InputLeftElement,
+  // InputRightElement,
 } from '@chakra-ui/react';
 
 interface Props {
@@ -19,6 +20,16 @@ export const Search = ({ value, handleChange, cleanInput }: Props) => {
   return (
     <Box mt={4} width="50%">
       <InputGroup size="md">
+        <InputLeftElement pr="2">
+          {value ? (
+            <Button size="sm" onClick={cleanInput} variant="ghost">
+              <Icon as={RiCloseLine} boxSize="4" color="orange.300" />
+            </Button>
+          ) : (
+            <Icon as={RiSearchLine} boxSize="4" color="orange.300" />
+          )}
+        </InputLeftElement>
+
         <Input
           type="text"
           placeholder="Pesquisar..."
@@ -33,7 +44,7 @@ export const Search = ({ value, handleChange, cleanInput }: Props) => {
           _focusVisible={{ borderColor: 'orange.300' }}
         />
 
-        <InputRightElement>
+        {/* <InputRightElement>
           {value ? (
             <Button size="sm" onClick={cleanInput} variant="ghost">
               <Icon as={RiCloseLine} boxSize="4" color="orange.300" />
@@ -41,7 +52,7 @@ export const Search = ({ value, handleChange, cleanInput }: Props) => {
           ) : (
             <Icon as={RiSearchLine} boxSize="4" color="orange.300" />
           )}
-        </InputRightElement>
+        </InputRightElement> */}
       </InputGroup>
     </Box>
   );
