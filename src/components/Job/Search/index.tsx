@@ -7,7 +7,6 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
-  // InputRightElement,
 } from '@chakra-ui/react';
 
 interface Props {
@@ -43,16 +42,6 @@ export const Search = ({ value, handleChange, cleanInput }: Props) => {
           _hover={{ borderColor: 'orange.300' }}
           _focusVisible={{ borderColor: 'orange.300' }}
         />
-
-        {/* <InputRightElement>
-          {value ? (
-            <Button size="sm" onClick={cleanInput} variant="ghost">
-              <Icon as={RiCloseLine} boxSize="4" color="orange.300" />
-            </Button>
-          ) : (
-            <Icon as={RiSearchLine} boxSize="4" color="orange.300" />
-          )}
-        </InputRightElement> */}
       </InputGroup>
     </Box>
   );

@@ -4,6 +4,7 @@ import {
   RiFileEditLine,
   RiUserSettingsLine,
   RiLogoutBoxRLine,
+  RiFilterLine,
 } from 'react-icons/ri';
 
 import { Box, List, Flex, Button } from '@chakra-ui/react';
@@ -35,6 +36,10 @@ export const Sidebar = () => {
 
         <NavLink icon={RiTodoLine} url="/jobs">
           Jobs
+        </NavLink>
+
+        <NavLink icon={RiFilterLine} url="/jobs/reports">
+          Apontamentos
         </NavLink>
 
         <NavLink icon={RiFileEditLine} url="/editor">
