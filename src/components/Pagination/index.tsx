@@ -50,7 +50,11 @@ export const Pagination = ({
   const paginationRangeMemo = React.useMemo(() => {
     return paginationRange?.map((pageNumber) => {
       if (pageNumber === DOTS) {
-        return <ListItem listStyleType="none">&#8230;</ListItem>;
+        return (
+          <ListItem listStyleType="none" key={uuid()}>
+            &#8230;
+          </ListItem>
+        );
       }
 
       return (
