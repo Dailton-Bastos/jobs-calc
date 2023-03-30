@@ -1,0 +1,12 @@
+.dateRangePickerContainer {
+  justify-content: space-between;
+  width: 100%;
+}
+
+.dateRangePickerContainer .rdrDateDisplayWrapper {
+  display: none;
+}
+
+.dateRangePickerContainer .rdrDayToday .rdrDayNumber span::after {
+  background: #F1972C;
+}

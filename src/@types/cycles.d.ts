@@ -52,6 +52,24 @@ export interface ActiveCycleInfo {
   highlight: boolean;
 }
 
+interface Time {
+  title: string;
+  label: string;
+  dateTime: string;
+}
+
+interface FilteredCycles {
+  id: string;
+  jobId: string;
+  jobTitle: string;
+  createdAt: number;
+  isActive: boolean;
+  hours: string;
+  totalInSeconds: number;
+  startDate: Time;
+  endDate: Time | null;
+}
+
 export interface CyclesContextData {
   activeCycle: Cycle | undefined;
   createNewCycleJob: (data: CreateNewCycleJobData) => void;
@@ -60,6 +78,7 @@ export interface CyclesContextData {
   finishCurrentCycle: (cycle: Cycle) => void;
   jobTotalHoursUsed: number;
   jobCycles: JobCycles[];
+  cycles: FilteredCycles[];
   countdownText: string;
   activeCycleInfo: ActiveCycleInfo | null;
   jobInfo: JobInfo | undefined;

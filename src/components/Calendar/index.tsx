@@ -1,33 +1,25 @@
-import React from 'react';
 import { DateRangePicker, RangeKeyDict, Range } from 'react-date-range';
 
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
+import './styles.css';
 
-export const Calendar = () => {
-  const [date, setDate] = React.useState<Range[]>([
-    {
-      startDate: new Date(),
-      endDate: new Date(),
-      key: 'selection',
-    },
-  ]);
+interface Props {
+  ranges: Range[];
+  onChange: (rangesByKey: RangeKeyDict) => void;
+}
 
-  const handleOnChange = React.useCallback((rangesByKey: RangeKeyDict) => {
-    const { selection } = rangesByKey;
-
-    setDate([selection]);
-  }, []);
-
+export const Calendar = ({ ranges, onChange }: Props) => {
   return (
     <DateRangePicker
-      onChange={handleOnChange}
+      onChange={onChange}
       months={2}
-      ranges={date}
+      moveRangeOnFirstSelection={false}
+      ranges={ranges}
       direction="horizontal"
       rangeColors={['#F1972C']}
       color="#F1972C"
-      dateDisplayFormat="dd MMM, yyyy"
+      className="dateRangePickerContainer"
     />
   );
 };

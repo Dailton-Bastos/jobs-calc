@@ -1,3 +1,5 @@
+import React from 'react';
+import { RangeKeyDict, Range } from 'react-date-range';
 import { RiFilterFill } from 'react-icons/ri';
 
 import {
@@ -11,14 +13,50 @@ import {
   AccordionButton,
   AccordionPanel,
 } from '@chakra-ui/react';
+import { getTime, startOfToday, endOfToday } from 'date-fns';
 
+import { FilteredCycles } from '~/@types/cycles';
 import { Calendar } from '~/components/Calendar';
 import { Head } from '~/components/Head';
 import { Sidebar } from '~/components/Sidebar';
+import { useCyclesContext } from '~/hooks/useCyclesContext';
 
-// import { ListJobs } from './ListJobs';
+import { Cycles } from './Cycles';
 
 export const ReportsPage = () => {
+  const [cyclesData, setCyclesData] = React.useState<FilteredCycles[]>([]);
+
+  const [date, setDate] = React.useState<Range[]>([
+    {
+      startDate: startOfToday(),
+      endDate: endOfToday(),
+      key: 'selection',
+    },
+  ]);
+
+  const { cycles } = useCyclesContext();
+
+  const handleOnChange = React.useCallback((rangesByKey: RangeKeyDict) => {
+    const { selection } = rangesByKey;
+
+    setDate([selection]);
+  }, []);
+
+  React.useEffect(() => {
+    const cyclesFiltered = cycles?.filter((cycle) => {
+      const startDate = date[0]?.startDate
+        ? getTime(new Date(date[0]?.startDate))
+        : getTime(startOfToday());
+      const endDate = date[0]?.endDate
+        ? getTime(new Date(date[0]?.endDate))
+        : getTime(endOfToday());
+
+      return cycle.createdAt >= startDate && cycle.createdAt <= endDate;
+    });
+
+    setCyclesData(cyclesFiltered);
+  }, [cycles, date]);
+
   return (
     <>
       <Head title="Meus Apontamentos" />
@@ -43,8 +81,8 @@ export const ReportsPage = () => {
                     Meus Apontamentos
                   </Heading>
 
-                  <Accordion allowToggle mt="5">
-                    <AccordionItem borderTop="none">
+                  <Accordion defaultIndex={[0]} allowToggle mt="5">
+                    <AccordionItem border="none">
                       <AccordionButton
                         _hover={{
                           bg: 'transparent',
@@ -72,12 +110,12 @@ export const ReportsPage = () => {
                         alignItems="center"
                         justifyContent="center"
                       >
-                        <Calendar />
+                        <Calendar ranges={date} onChange={handleOnChange} />
                       </AccordionPanel>
                     </AccordionItem>
                   </Accordion>
 
-                  {/* <ListJobs /> */}
+                  <Cycles cyclesData={cyclesData} />
                 </Box>
               </Container>
             </Container>

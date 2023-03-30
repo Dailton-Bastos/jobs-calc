@@ -17,6 +17,7 @@ import type {
   CreateNewCycleJobData,
   Cycle,
   CyclesProviderProps,
+  FilteredCycles,
   JobCycles,
   JobCyclesByDate,
 } from '~/@types/cycles';
@@ -31,6 +32,7 @@ import {
   groupBy,
   secondsToTime,
   getTime,
+  uuid,
 } from '~/helpers/utils';
 import { useAuth } from '~/hooks/useAuth';
 import { useCycle } from '~/hooks/useCycle';
@@ -71,6 +73,34 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
   } = useCycle();
 
   const { cyclesByUser, activeCycleId } = cyclesState;
+
+  const cyclesData: FilteredCycles[] = React.useMemo(() => {
+    return cyclesByUser?.map((cycle: Cycle) => {
+      const job = jobs?.find((item) => item.id === cycle?.jobId);
+
+      const fineshedDate = cycle?.fineshedDate ?? 0;
+
+      const { time: startDate } = getTime(cycle?.startDate);
+      const { time: endDate } = getTime(fineshedDate);
+
+      const totalHours = cycle?.fineshedDate
+        ? differenceInSeconds(cycle?.fineshedDate, cycle?.startDate)
+        : 0;
+      const { hours, minutes } = secondsToTime(totalHours);
+
+      return {
+        id: cycle?.id ?? uuid(),
+        jobId: cycle?.jobId,
+        jobTitle: job?.title ?? '',
+        startDate,
+        endDate: cycle?.fineshedDate ? endDate : null,
+        hours: cycle?.fineshedDate ? `${hours}h:${minutes}m` : '00h:00m',
+        totalInSeconds: totalHours,
+        createdAt: cycle?.startDate,
+        isActive: cycle?.isActive,
+      };
+    });
+  }, [cyclesByUser, jobs]);
 
   const activeCycle = React.useMemo(() => {
     return cyclesByUser.find((cycle) => cycle.id === activeCycleId);
@@ -353,6 +383,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       activeCycleCurrentSeconds,
       jobTotalHoursUsed,
       jobCycles,
+      cycles: cyclesData,
       countdownText,
       activeCycleInfo,
       jobInfo,
@@ -365,6 +396,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       activeCycleCurrentSeconds,
       jobTotalHoursUsed,
       jobCycles,
+      cyclesData,
       countdownText,
       activeCycleInfo,
       jobInfo,
