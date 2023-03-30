@@ -162,17 +162,19 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
   }, []);
 
   React.useEffect(() => {
-    const jobsReums: JobResum[] = jobs?.map((job) => {
-      const { hours, minutes } = secondsToTime(job.totalSecondsAmount);
+    const jobsReums: JobResum[] = [...jobs]
+      .sort((a, b) => b?.createdAt - a?.createdAt)
+      .map((job) => {
+        const { hours, minutes } = secondsToTime(job.totalSecondsAmount);
 
-      return {
-        id: job?.id ?? '',
-        title: job.title,
-        estimatedTime: `${hours}h:${minutes}m`,
-        type: getJobType(job.type),
-        status: getJobStatus(job.status),
-      };
-    });
+        return {
+          id: job?.id ?? '',
+          title: job.title,
+          estimatedTime: `${hours}h:${minutes}m`,
+          type: getJobType(job.type),
+          status: getJobStatus(job.status),
+        };
+      });
 
     setMyJobs(jobsReums);
   }, [jobs]);
