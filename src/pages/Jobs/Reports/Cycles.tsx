@@ -46,6 +46,10 @@ export const Cycles = ({ cyclesData }: Props) => {
   }, [cyclesData]);
 
   React.useEffect(() => {
+    setCurrentPage(1);
+  }, [cyclesData]);
+
+  React.useEffect(() => {
     const firstPageIndex = (currentPage - 1) * PageSize;
     const lastPageIndex = firstPageIndex + PageSize;
 
