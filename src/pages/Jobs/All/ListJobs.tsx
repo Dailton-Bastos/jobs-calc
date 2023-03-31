@@ -1,5 +1,4 @@
 import React from 'react';
-import { RiEyeLine } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 
 import {
@@ -25,6 +24,8 @@ import { Pagination } from '~/components/Pagination';
 import { STATUS_COLORS, truncateString } from '~/helpers/utils';
 import { useDebounce } from '~/hooks/useDebounce';
 import { useJobsContext } from '~/hooks/useJobsContext';
+
+import { Actions } from './Actions';
 
 const PageSize = 8;
 
@@ -125,7 +126,7 @@ export const ListJobs = () => {
                 <Th>Tipo</Th>
                 <Th>Tempo Estimado</Th>
                 <Th>Status</Th>
-                <Th></Th>
+                <Th>Ações</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -133,7 +134,7 @@ export const ListJobs = () => {
                 <Tr key={job.id}>
                   <Td>
                     <Tooltip label={job.title} placement="top-start">
-                      {truncateString(job.title, 50)}
+                      {truncateString(job.title, 40)}
                     </Tooltip>
                   </Td>
 
@@ -162,17 +163,7 @@ export const ListJobs = () => {
                   </Td>
 
                   <Td>
-                    <LinkChakra
-                      as={Link}
-                      to={`/jobs/${job.id}`}
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      p="2"
-                      title="Visualizar"
-                    >
-                      <RiEyeLine size={22} />
-                    </LinkChakra>
+                    <Actions id={job?.id} />
                   </Td>
                 </Tr>
               ))}
