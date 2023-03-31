@@ -1,7 +1,16 @@
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { Box, Flex, Grid, GridItem, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  FormControl,
+  FormLabel,
+  Grid,
+  GridItem,
+  Switch,
+  VStack,
+} from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
@@ -29,7 +38,13 @@ import { newJobFormValidationSchema } from '~/schemas/newJobFormSchema';
 
 type NewJobFormData = yup.InferType<typeof newJobFormValidationSchema>;
 
+type NewJobFormDataProps = NewJobFormData & {
+  isHighlight: boolean;
+};
+
 export const NewJobPage = () => {
+  const [isHighlight, setIsHighlight] = React.useState(false);
+
   const [jobTypeState, dispatch] = React.useReducer(
     jobTypeReducer,
     JOB_TYPE_INITIAL_STATE,
@@ -37,12 +52,13 @@ export const NewJobPage = () => {
 
   const { isDisableEstimateField, isDisableJobberIdField } = jobTypeState;
 
-  const newJobForm = useForm<NewJobFormData>({
+  const newJobForm = useForm<NewJobFormDataProps>({
     mode: 'all',
     defaultValues: {
       jobberId: '',
       hourEstimate: 1,
       minutesEstimate: 0,
+      isHighlight: false,
     },
     resolver: yupResolver(newJobFormValidationSchema),
   });
@@ -76,6 +92,10 @@ export const NewJobPage = () => {
     [resetField],
   );
 
+  const handleChangeHighlight = React.useCallback(() => {
+    setIsHighlight((prev) => !prev);
+  }, []);
+
   React.useEffect(() => {
     jobTypeActions(type);
   }, [type, jobTypeActions]);
@@ -95,11 +115,12 @@ export const NewJobPage = () => {
           minutesEstimate,
           0,
         ),
+        isHighlight,
       });
 
       reset();
     },
-    [createNewJob, reset],
+    [createNewJob, reset, isHighlight],
   );
 
   return (
@@ -172,6 +193,18 @@ export const NewJobPage = () => {
                         registerName="description"
                         label="Briefing (Opcional)"
                       />
+
+                      <FormControl display="flex" alignItems="center">
+                        <FormLabel htmlFor="highlight" mb="0">
+                          Destaque?
+                        </FormLabel>
+                        <Switch
+                          id="highlight"
+                          colorScheme="green"
+                          isChecked={isHighlight}
+                          onChange={handleChangeHighlight}
+                        />
+                      </FormControl>
                     </VStack>
                   </Box>
                 </Box>

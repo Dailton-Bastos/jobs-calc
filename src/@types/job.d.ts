@@ -15,6 +15,7 @@ export interface CreateNewJobData {
   minutesEstimate: number;
   totalSecondsAmount: number;
   description?: string;
+  isHighlight?: boolean;
 }
 
 export interface Job {
@@ -29,6 +30,7 @@ export interface Job {
   minutesEstimate: number;
   totalSecondsAmount: number;
   totalSecondsRemaining: number;
+  isHighlight?: boolean;
   createdAt: DateType;
   updatedAt: DateType;
 }

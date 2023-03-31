@@ -65,6 +65,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
         totalSecondsAmount: data.totalSecondsAmount,
         totalSecondsRemaining: data.totalSecondsAmount,
         description: data.description,
+        isHighlight: data?.isHighlight,
         createdAt: dateInTimestamp,
         updatedAt: dateInTimestamp,
       };
