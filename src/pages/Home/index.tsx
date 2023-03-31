@@ -1,7 +1,14 @@
-import { Box, Container, Grid, GridItem } from '@chakra-ui/react';
+import {
+  Box,
+  Container,
+  Grid,
+  GridItem,
+  Heading,
+  Text,
+} from '@chakra-ui/react';
 
 import { Head } from '~/components/Head';
-import { RecentJobs } from '~/components/RecentJobs';
+import { Highlights } from '~/components/Highlights';
 import { Sidebar } from '~/components/Sidebar';
 import { UserIdentifier } from '~/components/UserIdentifier';
 
@@ -27,7 +34,15 @@ export const Home = () => {
               <Container maxW="1120px" centerContent>
                 <UserIdentifier />
 
-                <RecentJobs />
+                <Box w="100%" my="10">
+                  <Heading size="md" textAlign="center">
+                    Destaques <Text as="span">📌</Text>
+                  </Heading>
+
+                  <Box mt="10">
+                    <Highlights />
+                  </Box>
+                </Box>
               </Container>
             </Container>
           </GridItem>

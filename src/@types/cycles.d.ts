@@ -79,6 +79,7 @@ export interface CyclesContextData {
   jobTotalHoursUsed: number;
   jobCycles: JobCycles[];
   cycles: FilteredCycles[];
+  cyclesByUser: Cycle[];
   countdownText: string;
   activeCycleInfo: ActiveCycleInfo | null;
   jobInfo: JobInfo | undefined;

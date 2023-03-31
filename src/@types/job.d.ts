@@ -95,6 +95,13 @@ interface JobResum {
   };
 }
 
+interface Highlight extends JobResum {
+  usedTime: {
+    time: string;
+    statusColor: keyof typeof STATUS_COLORS;
+  };
+}
+
 export interface JobsContextProps {
   jobs: Job[];
   myJobs: JobResum[];
