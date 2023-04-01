@@ -34,9 +34,9 @@ import {
   JOB_TYPE_INITIAL_STATE,
   jobTypeReducer,
 } from '~/reducers/JobType/reducer';
-import { newJobFormValidationSchema } from '~/schemas/newJobFormSchema';
+import { jobFormValidationSchema } from '~/schemas/jobFormSchema';
 
-type NewJobFormData = yup.InferType<typeof newJobFormValidationSchema>;
+type NewJobFormData = yup.InferType<typeof jobFormValidationSchema>;
 
 type NewJobFormDataProps = NewJobFormData & {
   isHighlight: boolean;
@@ -60,7 +60,7 @@ export const NewJobPage = () => {
       minutesEstimate: 0,
       isHighlight: false,
     },
-    resolver: yupResolver(newJobFormValidationSchema),
+    resolver: yupResolver(jobFormValidationSchema),
   });
 
   const { handleSubmit, formState, watch, resetField, reset } = newJobForm;

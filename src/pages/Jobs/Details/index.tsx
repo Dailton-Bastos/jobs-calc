@@ -9,9 +9,9 @@ import { Head } from '~/components/Head';
 import { Countdown } from '~/components/Job/Countdown';
 import { Cycles } from '~/components/Job/Cycles';
 import { InfoJob } from '~/components/Job/Info';
-import { JobStatus } from '~/components/Job/Status';
 import { JobTime } from '~/components/Job/Time';
 import { Title } from '~/components/Title';
+import { STATUS_COLORS } from '~/helpers/utils';
 import { useCyclesContext } from '~/hooks/useCyclesContext';
 import { useJobsContext } from '~/hooks/useJobsContext';
 
@@ -84,9 +84,26 @@ export const DetailsJobPage = () => {
                           <Text as="span">{jobInfo.type}</Text>
                         </InfoJob>
 
-                        <JobStatus statusColor={jobInfo.status.statusColor}>
-                          {jobInfo.status.type}
-                        </JobStatus>
+                        <Box w="100%">
+                          <Text fontWeight="bold" mb="2">
+                            Status
+                          </Text>
+                          <Flex gap="2" align="center" justify="flex-start">
+                            <Box
+                              w="8px"
+                              h="8px"
+                              borderRadius="50%"
+                              bg={STATUS_COLORS[jobInfo.status.statusColor]}
+                            />
+
+                            <Text
+                              fontSize="md"
+                              color={STATUS_COLORS[jobInfo.status.statusColor]}
+                            >
+                              {jobInfo.status.type}
+                            </Text>
+                          </Flex>
+                        </Box>
                       </Flex>
 
                       <Flex align="center" justify="space-between" w="100%">

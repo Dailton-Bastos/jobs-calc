@@ -325,12 +325,36 @@ export const jobSelectTypes = [
   },
 ];
 
+export const jobSelectStatus = [
+  {
+    name: 'Em aberto',
+    value: 'opened',
+    color: 'blue' as const,
+  },
+  {
+    name: 'Em andamento',
+    value: 'developing',
+    color: 'yellow' as const,
+  },
+  {
+    name: 'Em espera',
+    value: 'paused',
+    color: 'orange' as const,
+  },
+  {
+    name: 'Concluído',
+    value: 'done',
+    color: 'green' as const,
+  },
+];
+
 export const STATUS_COLORS = {
   yellow: 'yellow.500',
   red: 'red.500',
   green: 'green.500',
   gray: 'gray.500',
   blue: 'blue.500',
+  orange: 'orange.500',
   initial: '-moz-initial',
 } as const;
 

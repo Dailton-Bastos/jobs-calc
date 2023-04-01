@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-export const newJobFormValidationSchema = yup
+export const jobFormValidationSchema = yup
   .object({
     jobberId: yup.string().when('type', {
       is: (type: string) => type !== 'other',
