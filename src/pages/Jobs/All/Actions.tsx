@@ -75,7 +75,7 @@ export const Actions = ({ id }: Props) => {
         </Tooltip>
       </HStack>
 
-      <ModalDelete isOpen={isOpen} onClose={onClose} />
+      <ModalDelete isOpen={isOpen} onClose={onClose} id={id} />
     </>
   );
 };

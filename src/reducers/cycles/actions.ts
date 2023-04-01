@@ -4,6 +4,7 @@ export enum ActionTypes {
   ADD_NEW_CYCLE_JOB = 'ADD_NEW_CYCLE_JOB',
   CREATE_INITIAL_STATE = 'CREATE_INITIAL_STATE',
   FINISH_CURRENT_CYCLE = 'FINISH_CURRENT_CYCLE',
+  DELETE_CYCLE = 'DELETE_CYCLE',
 }
 
 interface InitialStateData {
@@ -23,6 +24,12 @@ export type Action =
       payload: null;
     }
   | {
+      type: ActionTypes.DELETE_CYCLE;
+      payload: {
+        id: string;
+      };
+    }
+  | {
       type: ActionTypes.CREATE_INITIAL_STATE;
       payload: InitialStateData;
     };
@@ -40,6 +47,13 @@ export const finishCurrentCycleActions = () => {
   return {
     type: ActionTypes.FINISH_CURRENT_CYCLE as const,
     payload: null,
+  };
+};
+
+export const deleteCycleActions = (id: string) => {
+  return {
+    type: ActionTypes.DELETE_CYCLE as const,
+    payload: { id },
   };
 };
 

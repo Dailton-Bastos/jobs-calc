@@ -28,6 +28,7 @@ import { useAuth } from '~/hooks/useAuth';
 import {
   addNewJobActions,
   createInitialStateActions,
+  deleteJobActions,
   setActiveJobActions,
   updateJobActions,
 } from '~/reducers/jobs/actions';
@@ -162,6 +163,10 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
     dispatch(setActiveJobActions(job));
   }, []);
 
+  const deleteJob = React.useCallback((id: string) => {
+    dispatch(deleteJobActions(id));
+  }, []);
+
   React.useEffect(() => {
     const jobsReums: JobResum[] = [...jobs]
       .sort((a, b) => b?.createdAt - a?.createdAt)
@@ -194,6 +199,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       updateActiveJob,
       updateJob,
       myJobs,
+      deleteJob,
     }),
     [
       jobs,
@@ -204,6 +210,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       updateActiveJob,
       updateJob,
       myJobs,
+      deleteJob,
     ],
   );
 

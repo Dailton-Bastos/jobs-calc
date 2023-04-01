@@ -83,6 +83,7 @@ export interface CyclesContextData {
   countdownText: string;
   activeCycleInfo: ActiveCycleInfo | null;
   jobInfo: JobInfo | undefined;
+  deleteCycle: (id: string) => void;
 }
 
 export interface CyclesState {

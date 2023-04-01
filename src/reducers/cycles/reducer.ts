@@ -35,6 +35,16 @@ export const CyclesReducer = (state: CyclesState, action: Action) => {
       });
     }
 
+    case ActionTypes.DELETE_CYCLE: {
+      return produce(state, (draft) => {
+        const index = draft.cyclesByUser?.findIndex(
+          (cycle) => cycle?.id === payload?.id,
+        );
+
+        if (index !== -1) draft.cyclesByUser.splice(index, 1);
+      });
+    }
+
     case ActionTypes.CREATE_INITIAL_STATE:
       return produce(state, (draft) => {
         draft.cyclesByUser = payload.cyclesByUser;

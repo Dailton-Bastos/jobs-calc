@@ -47,6 +47,14 @@ export const jobsReducer = (state: JobsState, action: Action): JobsState => {
       });
     }
 
+    case ActionTypes.DELETE_JOB: {
+      return produce(state, (draft) => {
+        const index = draft.jobs?.findIndex((job) => job?.id === payload?.id);
+
+        if (index !== -1) draft.jobs.splice(index, 1);
+      });
+    }
+
     default:
       return state;
   }

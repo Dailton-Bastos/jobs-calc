@@ -40,6 +40,7 @@ import { useJobsContext } from '~/hooks/useJobsContext';
 import {
   addNewCycleJobActions,
   createInitialStateActions,
+  deleteCycleActions,
   finishCurrentCycleActions,
 } from '~/reducers/cycles/actions';
 import { CyclesReducer, initialCyclesState } from '~/reducers/cycles/reducer';
@@ -272,6 +273,10 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     [updateCycle, updateJob, activeJob, activeCycleCurrentSeconds],
   );
 
+  const deleteCycle = React.useCallback((id: string) => {
+    dispatch(deleteCycleActions(id));
+  }, []);
+
   const getJobInfo = React.useCallback(() => {
     if (activeJob) {
       const activeJobId = activeJob?.id ?? '';
@@ -388,6 +393,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       countdownText,
       activeCycleInfo,
       jobInfo,
+      deleteCycle,
     }),
     [
       createNewCycleJob,
@@ -402,6 +408,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       countdownText,
       activeCycleInfo,
       jobInfo,
+      deleteCycle,
     ],
   );
 
