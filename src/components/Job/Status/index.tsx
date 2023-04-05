@@ -1,38 +1,34 @@
-import { Box, UseRadioProps, useRadio } from '@chakra-ui/react';
+import { HStack, useRadioGroup } from '@chakra-ui/react';
 
-import { STATUS_COLORS } from '~/helpers/utils';
+import { JobStatus } from '~/@types/job';
+import { Radio } from '~/components/Form/Radio';
+import { jobSelectStatus } from '~/helpers/utils';
 
-interface Props extends UseRadioProps {
-  children: string;
-  statusColor: keyof typeof STATUS_COLORS;
+interface Props {
+  defaultValue: JobStatus;
+  onChange: (nextValue: JobStatus) => void;
 }
 
-export const JobStatus = ({ children, statusColor, ...rest }: Props) => {
-  const { getInputProps, getCheckboxProps } = useRadio({ ...rest });
+export const Status = ({ defaultValue, onChange }: Props) => {
+  const { getRootProps, getRadioProps } = useRadioGroup({
+    name: 'status',
+    defaultValue,
+    onChange: onChange,
+  });
 
-  const input = getInputProps();
-  const checkbox = getCheckboxProps();
+  const group = getRootProps();
 
   return (
-    <Box as="label">
-      <input {...input} />
-      <Box
-        {...checkbox}
-        cursor="pointer"
-        borderWidth="1px"
-        borderRadius="md"
-        boxShadow="md"
-        bg="white"
-        _checked={{
-          bg: STATUS_COLORS[statusColor],
-          color: 'white',
-          borderColor: STATUS_COLORS[statusColor],
-        }}
-        px={5}
-        py={1}
-      >
-        {children}
-      </Box>
-    </Box>
+    <HStack {...group} mt="2">
+      {jobSelectStatus?.map(({ name, value, color }) => {
+        const radio = getRadioProps({ value });
+
+        return (
+          <Radio key={value} {...radio} statusColor={color}>
+            {name}
+          </Radio>
+        );
+      })}
+    </HStack>
   );
 };

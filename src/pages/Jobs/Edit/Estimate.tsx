@@ -3,7 +3,17 @@ import { RiRefreshLine, RiSave3Line } from 'react-icons/ri';
 
 import { Button, Flex, HStack, Text } from '@chakra-ui/react';
 
-export const Estimate = () => {
+interface Props {
+  hourEstimate: string;
+  minutesEstimate: string;
+  resetForm: () => void;
+}
+
+export const Estimate = ({
+  hourEstimate = '00',
+  minutesEstimate = '00',
+  resetForm,
+}: Props) => {
   return (
     <Flex
       direction="column"
@@ -17,7 +27,7 @@ export const Estimate = () => {
       maxW="352px"
     >
       <Text as="time" fontSize="5xl" color="purple.700">
-        10h:00m
+        {`${hourEstimate}h:${minutesEstimate}m`}
       </Text>
 
       <HStack mt={4}>
@@ -25,7 +35,11 @@ export const Estimate = () => {
           Salvar
         </Button>
 
-        <Button colorScheme="red" leftIcon={<RiRefreshLine />}>
+        <Button
+          colorScheme="red"
+          leftIcon={<RiRefreshLine />}
+          onClick={resetForm}
+        >
           Resetar
         </Button>
       </HStack>

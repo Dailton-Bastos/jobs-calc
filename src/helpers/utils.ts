@@ -337,11 +337,6 @@ export const jobSelectStatus = [
     color: 'yellow' as const,
   },
   {
-    name: 'Em espera',
-    value: 'paused',
-    color: 'orange' as const,
-  },
-  {
     name: 'Concluído',
     value: 'done',
     color: 'green' as const,
