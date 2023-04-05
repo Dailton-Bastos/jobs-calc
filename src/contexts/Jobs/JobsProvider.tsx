@@ -40,6 +40,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
   const [jobsState, dispatch] = React.useReducer(jobsReducer, initialJobsState);
   const [newCycle, setNewCycle] = React.useState<Cycle | null>(null);
   const [myJobs, setMyJobs] = React.useState<JobResum[]>([]);
+  const [isLoading, setIsLoaging] = React.useState(false);
 
   const { jobs, activeJob } = jobsState;
 
@@ -107,22 +108,25 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
     [userId, navigate],
   );
 
-  const updateJob = React.useCallback((job: Job) => {
+  const updateJob = React.useCallback(async (job: Job) => {
     if (!job.id) return;
 
-    const dateInTimestamp = new Date().getTime();
-
-    set(ref(db, `jobs/${job.id}`), {
-      ...job,
-      updatedAt: dateInTimestamp,
-    });
-
-    dispatch(
-      updateJobActions({
+    try {
+      setIsLoaging(true);
+      const jobData = {
         ...job,
-        updatedAt: dateInTimestamp,
-      }),
-    );
+        updatedAt: new Date().getTime(),
+      };
+
+      await set(ref(db, `jobs/${job.id}`), jobData);
+
+      dispatch(updateJobActions(jobData));
+
+      setIsLoaging(false);
+    } catch (error) {
+      setIsLoaging(false);
+      throw new Error('Erro to update job');
+    }
   }, []);
 
   const createInitialState = React.useCallback(async () => {
@@ -200,6 +204,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       updateJob,
       myJobs,
       deleteJob,
+      isLoading,
     }),
     [
       jobs,
@@ -211,6 +216,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       updateJob,
       myJobs,
       deleteJob,
+      isLoading,
     ],
   );
 

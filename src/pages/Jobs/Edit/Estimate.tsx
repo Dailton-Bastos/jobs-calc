@@ -1,7 +1,8 @@
-import React from 'react';
 import { RiRefreshLine, RiSave3Line } from 'react-icons/ri';
 
 import { Button, Flex, HStack, Text } from '@chakra-ui/react';
+
+import { useJobsContext } from '~/hooks/useJobsContext';
 
 interface Props {
   hourEstimate: string;
@@ -14,6 +15,8 @@ export const Estimate = ({
   minutesEstimate = '00',
   resetForm,
 }: Props) => {
+  const { isLoading } = useJobsContext();
+
   return (
     <Flex
       direction="column"
@@ -31,7 +34,12 @@ export const Estimate = ({
       </Text>
 
       <HStack mt={4}>
-        <Button type="submit" colorScheme="green" leftIcon={<RiSave3Line />}>
+        <Button
+          type="submit"
+          colorScheme="green"
+          leftIcon={<RiSave3Line />}
+          isLoading={isLoading}
+        >
           Salvar
         </Button>
 
@@ -39,6 +47,7 @@ export const Estimate = ({
           colorScheme="red"
           leftIcon={<RiRefreshLine />}
           onClick={resetForm}
+          disabled={isLoading}
         >
           Resetar
         </Button>

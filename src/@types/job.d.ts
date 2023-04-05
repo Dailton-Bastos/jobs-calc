@@ -114,6 +114,7 @@ export interface JobsContextProps {
   newCycle: Cycle | null;
   updateJob: (job: Job) => void;
   deleteJob: (id: string) => void;
+  isLoading: boolean;
 }
 
 export interface JobsProviderProps {

@@ -7,7 +7,6 @@ import {
   FormControl,
   FormLabel,
   Grid,
-  GridItem,
   Switch,
   Text,
   VStack,
@@ -15,13 +14,23 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
-import { Job, JobStatus } from '~/@types/job';
+import { Job, JobStatus, JobType } from '~/@types/job';
 import { Input } from '~/components/Form/Input';
 import { Select } from '~/components/Form/Select';
 import { Textarea } from '~/components/Form/Textarea';
 import { Status } from '~/components/Job/Status';
 import { Title } from '~/components/Title';
-import { jobSelectTypes } from '~/helpers/utils';
+import { getTotalTimeInSeconds, jobSelectTypes } from '~/helpers/utils';
+import { useJobsContext } from '~/hooks/useJobsContext';
+import {
+  jobTypeBudgetAction,
+  jobTypeDevelopmentAction,
+  jobTypeOtherAction,
+} from '~/reducers/JobType/actions';
+import {
+  JOB_TYPE_INITIAL_STATE,
+  jobTypeReducer,
+} from '~/reducers/JobType/reducer';
 import { jobFormValidationSchema } from '~/schemas/jobFormSchema';
 
 import { Estimate } from './Estimate';
@@ -40,13 +49,22 @@ export const Form = ({ job }: Props) => {
     return job?.isHighlight ?? false;
   });
 
+  const [jobTypeState, dispatch] = React.useReducer(
+    jobTypeReducer,
+    JOB_TYPE_INITIAL_STATE,
+  );
+
+  const { updateJob } = useJobsContext();
+
+  const { isDisableEstimateField, isDisableJobberIdField } = jobTypeState;
+
   const editJobForm = useForm<EditJobFormData>({
     mode: 'all',
     defaultValues: job,
     resolver: yupResolver(jobFormValidationSchema),
   });
 
-  const { formState, handleSubmit, watch, reset } = editJobForm;
+  const { formState, handleSubmit, watch, reset, setValue } = editJobForm;
 
   const { errors } = formState;
 
@@ -58,6 +76,8 @@ export const Form = ({ job }: Props) => {
     .toString()
     .padStart(2, '0');
 
+  const type = watch('type') as JobType;
+
   const handleChangeJobStatus = React.useCallback((nextValue: JobStatus) => {
     setStatus(nextValue);
   }, []);
@@ -68,16 +88,30 @@ export const Form = ({ job }: Props) => {
 
   const handleUpdateJob = React.useCallback(
     (data: EditJobFormData) => {
-      const jobData: EditJobFormData = {
-        ...data,
-        status,
-        isHighlight,
-      };
+      const jobHourEstimate = data?.hourEstimate ?? 0;
+      const jobMinutesEstimate = data?.minutesEstimate ?? 0;
+      const jobType = data?.type as JobType;
+      const totalSecondsAmount = getTotalTimeInSeconds(
+        jobHourEstimate,
+        jobMinutesEstimate,
+        0,
+      );
 
-      return jobData;
+      if (job) {
+        updateJob({
+          ...job,
+          ...data,
+          type: jobType,
+          hourEstimate: jobHourEstimate,
+          minutesEstimate: jobMinutesEstimate,
+          totalSecondsAmount,
+          status,
+          isHighlight,
+        });
+      }
     },
 
-    [status, isHighlight],
+    [status, isHighlight, updateJob, job],
   );
 
   const handleResetForm = React.useCallback(() => {
@@ -86,6 +120,49 @@ export const Form = ({ job }: Props) => {
       setIsHighlight(job?.isHighlight ?? false);
     }
   }, [job, reset]);
+
+  const jobTypeBudget = React.useCallback(() => {
+    dispatch(jobTypeBudgetAction());
+    setValue('hourEstimate', 1);
+    setValue('minutesEstimate', 0);
+    setValue('jobberId', job?.jobberId);
+  }, [setValue, job]);
+
+  const jobTypeInternal = React.useCallback(() => {
+    dispatch(jobTypeOtherAction());
+    setValue('jobberId', '');
+    setValue('hourEstimate', job?.hourEstimate);
+    setValue('minutesEstimate', job?.minutesEstimate);
+  }, [setValue, job]);
+
+  const jobTypeDevelopment = React.useCallback(() => {
+    dispatch(jobTypeDevelopmentAction());
+    setValue('jobberId', job?.jobberId);
+    setValue('hourEstimate', job?.hourEstimate);
+    setValue('minutesEstimate', job?.minutesEstimate);
+  }, [setValue, job]);
+
+  const jobTypeActions = React.useCallback(
+    (jobType: JobType) => {
+      switch (jobType) {
+        case 'budget':
+          jobTypeBudget();
+          break;
+        case 'other':
+          jobTypeInternal();
+          break;
+
+        default:
+          jobTypeDevelopment();
+          break;
+      }
+    },
+    [jobTypeBudget, jobTypeInternal, jobTypeDevelopment],
+  );
+
+  React.useEffect(() => {
+    jobTypeActions(type);
+  }, [type, jobTypeActions]);
 
   return (
     <FormProvider {...editJobForm}>
@@ -101,23 +178,26 @@ export const Form = ({ job }: Props) => {
 
           <Box mt="8">
             <VStack spacing="6" align="flex-start">
-              <Grid gap="6" templateColumns="110px 1fr" w="100%">
-                <GridItem w="100%">
-                  <Input
-                    registerName="jobberId"
-                    label="Jobber ID"
-                    error={errors?.jobberId}
-                  />
-                </GridItem>
+              <Flex gap="6" w="100%">
+                {!isDisableJobberIdField && (
+                  <Box maxW="110px">
+                    <Input
+                      registerName="jobberId"
+                      label="Jobber ID"
+                      error={errors?.jobberId}
+                      isDisabled={isDisableJobberIdField}
+                    />
+                  </Box>
+                )}
 
-                <GridItem w="100%">
+                <Box width="100%">
                   <Input
                     registerName="title"
                     label="Título"
                     error={errors?.title}
                   />
-                </GridItem>
-              </Grid>
+                </Box>
+              </Flex>
 
               <Select
                 registerName="type"
@@ -132,6 +212,7 @@ export const Form = ({ job }: Props) => {
                   label="Tempo Estimado (h)"
                   type="number"
                   error={errors?.hourEstimate}
+                  isDisabled={isDisableEstimateField}
                 />
 
                 <Input
@@ -139,6 +220,7 @@ export const Form = ({ job }: Props) => {
                   label="Tempo Estimado (min)"
                   type="number"
                   error={errors?.minutesEstimate}
+                  isDisabled={isDisableEstimateField}
                 />
               </Grid>
 
