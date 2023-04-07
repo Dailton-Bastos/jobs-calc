@@ -1,3 +1,5 @@
+import { ToastId, UseToastOptions } from '@chakra-ui/react';
+
 import { STATUS_COLORS } from '~/helpers/utils';
 
 import { Cycle } from './cycles';
@@ -114,7 +116,7 @@ export interface JobsContextProps {
   newCycle: Cycle | null;
   updateJob: (job: Job) => void;
   deleteJob: (id: string) => void;
-  isLoading: boolean;
+  showToast: (options: UseToastOptions) => ToastId | undefined;
 }
 
 export interface JobsProviderProps {

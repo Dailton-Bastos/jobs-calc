@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { UseToastOptions, useToast } from '@chakra-ui/react';
 import {
   ref,
   push,
@@ -40,7 +41,6 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
   const [jobsState, dispatch] = React.useReducer(jobsReducer, initialJobsState);
   const [newCycle, setNewCycle] = React.useState<Cycle | null>(null);
   const [myJobs, setMyJobs] = React.useState<JobResum[]>([]);
-  const [isLoading, setIsLoaging] = React.useState(false);
 
   const { jobs, activeJob } = jobsState;
 
@@ -48,6 +48,23 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
   const userId = user?.uid;
 
   const navigate = useNavigate();
+  const toast = useToast();
+
+  const showToast = React.useCallback(
+    (options: UseToastOptions) => {
+      const id = 'customToast';
+
+      if (!toast.isActive(id)) {
+        return toast({
+          ...options,
+          variant: 'left-accent',
+          position: 'bottom-left',
+          isClosable: true,
+        });
+      }
+    },
+    [toast],
+  );
 
   const createNewJob = React.useCallback(
     (data: CreateNewJobData) => {
@@ -108,26 +125,36 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
     [userId, navigate],
   );
 
-  const updateJob = React.useCallback(async (job: Job) => {
-    if (!job.id) return;
+  const updateJob = React.useCallback(
+    async (job: Job) => {
+      if (!job.id) return;
 
-    try {
-      setIsLoaging(true);
-      const jobData = {
-        ...job,
-        updatedAt: new Date().getTime(),
-      };
+      try {
+        const jobData = {
+          ...job,
+          updatedAt: new Date().getTime(),
+        };
 
-      await set(ref(db, `jobs/${job.id}`), jobData);
+        await set(ref(db, `jobs/${job.id}`), jobData);
 
-      dispatch(updateJobActions(jobData));
+        dispatch(updateJobActions(jobData));
+        showToast({
+          title: 'Job atualizado',
+          description: 'Informações salvas com sucesso.',
+          status: 'success',
+        });
+      } catch (error) {
+        showToast({
+          title: 'Ocorreu um erro',
+          description: 'Tente novamente, por favor.',
+          status: 'error',
+        });
 
-      setIsLoaging(false);
-    } catch (error) {
-      setIsLoaging(false);
-      throw new Error('Erro to update job');
-    }
-  }, []);
+        throw new Error('Erro to update job');
+      }
+    },
+    [showToast],
+  );
 
   const createInitialState = React.useCallback(async () => {
     if (!userId) return;
@@ -204,7 +231,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       updateJob,
       myJobs,
       deleteJob,
-      isLoading,
+      showToast,
     }),
     [
       jobs,
@@ -216,7 +243,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       updateJob,
       myJobs,
       deleteJob,
-      isLoading,
+      showToast,
     ],
   );
 

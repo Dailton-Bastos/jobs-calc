@@ -66,7 +66,7 @@ export const Form = ({ job }: Props) => {
 
   const { formState, handleSubmit, watch, reset, setValue } = editJobForm;
 
-  const { errors } = formState;
+  const { errors, isSubmitting } = formState;
 
   const hourEstimate = Number(watch('hourEstimate'))
     .toString()
@@ -109,9 +109,19 @@ export const Form = ({ job }: Props) => {
           isHighlight,
         });
       }
+
+      reset({
+        ...job,
+        ...data,
+        type: jobType,
+        hourEstimate: jobHourEstimate,
+        minutesEstimate: jobMinutesEstimate,
+        status,
+        isHighlight,
+      });
     },
 
-    [status, isHighlight, updateJob, job],
+    [status, isHighlight, updateJob, job, reset],
   );
 
   const handleResetForm = React.useCallback(() => {
@@ -257,6 +267,7 @@ export const Form = ({ job }: Props) => {
           hourEstimate={hourEstimate}
           minutesEstimate={minutesEstimate}
           resetForm={handleResetForm}
+          isLoading={isSubmitting}
         />
       </Flex>
     </FormProvider>

@@ -2,21 +2,19 @@ import { RiRefreshLine, RiSave3Line } from 'react-icons/ri';
 
 import { Button, Flex, HStack, Text } from '@chakra-ui/react';
 
-import { useJobsContext } from '~/hooks/useJobsContext';
-
 interface Props {
   hourEstimate: string;
   minutesEstimate: string;
   resetForm: () => void;
+  isLoading: boolean;
 }
 
 export const Estimate = ({
   hourEstimate = '00',
   minutesEstimate = '00',
   resetForm,
+  isLoading,
 }: Props) => {
-  const { isLoading } = useJobsContext();
-
   return (
     <Flex
       direction="column"
