@@ -51,13 +51,24 @@ export const DetailsJobPage = () => {
                   gap="8"
                 >
                   <Box w="100%" maxW="640px">
-                    <Title>Descrição</Title>
+                    <Title
+                      title="Descrição"
+                      label="Editar Descrição"
+                      url={`/jobs/${activeJob?.id}/edit`}
+                      withTooltip
+                    />
 
                     <VStack spacing="6" mt="8" align="flex-start">
                       <Flex align="center" justify="space-between" w="100%">
                         {jobInfo.jobberId && (
                           <InfoJob title="Jobber ID">
-                            <Text as="span">{jobInfo.jobberId}</Text>
+                            <a
+                              href={`https://jobber.team/jobs/details/${jobInfo.jobberId}`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <Text as="span">{jobInfo.jobberId}</Text>
+                            </a>
                           </InfoJob>
                         )}
 
@@ -67,7 +78,7 @@ export const DetailsJobPage = () => {
                       </Flex>
 
                       <Flex align="center" justify="space-between" w="100%">
-                        <InfoJob title="Tempo Estimado">
+                        <InfoJob title="Tempo estimado">
                           <Text as="span">{jobInfo.estimatedTime}</Text>
                         </InfoJob>
 
@@ -138,7 +149,12 @@ export const DetailsJobPage = () => {
                 </Flex>
 
                 <Box mt="12">
-                  <Title>Apontamentos</Title>
+                  <Title
+                    title="Apontamentos"
+                    label="Editar Apontamentos"
+                    url={`/jobs/${id}/cycles`}
+                    withTooltip
+                  />
 
                   <Cycles />
                 </Box>

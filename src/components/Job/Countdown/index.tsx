@@ -43,7 +43,8 @@ export const Countdown = () => {
   }, [percentage]);
 
   const hideCountdownControl =
-    activeCycleInfo && activeCycleInfo.jobId !== activeJob?.id;
+    activeJob?.status === 'done' ||
+    (activeCycleInfo && activeCycleInfo.jobId !== activeJob?.id);
 
   return (
     <Flex

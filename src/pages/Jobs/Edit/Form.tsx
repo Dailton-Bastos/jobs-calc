@@ -184,7 +184,7 @@ export const Form = ({ job }: Props) => {
         onSubmit={handleSubmit(handleUpdateJob)}
       >
         <Box w="100%" maxW="640px">
-          <Title>Dados do Job</Title>
+          <Title title="Dados do Job" />
 
           <Box mt="8">
             <VStack spacing="6" align="flex-start">
