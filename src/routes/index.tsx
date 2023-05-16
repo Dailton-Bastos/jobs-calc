@@ -8,6 +8,7 @@ import { Home } from '~/pages/Home';
 import { AllJobsPage } from '~/pages/Jobs/All';
 import { DetailsJobPage } from '~/pages/Jobs/Details';
 import { EditJobPage } from '~/pages/Jobs/Edit';
+import { EditJobReports } from '~/pages/Jobs/Edit/Reports';
 import { NewJobPage } from '~/pages/Jobs/New';
 import { ReportsPage } from '~/pages/Jobs/Reports';
 import { SignIn } from '~/pages/SignIn';
@@ -32,6 +33,7 @@ export const GlobalRoutes = () => {
         <Route path="/jobs/:id" element={<DetailsJobPage />} />
         <Route path="/jobs/new" element={<NewJobPage />} />
         <Route path="/jobs/:id/edit" element={<EditJobPage />} />
+        <Route path="/jobs/:id/cycles" element={<EditJobReports />} />
         <Route path="/jobs" element={<AllJobsPage />} />
         <Route path="/jobs/reports" element={<ReportsPage />} />
       </Route>

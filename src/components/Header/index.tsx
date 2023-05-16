@@ -10,7 +10,15 @@ type Props = {
 
 export const Header = ({ title, to }: Props) => {
   return (
-    <Box as="header" bg="black" w="100%" position="fixed" left="0" top="0">
+    <Box
+      as="header"
+      bg="black"
+      w="100%"
+      position="fixed"
+      left="0"
+      top="0"
+      zIndex="sticky"
+    >
       <Box w="100%" maxW="1440px" mx="auto" px="12">
         <Flex
           h="20"
