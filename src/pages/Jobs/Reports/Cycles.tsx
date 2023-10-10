@@ -87,7 +87,11 @@ export const Cycles = ({ cyclesData }: Props) => {
                 <Tr key={cycle?.id}>
                   <Td>
                     <Tooltip label={cycle?.jobTitle} placement="top-start">
-                      <LinkChakra as={Link} to={`/jobs/${cycle?.jobId}`}>
+                      <LinkChakra
+                        as={Link}
+                        to={`/jobs/${cycle?.jobId}`}
+                        target="_blank"
+                      >
                         {truncateString(cycle?.jobTitle, 55)}
                       </LinkChakra>
                     </Tooltip>

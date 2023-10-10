@@ -87,16 +87,17 @@ export const ListJobs = () => {
           justifyContent="center"
           position="relative"
           borderWidth="1px"
+          backgroundColor="orange.300"
           borderColor="orange.300"
           borderStyle="solid"
           borderRadius="md"
-          color="orange.300"
+          color="white"
           p="3"
           h="40px"
           w="220px"
           _hover={{
             textDecoration: 'none',
-            bg: 'orange.300',
+            bg: 'orange.400',
             color: 'white',
           }}
         >

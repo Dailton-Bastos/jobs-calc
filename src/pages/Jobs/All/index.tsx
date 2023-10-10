@@ -24,9 +24,7 @@ export const AllJobsPage = () => {
 
           <GridItem area={'main'}>
             <Container as="main" maxW="1440px" centerContent px="16">
-              <Container maxW="1120px" centerContent>
-                <ListJobs />
-              </Container>
+              <ListJobs />
             </Container>
           </GridItem>
         </Grid>
