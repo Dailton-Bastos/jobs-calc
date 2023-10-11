@@ -154,6 +154,7 @@ export interface IJob {
     type: string;
     statusColor: string;
   };
+  reports: CyclesByDate[];
   createdAt: IDate;
   updatedAt: IDate;
   briefing?: string;
