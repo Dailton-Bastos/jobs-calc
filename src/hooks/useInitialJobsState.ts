@@ -18,13 +18,18 @@ import {
   getJobStatus,
   getJobType,
   getTime,
+  secondsToTime,
   truncateString,
 } from '~/helpers/utils';
 import { createInitialStateActions } from '~/reducers/jobs/actions';
 import { initialJobsState, jobsReducer } from '~/reducers/jobs/reducer';
 
+import { useCycle } from './useCycle';
+
 export const useInitialJobsState = () => {
   const [state, dispatch] = React.useReducer(jobsReducer, initialJobsState);
+
+  const { getTotalHoursUsedActiveCycleJob } = useCycle();
 
   const snapshotJobs = React.useCallback(async (userId: string) => {
     const snapshot = await get(
@@ -54,6 +59,20 @@ export const useInitialJobsState = () => {
     return { val };
   }, []);
 
+  const getJobTotalHoursUsed = React.useCallback(
+    (cycles: Cycle[]) => {
+      const { totalHoursUsedActiveCycleJob } =
+        getTotalHoursUsedActiveCycleJob(cycles);
+
+      const totalHoursUsed = totalHoursUsedActiveCycleJob;
+
+      const { hours, minutes } = secondsToTime(totalHoursUsed);
+
+      return { hours, minutes, totalHoursUsed };
+    },
+    [getTotalHoursUsedActiveCycleJob],
+  );
+
   const createInitialState = React.useCallback(
     async (userId: string) => {
       if (!userId) return;
@@ -64,7 +83,6 @@ export const useInitialJobsState = () => {
       const jobsList: Job[] = [];
       const jobData: IJob[] = [];
       const cycles: Cycle[] = [];
-      const cyclesByJob: Cycle[] = [];
 
       if (cyclesVal) {
         for (const property in cyclesVal) {
@@ -88,18 +106,23 @@ export const useInitialJobsState = () => {
             isHighlight,
             createdAt,
             updatedAt,
+            totalSecondsAmount,
           } = jobsVal[property];
 
           const { time: createdAtTime } = getTime(createdAt);
           const { time: updatedAtTime } = getTime(updatedAt);
 
-          const cycleByJob = cycles?.find((cycle) => cycle?.jobId === id);
+          const reports = cycles?.filter((cycle) => cycle?.jobId === id);
 
-          if (cycleByJob) {
-            cyclesByJob.push(cycleByJob);
-          }
+          const { hours, minutes, totalHoursUsed } =
+            getJobTotalHoursUsed(reports);
 
-          const { jobCyclesByDate } = getJobReports(cyclesByJob);
+          const { jobCyclesByDate } = getJobReports(reports);
+
+          const statusColor =
+            totalHoursUsed > totalSecondsAmount
+              ? ('red' as const)
+              : ('gray' as const);
 
           jobData.push({
             id,
@@ -115,16 +138,17 @@ export const useInitialJobsState = () => {
               total: formatTime(hourEstimate, minutesEstimate),
             },
             usedTime: {
-              hours: 1,
-              minutes: 5,
-              total: '01h:04m',
-              statusColor: 'red',
+              hours,
+              minutes,
+              total: `${hours}h:${minutes}m`,
+              statusColor,
             },
             type: getJobType(type),
             status: getJobStatus(status),
             briefing: description,
             isHighlight,
             reports: jobCyclesByDate,
+            totalSecondsAmount,
             createdAt: {
               timestamp: createdAt,
               ...createdAtTime,
@@ -139,7 +163,7 @@ export const useInitialJobsState = () => {
 
       dispatch(createInitialStateActions(jobData, jobsList));
     },
-    [snapshotJobs, snapshotReports],
+    [snapshotJobs, snapshotReports, getJobTotalHoursUsed],
   );
 
   return { state, dispatch, createInitialState };

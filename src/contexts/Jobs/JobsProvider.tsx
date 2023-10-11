@@ -31,7 +31,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
 
   const { state, dispatch, createInitialState } = useInitialJobsState();
 
-  const { jobs, activeJob } = state;
+  const { jobs, activeJob, data: jobsData } = state;
 
   const { user } = useAuth();
   const userId = user?.uid;
@@ -202,6 +202,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
 
   const values = React.useMemo(
     () => ({
+      data: jobsData,
       jobs,
       createNewJob,
       newCycle,
@@ -214,6 +215,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       showToast,
     }),
     [
+      jobsData,
       jobs,
       createNewJob,
       newCycle,

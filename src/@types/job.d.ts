@@ -107,6 +107,7 @@ interface Highlight extends JobResum {
 }
 
 export interface JobsContextProps {
+  data: IJob[];
   jobs: Job[];
   myJobs: JobResum[];
   createNewJob: (data: CreateNewJobData) => void;
@@ -144,17 +145,18 @@ export interface IJob {
     total: string;
   };
   usedTime: {
-    hours: number;
-    minutes: number;
+    hours: string;
+    minutes: string;
     total: string;
-    statusColor: string;
+    statusColor: keyof typeof STATUS_COLORS;
   };
   type: string;
   status: {
     type: string;
-    statusColor: string;
+    statusColor: keyof typeof STATUS_COLORS;
   };
   reports: CyclesByDate[];
+  totalSecondsAmount: number;
   createdAt: IDate;
   updatedAt: IDate;
   briefing?: string;
