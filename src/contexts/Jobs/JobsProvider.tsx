@@ -2,18 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { UseToastOptions, useToast } from '@chakra-ui/react';
-import {
-  ref,
-  push,
-  child,
-  get,
-  set,
-  query,
-  orderByChild,
-  equalTo,
-  onValue,
-  ThenableReference,
-} from 'firebase/database';
+import { ref, push, set, onValue, ThenableReference } from 'firebase/database';
 
 import { Cycle } from '~/@types/cycles';
 import {
@@ -26,23 +15,23 @@ import {
 import { db } from '~/config/firebase';
 import { getJobStatus, getJobType, secondsToTime } from '~/helpers/utils';
 import { useAuth } from '~/hooks/useAuth';
+import { useInitialJobsState } from '~/hooks/useInitialJobsState';
 import {
   addNewJobActions,
-  createInitialStateActions,
   deleteJobActions,
   setActiveJobActions,
   updateJobActions,
 } from '~/reducers/jobs/actions';
-import { initialJobsState, jobsReducer } from '~/reducers/jobs/reducer';
 
 import { JobsContext } from './JobsContext';
 
 export const JobsProvider = ({ children }: JobsProviderProps) => {
-  const [jobsState, dispatch] = React.useReducer(jobsReducer, initialJobsState);
   const [newCycle, setNewCycle] = React.useState<Cycle | null>(null);
   const [myJobs, setMyJobs] = React.useState<JobResum[]>([]);
 
-  const { jobs, activeJob } = jobsState;
+  const { state, dispatch, createInitialState } = useInitialJobsState();
+
+  const { jobs, activeJob } = state;
 
   const { user } = useAuth();
   const userId = user?.uid;
@@ -122,7 +111,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
 
       navigate(`/jobs/${jobKey}`);
     },
-    [userId, navigate],
+    [userId, navigate, dispatch],
   );
 
   const updateJob = React.useCallback(
@@ -153,50 +142,39 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
         throw new Error('Erro to update job');
       }
     },
-    [showToast],
+    [showToast, dispatch],
   );
 
-  const createInitialState = React.useCallback(async () => {
-    if (!userId) return;
+  const fetchJob = React.useCallback(
+    (key: string) => {
+      if (!key) return;
 
-    const snapshot = await get(
-      query(child(ref(db), 'jobs'), orderByChild('userId'), equalTo(userId)),
-    );
+      onValue(ref(db, `jobs/${key}`), (snapshot) => {
+        if (snapshot && snapshot.exists()) {
+          const val: Job = snapshot.val();
 
-    const jobsList: Job[] = [];
+          if (!snapshot.key) return;
 
-    if (snapshot && snapshot.exists()) {
-      const data = snapshot.val();
+          dispatch(setActiveJobActions({ ...val, id: snapshot.key }));
+        }
+      });
+    },
+    [dispatch],
+  );
 
-      for (const property in data) {
-        jobsList.push({ id: property, ...data[property] });
-      }
-    }
+  const updateActiveJob = React.useCallback(
+    (job: Job) => {
+      dispatch(setActiveJobActions(job));
+    },
+    [dispatch],
+  );
 
-    dispatch(createInitialStateActions(jobsList));
-  }, [userId]);
-
-  const fetchJob = React.useCallback((key: string) => {
-    if (!key) return;
-
-    onValue(ref(db, `jobs/${key}`), (snapshot) => {
-      if (snapshot && snapshot.exists()) {
-        const data: Job = snapshot.val();
-
-        if (!snapshot.key) return;
-
-        dispatch(setActiveJobActions({ ...data, id: snapshot.key }));
-      }
-    });
-  }, []);
-
-  const updateActiveJob = React.useCallback((job: Job) => {
-    dispatch(setActiveJobActions(job));
-  }, []);
-
-  const deleteJob = React.useCallback((id: string) => {
-    dispatch(deleteJobActions(id));
-  }, []);
+  const deleteJob = React.useCallback(
+    (id: string) => {
+      dispatch(deleteJobActions(id));
+    },
+    [dispatch],
+  );
 
   React.useEffect(() => {
     const jobsReums: JobResum[] = [...jobs]
@@ -217,8 +195,10 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
   }, [jobs]);
 
   React.useEffect(() => {
-    createInitialState();
-  }, [createInitialState]);
+    if (!user) return;
+
+    createInitialState(user?.uid);
+  }, [createInitialState, user]);
 
   const values = React.useMemo(
     () => ({

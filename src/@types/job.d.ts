@@ -122,3 +122,40 @@ export interface JobsContextProps {
 export interface JobsProviderProps {
   children: React.ReactNode;
 }
+
+interface IDate {
+  timestamp: number;
+  label: string;
+  title: string;
+  dateTime: string;
+}
+
+export interface IJob {
+  id: string | null;
+  userId: string;
+  jobberId?: string;
+  title: {
+    shortName: string;
+    fullName: string;
+  };
+  estimatedTime: {
+    hours: number;
+    minutes: number;
+    total: string;
+  };
+  usedTime: {
+    hours: number;
+    minutes: number;
+    total: string;
+    statusColor: string;
+  };
+  type: string;
+  status: {
+    type: string;
+    statusColor: string;
+  };
+  createdAt: IDate;
+  updatedAt: IDate;
+  briefing?: string;
+  isHighlight?: boolean;
+}

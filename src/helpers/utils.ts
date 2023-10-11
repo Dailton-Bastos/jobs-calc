@@ -138,7 +138,7 @@ export function getJobType(type: JobType) {
       return 'Orçamento';
 
     default:
-      return 'Outro';
+      return 'Interno';
   }
 }
 

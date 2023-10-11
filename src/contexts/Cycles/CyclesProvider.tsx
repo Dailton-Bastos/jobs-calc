@@ -1,17 +1,7 @@
 import React from 'react';
 
 import { differenceInSeconds } from 'date-fns';
-import {
-  ref,
-  push,
-  child,
-  get,
-  set,
-  query,
-  orderByChild,
-  equalTo,
-  ThenableReference,
-} from 'firebase/database';
+import { ref, push, set, ThenableReference } from 'firebase/database';
 
 import type {
   CreateNewCycleJobData,
@@ -36,14 +26,13 @@ import {
 } from '~/helpers/utils';
 import { useAuth } from '~/hooks/useAuth';
 import { useCycle } from '~/hooks/useCycle';
+import { useInitialCyclesState } from '~/hooks/useInitialCyclesState';
 import { useJobsContext } from '~/hooks/useJobsContext';
 import {
   addNewCycleJobActions,
-  createInitialStateActions,
   deleteCycleActions,
   finishCurrentCycleActions,
 } from '~/reducers/cycles/actions';
-import { CyclesReducer, initialCyclesState } from '~/reducers/cycles/reducer';
 
 import { CyclesContext } from './CyclesContext';
 
@@ -56,10 +45,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
   const [jobCycles, setJobCycles] = React.useState<JobCycles[]>([]);
 
-  const [cyclesState, dispatch] = React.useReducer(
-    CyclesReducer,
-    initialCyclesState,
-  );
+  const { state, dispatch, createInitialState } = useInitialCyclesState();
 
   const { user } = useAuth();
 
@@ -73,7 +59,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     getActiveCycleInfo,
   } = useCycle();
 
-  const { cyclesByUser, activeCycleId } = cyclesState;
+  const { cyclesByUser, activeCycleId } = state;
 
   const cyclesData: FilteredCycles[] = React.useMemo(() => {
     return cyclesByUser?.map((cycle: Cycle) => {
@@ -209,39 +195,8 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
       dispatch(addNewCycleJobActions(newCycleData));
     },
-    [user],
+    [user, dispatch],
   );
-
-  const createInitialState = React.useCallback(async () => {
-    if (!user) return;
-
-    const snapshot = await get(
-      query(
-        child(ref(db), 'cycles'),
-        orderByChild('userId'),
-        equalTo(user?.uid),
-      ),
-    );
-
-    const cyclesList: Cycle[] = [];
-
-    if (snapshot && snapshot.exists()) {
-      const data = snapshot.val();
-
-      for (const property in data) {
-        cyclesList.push({ id: property, ...data[property] });
-      }
-    }
-
-    const currentActiveCycle = cyclesList?.find((cycle) => cycle.isActive);
-
-    const initialStateData = {
-      cyclesByUser: cyclesList,
-      activeCycle: currentActiveCycle,
-    };
-
-    dispatch(createInitialStateActions(initialStateData));
-  }, [user]);
 
   const updateCycle = React.useCallback(async (cycle: Cycle) => {
     if (!cycle.id) return;
@@ -270,12 +225,15 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
       dispatch(finishCurrentCycleActions());
     },
-    [updateCycle, updateJob, activeJob, activeCycleCurrentSeconds],
+    [updateCycle, updateJob, activeJob, activeCycleCurrentSeconds, dispatch],
   );
 
-  const deleteCycle = React.useCallback((id: string) => {
-    dispatch(deleteCycleActions(id));
-  }, []);
+  const deleteCycle = React.useCallback(
+    (id: string) => {
+      dispatch(deleteCycleActions(id));
+    },
+    [dispatch],
+  );
 
   const getJobInfo = React.useCallback(() => {
     if (activeJob) {
@@ -367,7 +325,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     if (newCycle) {
       dispatch(addNewCycleJobActions(newCycle));
     }
-  }, [newCycle]);
+  }, [newCycle, dispatch]);
 
   React.useEffect(() => {
     if (activeCycleJob) {
@@ -376,8 +334,10 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
   }, [activeCycleJob, updateActiveJob]);
 
   React.useEffect(() => {
-    createInitialState();
-  }, [createInitialState]);
+    if (!user) return;
+
+    createInitialState(user?.uid);
+  }, [createInitialState, user]);
 
   const values = React.useMemo(
     () => ({

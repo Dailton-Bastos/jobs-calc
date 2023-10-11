@@ -1,15 +1,17 @@
 import { produce } from 'immer';
 
-import { Job } from '~/@types/job';
+import { Job, IJob } from '~/@types/job';
 
 import { Action, ActionTypes } from './actions';
 
 interface JobsState {
+  data: IJob[];
   jobs: Job[];
   activeJob: Job | null;
 }
 
 export const initialJobsState: JobsState = {
+  data: [],
   jobs: [],
   activeJob: null,
 };
@@ -20,6 +22,7 @@ export const jobsReducer = (state: JobsState, action: Action): JobsState => {
   switch (type) {
     case ActionTypes.CREATE_INITIAL_STATE:
       return produce(state, (draft) => {
+        draft.data = payload.data;
         draft.jobs = payload.jobs;
         draft.activeJob = null;
       });

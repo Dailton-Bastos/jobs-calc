@@ -1,4 +1,4 @@
-import { Job } from '~/@types/job';
+import { Job, IJob } from '~/@types/job';
 
 export enum ActionTypes {
   ADD_NEW_JOB = 'ADD_NEW_JOB',
@@ -12,6 +12,7 @@ export type Action =
   | {
       type: ActionTypes.CREATE_INITIAL_STATE;
       payload: {
+        data: IJob[];
         jobs: Job[];
       };
     }
@@ -40,10 +41,13 @@ export type Action =
       };
     };
 
-export const createInitialStateActions = (jobs: Job[]) => {
+export const createInitialStateActions = (data: IJob[], jobs: Job[]) => {
   return {
     type: ActionTypes.CREATE_INITIAL_STATE as const,
-    payload: { jobs },
+    payload: {
+      data,
+      jobs,
+    },
   };
 };
 
