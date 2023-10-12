@@ -112,7 +112,9 @@ const ListJobs = () => {
                   </Flex>
                 </Td>
 
-                <Td>{job?.id && <Actions id={job?.id} />}</Td>
+                <Td>
+                  <Actions job={job} />
+                </Td>
               </Tr>
             ))}
           </Tbody>

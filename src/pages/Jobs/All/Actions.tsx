@@ -1,4 +1,10 @@
-import { RiDeleteBin2Line, RiEdit2Line, RiEyeLine } from 'react-icons/ri';
+import React from 'react';
+import {
+  RiDeleteBin2Line,
+  RiEdit2Line,
+  RiPushpinLine,
+  RiUnpinLine,
+} from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 
 import {
@@ -7,41 +13,74 @@ import {
   Tooltip,
   useDisclosure,
   IconButton,
+  Button,
 } from '@chakra-ui/react';
+
+import type { IJob } from '~/@types/job';
 
 import { ModalDelete } from './Modal';
 
 interface Props {
-  id: string;
+  job: IJob;
 }
 
-export const Actions = ({ id }: Props) => {
+export const Actions = ({ job }: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const id = job?.id;
+
+  const handleIsHighlight = React.useCallback((isHighlight: boolean) => {
+    return isHighlight;
+  }, []);
 
   return (
     <>
       <HStack spacing="5px">
-        <Tooltip
-          label="Visualizar"
-          hasArrow
-          arrowSize={15}
-          aria-label="Visualizar Job"
-        >
-          <LinkChakra
-            as={Link}
-            to={`/jobs/${id}`}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            p="2"
-            borderRadius="md"
-            _hover={{
-              bg: 'gray.200',
-            }}
+        {job?.isHighlight ? (
+          <Tooltip
+            label="Remover Destaque"
+            hasArrow
+            arrowSize={15}
+            aria-label="Remover Destaque"
           >
-            <RiEyeLine size={22} />
-          </LinkChakra>
-        </Tooltip>
+            <Button
+              variant="link"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              p="2"
+              borderRadius="md"
+              _hover={{
+                bg: 'gray.200',
+              }}
+              onClick={() => handleIsHighlight(true)}
+            >
+              <RiUnpinLine size={22} />
+            </Button>
+          </Tooltip>
+        ) : (
+          <Tooltip
+            label="Marcar como Destaque"
+            hasArrow
+            arrowSize={15}
+            aria-label="Destacar Job"
+          >
+            <Button
+              variant="link"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              p="2"
+              borderRadius="md"
+              _hover={{
+                bg: 'gray.200',
+              }}
+              onClick={() => handleIsHighlight(false)}
+            >
+              <RiPushpinLine size={22} />
+            </Button>
+          </Tooltip>
+        )}
 
         <Tooltip label="Editar" hasArrow arrowSize={15} aria-label="Editar Job">
           <LinkChakra
@@ -75,7 +114,7 @@ export const Actions = ({ id }: Props) => {
         </Tooltip>
       </HStack>
 
-      <ModalDelete isOpen={isOpen} onClose={onClose} id={id} />
+      {id && <ModalDelete isOpen={isOpen} onClose={onClose} id={id} />}
     </>
   );
 };
