@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   RiDashboardLine,
   RiTodoLine,
@@ -14,7 +15,7 @@ import { useAuth } from '~/hooks/useAuth';
 
 import { NavLink } from './NavLink';
 
-export const Sidebar = () => {
+const SidebarMemo = () => {
   const { logout } = useAuth();
 
   return (
@@ -63,3 +64,5 @@ export const Sidebar = () => {
     </Flex>
   );
 };
+
+export const Sidebar = React.memo(SidebarMemo);
