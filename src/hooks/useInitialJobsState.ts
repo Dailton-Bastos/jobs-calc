@@ -81,7 +81,7 @@ export const useInitialJobsState = () => {
       const { val: cyclesVal } = await snapshotReports(userId);
 
       const jobsList: Job[] = [];
-      const jobData: IJob[] = [];
+      const jobsData: IJob[] = [];
       const cycles: Cycle[] = [];
 
       if (cyclesVal) {
@@ -122,9 +122,9 @@ export const useInitialJobsState = () => {
           const statusColor =
             totalHoursUsed > totalSecondsAmount
               ? ('red' as const)
-              : ('gray' as const);
+              : ('green' as const);
 
-          jobData.push({
+          jobsData.push({
             id,
             userId,
             jobberId,
@@ -161,7 +161,11 @@ export const useInitialJobsState = () => {
         }
       }
 
-      dispatch(createInitialStateActions(jobData, jobsList));
+      const jobs = jobsData?.sort((a, b) => {
+        return b?.createdAt?.timestamp - a?.createdAt.timestamp;
+      });
+
+      dispatch(createInitialStateActions(jobs, jobsList));
     },
     [snapshotJobs, snapshotReports, getJobTotalHoursUsed],
   );

@@ -8,12 +8,10 @@ import { Cycle } from '~/@types/cycles';
 import {
   CreateNewJobData,
   Job,
-  JobResum,
   JobType,
   JobsProviderProps,
 } from '~/@types/job';
 import { db } from '~/config/firebase';
-import { getJobStatus, getJobType, secondsToTime } from '~/helpers/utils';
 import { useAuth } from '~/hooks/useAuth';
 import { useInitialJobsState } from '~/hooks/useInitialJobsState';
 import {
@@ -27,7 +25,6 @@ import { JobsContext } from './JobsContext';
 
 export const JobsProvider = ({ children }: JobsProviderProps) => {
   const [newCycle, setNewCycle] = React.useState<Cycle | null>(null);
-  const [myJobs, setMyJobs] = React.useState<JobResum[]>([]);
 
   const { state, dispatch, createInitialState } = useInitialJobsState();
 
@@ -177,24 +174,6 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
   );
 
   React.useEffect(() => {
-    const jobsReums: JobResum[] = [...jobs]
-      .sort((a, b) => b?.createdAt - a?.createdAt)
-      .map((job) => {
-        const { hours, minutes } = secondsToTime(job.totalSecondsAmount);
-
-        return {
-          id: job?.id ?? '',
-          title: job.title,
-          estimatedTime: `${hours}h:${minutes}m`,
-          type: getJobType(job.type),
-          status: getJobStatus(job.status),
-        };
-      });
-
-    setMyJobs(jobsReums);
-  }, [jobs]);
-
-  React.useEffect(() => {
     if (!user) return;
 
     createInitialState(user?.uid);
@@ -210,7 +189,6 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       activeJob,
       updateActiveJob,
       updateJob,
-      myJobs,
       deleteJob,
       showToast,
     }),
@@ -223,7 +201,6 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       activeJob,
       updateActiveJob,
       updateJob,
-      myJobs,
       deleteJob,
       showToast,
     ],
