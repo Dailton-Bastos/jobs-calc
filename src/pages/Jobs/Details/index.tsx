@@ -38,7 +38,7 @@ export const DetailsJobPage = () => {
     <>
       <Head title={pageTitle} />
 
-      <Container title="Detalhes do Job" to="/jobs">
+      <Container title="Detalhes do Job">
         <>
           {showActiveCycleInfo && <ActiveCycleInfo />}
 

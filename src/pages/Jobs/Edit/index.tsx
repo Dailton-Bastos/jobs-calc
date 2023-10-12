@@ -24,7 +24,7 @@ export const EditJobPage = () => {
     <>
       <Head title={pageTitle} />
 
-      <Container title="Editar Job" to="/jobs">
+      <Container title="Editar Job">
         <Box as="section">
           <Form job={data} />
         </Box>

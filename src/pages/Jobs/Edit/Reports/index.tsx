@@ -27,7 +27,7 @@ export const EditJobReports = () => {
     <>
       <Head title="Editar Apontamentos" />
 
-      <Container title="Editar Apontamentos" to="/jobs">
+      <Container title="Editar Apontamentos">
         <Box as="section" bg="white" px="8" py="12" borderRadius="5px">
           <Box>
             <Title title="Job Apontamentos" />

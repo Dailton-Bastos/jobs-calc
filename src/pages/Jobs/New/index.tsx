@@ -127,7 +127,7 @@ export const NewJobPage = () => {
     <>
       <Head title="Novo Job" />
 
-      <Container title="Adicionar Novo Job" to="/jobs">
+      <Container title="Adicionar Novo Job">
         <>
           <ActiveCycleInfo />
 

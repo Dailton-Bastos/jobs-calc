@@ -1,14 +1,20 @@
+import React from 'react';
 import { RiArrowLeftLine } from 'react-icons/ri';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-import { Box, Flex, Text, Link as ChakraLink } from '@chakra-ui/react';
+import { Box, Flex, Text, Button } from '@chakra-ui/react';
 
 type Props = {
   title: string;
-  to?: string;
 };
 
-export const Header = ({ title, to }: Props) => {
+export const Header = ({ title }: Props) => {
+  const navigate = useNavigate();
+
+  const handleGoBack = React.useCallback(() => {
+    navigate(-1);
+  }, [navigate]);
+
   return (
     <Box
       as="header"
@@ -37,9 +43,17 @@ export const Header = ({ title, to }: Props) => {
               color: 'white',
             }}
           >
-            <ChakraLink as={Link} to={to ?? '/dashboard'}>
+            <Button
+              bg="transparent"
+              _hover={{
+                borderColor: 'gray.400',
+                borderWidth: '1px',
+                borderStyle: 'solid',
+              }}
+              onClick={handleGoBack}
+            >
               <RiArrowLeftLine size={24} />
-            </ChakraLink>
+            </Button>
           </Box>
 
           <Text
