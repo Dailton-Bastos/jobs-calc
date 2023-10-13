@@ -26,7 +26,7 @@ const PageSize = 10;
 export const Highlights = () => {
   const [currentPage, setCurrentPage] = React.useState(1);
 
-  const { data } = useJobsContext();
+  const { jobs: data } = useJobsContext();
 
   const totalCount = React.useMemo(() => {
     return data?.filter((job) => job?.isHighlight)?.length;
@@ -65,9 +65,9 @@ export const Highlights = () => {
             {jobsHighlights?.map((job) => (
               <Tr key={job?.id}>
                 <Td>
-                  <Tooltip label={job?.title?.fullName} placement="top-start">
+                  <Tooltip label={job?.title?.fullTitle} placement="top-start">
                     <LinkChakra as={Link} to={`/jobs/${job?.id}`}>
-                      {job?.title?.shortName}
+                      {job?.title?.shortTitle}
                     </LinkChakra>
                   </Tooltip>
                 </Td>
@@ -96,7 +96,7 @@ export const Highlights = () => {
                       fontSize="md"
                       color={STATUS_COLORS[job.status.statusColor]}
                     >
-                      {job.status.type}
+                      {job.status.title}
                     </Text>
                   </Flex>
                 </Td>

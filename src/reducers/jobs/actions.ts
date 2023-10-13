@@ -1,4 +1,4 @@
-import { Job, IJob } from '~/@types/job';
+import { JobFormatted } from '~/@types/job';
 
 export enum ActionTypes {
   ADD_NEW_JOB = 'ADD_NEW_JOB',
@@ -12,26 +12,25 @@ export type Action =
   | {
       type: ActionTypes.CREATE_INITIAL_STATE;
       payload: {
-        data: IJob[];
-        jobs: Job[];
+        jobs: JobFormatted[];
       };
     }
   | {
       type: ActionTypes.ADD_NEW_JOB;
       payload: {
-        newJob: Job;
+        data: JobFormatted;
       };
     }
   | {
       type: ActionTypes.SET_ACTIVE_JOB;
       payload: {
-        activeJob: Job | null;
+        activeJob: JobFormatted | null;
       };
     }
   | {
       type: ActionTypes.UPDATE_JOB;
       payload: {
-        job: Job;
+        job: JobFormatted;
       };
     }
   | {
@@ -41,24 +40,23 @@ export type Action =
       };
     };
 
-export const createInitialStateActions = (data: IJob[], jobs: Job[]) => {
+export const createInitialStateActions = (jobs: JobFormatted[]) => {
   return {
     type: ActionTypes.CREATE_INITIAL_STATE as const,
     payload: {
-      data,
       jobs,
     },
   };
 };
 
-export const addNewJobActions = (newJob: Job) => {
+export const addNewJobActions = (data: JobFormatted) => {
   return {
     type: ActionTypes.ADD_NEW_JOB as const,
-    payload: { newJob },
+    payload: { data },
   };
 };
 
-export const setActiveJobActions = (job: Job | null) => {
+export const setActiveJobActions = (job: JobFormatted | null) => {
   return {
     type: ActionTypes.SET_ACTIVE_JOB as const,
     payload: {
@@ -67,7 +65,7 @@ export const setActiveJobActions = (job: Job | null) => {
   };
 };
 
-export const updateJobActions = (job: Job) => {
+export const updateJobActions = (job: JobFormatted) => {
   return {
     type: ActionTypes.UPDATE_JOB as const,
     payload: { job },

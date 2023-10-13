@@ -11,17 +11,17 @@ import {
   AccordionButton,
   AccordionPanel,
 } from '@chakra-ui/react';
-import { getTime, startOfToday, endOfToday } from 'date-fns';
+import { startOfToday, endOfToday } from 'date-fns';
 
-import { FilteredCycles } from '~/@types/cycles';
+// import { FilteredCycles } from '~/@types/cycles';
 import { Calendar } from '~/components/Calendar';
 import { Head } from '~/components/Head';
-import { useCyclesContext } from '~/hooks/useCyclesContext';
+// import { useCyclesContext } from '~/hooks/useCyclesContext';
 
-import { Cycles } from './Cycles';
+// import { Cycles } from './Cycles';
 
 export const ReportsPage = () => {
-  const [cyclesData, setCyclesData] = React.useState<FilteredCycles[]>([]);
+  // const [cyclesData, setCyclesData] = React.useState<FilteredCycles[]>([]);
 
   const [date, setDate] = React.useState<Range[]>([
     {
@@ -31,7 +31,7 @@ export const ReportsPage = () => {
     },
   ]);
 
-  const { cycles } = useCyclesContext();
+  // const { cycles } = useCyclesContext();
 
   const handleOnChange = React.useCallback((rangesByKey: RangeKeyDict) => {
     const { selection } = rangesByKey;
@@ -39,20 +39,20 @@ export const ReportsPage = () => {
     setDate([selection]);
   }, []);
 
-  React.useEffect(() => {
-    const cyclesFiltered = cycles?.filter((cycle) => {
-      const startDate = date[0]?.startDate
-        ? getTime(new Date(date[0]?.startDate))
-        : getTime(startOfToday());
-      const endDate = date[0]?.endDate
-        ? getTime(new Date(date[0]?.endDate))
-        : getTime(endOfToday());
+  // React.useEffect(() => {
+  //   const cyclesFiltered = cycles?.filter((cycle) => {
+  //     const startDate = date[0]?.startDate
+  //       ? getTime(new Date(date[0]?.startDate))
+  //       : getTime(startOfToday());
+  //     const endDate = date[0]?.endDate
+  //       ? getTime(new Date(date[0]?.endDate))
+  //       : getTime(endOfToday());
 
-      return cycle.createdAt >= startDate && cycle.createdAt <= endDate;
-    });
+  //     return cycle.createdAt >= startDate && cycle.createdAt <= endDate;
+  //   });
 
-    setCyclesData(cyclesFiltered);
-  }, [cycles, date]);
+  //   setCyclesData(cyclesFiltered);
+  // }, [cycles, date]);
 
   return (
     <>
@@ -94,7 +94,7 @@ export const ReportsPage = () => {
             </AccordionItem>
           </Accordion>
 
-          <Cycles cyclesData={cyclesData} />
+          {/* <Cycles cyclesData={cyclesData} /> */}
         </Box>
       </Container>
     </>

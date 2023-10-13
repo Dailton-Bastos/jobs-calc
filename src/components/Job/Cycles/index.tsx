@@ -1,6 +1,6 @@
 import {
   Flex,
-  VStack,
+  // VStack,
   Text,
   TableContainer,
   Table,
@@ -9,15 +9,15 @@ import {
   Tbody,
   Tr,
   Th,
-  Td,
+  // Td,
 } from '@chakra-ui/react';
 
-import { useCyclesContext } from '~/hooks/useCyclesContext';
+// import { useCyclesContext } from '~/hooks/useCyclesContext';
 
-import { JobTime } from '../Time';
+// import { JobTime } from '../Time';
 
 export const Cycles = () => {
-  const { jobInfo } = useCyclesContext();
+  // const { jobInfo } = useCyclesContext();
 
   return (
     <TableContainer mt="10">
@@ -25,7 +25,7 @@ export const Cycles = () => {
         <TableCaption>
           <Flex gap="2" align="center" justify="flex-end">
             <Text fontWeight="bold">Total de horas:</Text>
-            <Text>{jobInfo?.usedTime.time}</Text>
+            {/* <Text>{jobInfo?.usedTime.time}</Text> */}
           </Flex>
         </TableCaption>
         <Thead>
@@ -37,12 +37,12 @@ export const Cycles = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {jobInfo?.cyclesByDate?.map((cycleByDate) => (
+          {/* {jobInfo?.cyclesByDate?.map((cycleByDate) => (
             <Tr key={cycleByDate?.id}>
               <Td>
                 <JobTime
                   label={cycleByDate?.time.label}
-                  dateTime={cycleByDate?.time.dateTime}
+                  dateTime={cycleByDate?.time.datetime}
                 >
                   {cycleByDate?.time.title}
                 </JobTime>
@@ -69,7 +69,7 @@ export const Cycles = () => {
 
               <Td>{cycleByDate.cycleTotalTime}</Td>
             </Tr>
-          ))}
+          ))} */}
         </Tbody>
       </Table>
     </TableContainer>

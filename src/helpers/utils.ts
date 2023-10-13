@@ -146,25 +146,29 @@ export function getJobStatus(status: JobStatus) {
   switch (status) {
     case 'opened':
       return {
-        type: 'Em aberto',
+        type: 'opened' as const,
+        title: 'Em aberto',
         statusColor: 'blue' as const,
       };
 
     case 'paused':
       return {
-        type: 'Em espera',
+        type: 'paused' as const,
+        title: 'Em espera',
         statusColor: 'red' as const,
       };
 
     case 'done':
       return {
-        type: 'Concluído',
+        type: 'done' as const,
+        title: 'Concluído',
         statusColor: 'green' as const,
       };
 
     default:
       return {
-        type: 'Em andamento',
+        type: 'developing' as const,
+        title: 'Em andamento',
         statusColor: 'yellow' as const,
       };
   }
@@ -177,19 +181,19 @@ export const getTime = (time: number) => {
     locale: pt,
   });
 
-  const dateTime = format(new Date(time), "yyyy'-'MM'-'dd HH':'mm':'ss", {
+  const datetime = format(new Date(time), "yyyy'-'MM'-'dd HH':'mm':'ss", {
     locale: pt,
   });
 
   return {
     title,
     label,
-    dateTime,
+    datetime,
 
     time: {
       title,
       label,
-      dateTime,
+      datetime,
     },
   };
 };
@@ -244,14 +248,14 @@ export function getJobReports(listCycles: Cycle[]) {
     (accumulator: CycleDataByCreatedAt[], currentValue: Cycle) => {
       const cycleId = currentValue?.id ?? uuid();
 
-      const { label, dateTime } = getTime(currentValue.startDate);
+      const { label, datetime } = getTime(currentValue.startDate);
 
       const time = {
         label,
         title: format(new Date(currentValue.startDate), "dd'/'MM'/'yyyy", {
           locale: pt,
         }),
-        dateTime,
+        datetime,
       };
 
       const createdAt = format(

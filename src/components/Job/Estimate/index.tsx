@@ -1,14 +1,14 @@
-import React from 'react';
+// import React from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { Flex, Text } from '@chakra-ui/react';
 
 import { SubmitButton } from '~/components/Form/SubmitButton';
-import { useCyclesContext } from '~/hooks/useCyclesContext';
+// import { useCyclesContext } from '~/hooks/useCyclesContext';
 
 export const JobEstimate = () => {
   const { formState, watch } = useFormContext();
-  const { activeCycleInfo } = useCyclesContext();
+  // const { activeCycleInfo } = useCyclesContext();
 
   const { isSubmitting } = formState;
 
@@ -56,7 +56,7 @@ export const JobEstimate = () => {
         <SubmitButton
           isLoading={isSubmitting}
           maxW="100%"
-          disabled={!!activeCycleInfo}
+          // disabled={!!activeCycleInfo}
         >
           Salvar
         </SubmitButton>

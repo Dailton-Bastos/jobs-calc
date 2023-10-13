@@ -16,12 +16,12 @@ import {
   Button,
 } from '@chakra-ui/react';
 
-import type { IJob } from '~/@types/job';
+import type { JobFormatted } from '~/@types/job';
 
 import { ModalDelete } from './Modal';
 
 interface Props {
-  job: IJob;
+  job: JobFormatted;
 }
 
 export const Actions = ({ job }: Props) => {

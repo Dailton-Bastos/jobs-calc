@@ -9,15 +9,79 @@ export type JobType = 'other' | 'budget' | 'development';
 
 type DateType = number;
 
-export interface CreateNewJobData {
+interface Date {
+  title: string;
+  label: string;
+  datetime: string;
+  timestamp: number;
+}
+
+interface Cycle {
+  id: string;
+  isActive: boolean;
+  startHour: string;
+  fineshedHour: string;
+  total: string;
+  totalCycleInSeconds: number;
+  createdAt: string;
+}
+
+interface Report {
+  id: string;
+  date: Date;
+  cycles: Cycle[];
+  totalUsedTime: string;
+}
+
+interface JobCommon {
+  userId: string;
   jobberId?: string;
+  description?: string;
+  isHighlight: boolean;
+  totalSecondsAmount: number;
+  totalSecondsRemaining: number;
+}
+
+export interface JobFormatted extends JobCommon {
+  id: string;
+  title: {
+    shortTitle: string;
+    fullTitle: string;
+  };
+  estimatedTime: {
+    hours: number;
+    minutes: number;
+    total: string;
+  };
+  usedTime: {
+    hours: string;
+    minutes: string;
+    total: string;
+    statusColor: keyof typeof STATUS_COLORS;
+  };
+  type: string;
+  status: {
+    type: JobStatus;
+    title: string;
+    statusColor: keyof typeof STATUS_COLORS;
+  };
+  reports: Report[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface JobData extends JobCommon {
   type: JobType;
+  status: JobStatus;
   title: string;
   hourEstimate: number;
   minutesEstimate: number;
-  totalSecondsAmount: number;
-  description?: string;
-  isHighlight?: boolean;
+  createdAt: number;
+  updatedAt: number;
+}
+
+interface JobApiData extends JobData {
+  id: string;
 }
 
 export interface Job {
@@ -50,7 +114,7 @@ interface CycleData {
 interface Time {
   title: string;
   label: string;
-  dateTime: string;
+  datetime: string;
 }
 
 interface CycleDataByCreatedAt {
@@ -89,12 +153,11 @@ export interface JobInfo {
 }
 
 export interface JobsContextProps {
-  data: IJob[];
-  jobs: Job[];
-  createNewJob: (data: CreateNewJobData) => void;
+  jobs: JobFormatted[];
+  createNewJob: (data: JobData) => void;
   fetchJob: (id: string) => void;
-  activeJob: Job | null;
-  updateActiveJob: (job: Job) => void;
+  activeJob: JobFormatted | null;
+  updateActiveJob: (job: JobFormatted) => void;
   newCycle: Cycle | null;
   updateJob: (job: Job) => void;
   deleteJob: (id: string) => void;
@@ -103,43 +166,4 @@ export interface JobsContextProps {
 
 export interface JobsProviderProps {
   children: React.ReactNode;
-}
-
-interface IDate {
-  timestamp: number;
-  label: string;
-  title: string;
-  dateTime: string;
-}
-
-export interface IJob {
-  id: string | null;
-  userId: string;
-  jobberId?: string;
-  title: {
-    shortName: string;
-    fullName: string;
-  };
-  estimatedTime: {
-    hours: number;
-    minutes: number;
-    total: string;
-  };
-  usedTime: {
-    hours: string;
-    minutes: string;
-    total: string;
-    statusColor: keyof typeof STATUS_COLORS;
-  };
-  type: string;
-  status: {
-    type: string;
-    statusColor: keyof typeof STATUS_COLORS;
-  };
-  reports: CyclesByDate[];
-  totalSecondsAmount: number;
-  createdAt: IDate;
-  updatedAt: IDate;
-  briefing?: string;
-  isHighlight?: boolean;
 }

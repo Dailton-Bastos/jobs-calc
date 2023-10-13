@@ -1,30 +1,30 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
-import { Flex, Box, VStack, Text } from '@chakra-ui/react';
+// import { Flex, Box, VStack, Text } from '@chakra-ui/react';
 
-import { ActiveCycleInfo } from '~/components/ActiveCycleInfo';
+// import { ActiveCycleInfo } from '~/components/ActiveCycleInfo';
 import { Container } from '~/components/Container';
-import { Head } from '~/components/Head';
-import { Countdown } from '~/components/Job/Countdown';
-import { Cycles } from '~/components/Job/Cycles';
-import { InfoJob } from '~/components/Job/Info';
-import { JobTime } from '~/components/Job/Time';
-import { Title } from '~/components/Title';
-import { STATUS_COLORS } from '~/helpers/utils';
-import { useCyclesContext } from '~/hooks/useCyclesContext';
+// import { Head } from '~/components/Head';
+// import { Countdown } from '~/components/Job/Countdown';
+// import { Cycles } from '~/components/Job/Cycles';
+// import { InfoJob } from '~/components/Job/Info';
+// import { JobTime } from '~/components/Job/Time';
+// import { Title } from '~/components/Title';
+// import { STATUS_COLORS } from '~/helpers/utils';
+// import { useCyclesContext } from '~/hooks/useCyclesContext';
 import { useJobsContext } from '~/hooks/useJobsContext';
 
 export const DetailsJobPage = () => {
   const { id } = useParams();
 
-  const { jobs, activeJob, updateActiveJob } = useJobsContext();
+  const { jobs, updateActiveJob } = useJobsContext();
 
-  const { activeCycleInfo, jobInfo, countdownText } = useCyclesContext();
+  // const { activeCycleInfo, jobInfo, countdownText } = useCyclesContext();
 
-  const pageTitle = `${countdownText} - ${activeJob?.title}`;
+  // const pageTitle = `${countdownText} - ${activeJob?.title}`;
 
-  const showActiveCycleInfo = activeJob?.id !== activeCycleInfo?.jobId;
+  // const showActiveCycleInfo = activeJob?.id !== activeCycleInfo?.jobId;
 
   React.useEffect(() => {
     const job = jobs?.find((item) => item.id === id);
@@ -36,13 +36,13 @@ export const DetailsJobPage = () => {
 
   return (
     <>
-      <Head title={pageTitle} />
+      {/* <Head title={pageTitle} /> */}
 
       <Container title="Detalhes do Job">
         <>
-          {showActiveCycleInfo && <ActiveCycleInfo />}
+          {/* {showActiveCycleInfo && <ActiveCycleInfo />} */}
 
-          <Box as="section" bg="white" px="8" py="12" borderRadius="5px">
+          {/* <Box as="section" bg="white" px="8" py="12" borderRadius="5px">
             {jobInfo && (
               <>
                 <Flex
@@ -160,7 +160,7 @@ export const DetailsJobPage = () => {
                 </Box>
               </>
             )}
-          </Box>
+          </Box> */}
         </>
       </Container>
     </>

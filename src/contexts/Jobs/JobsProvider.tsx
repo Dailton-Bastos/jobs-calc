@@ -5,21 +5,17 @@ import { UseToastOptions, useToast } from '@chakra-ui/react';
 import { ref, push, set, onValue, ThenableReference } from 'firebase/database';
 
 import { Cycle } from '~/@types/cycles';
-import {
-  CreateNewJobData,
-  Job,
-  JobType,
+import type {
   JobsProviderProps,
+  JobData,
+  JobFormatted,
+  Job,
 } from '~/@types/job';
 import { db } from '~/config/firebase';
 import { useAuth } from '~/hooks/useAuth';
 import { useInitialJobsState } from '~/hooks/useInitialJobsState';
-import {
-  addNewJobActions,
-  deleteJobActions,
-  setActiveJobActions,
-  updateJobActions,
-} from '~/reducers/jobs/actions';
+import { useJobs } from '~/hooks/useJobs';
+import { addNewJobActions, deleteJobActions } from '~/reducers/jobs/actions';
 
 import { JobsContext } from './JobsContext';
 
@@ -28,7 +24,9 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
 
   const { state, dispatch, createInitialState } = useInitialJobsState();
 
-  const { jobs, activeJob, data: jobsData } = state;
+  const { jobs, activeJob } = state;
+
+  const { formatJob } = useJobs();
 
   const { user } = useAuth();
   const userId = user?.uid;
@@ -53,45 +51,23 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
   );
 
   const createNewJob = React.useCallback(
-    (data: CreateNewJobData) => {
+    (data: JobData) => {
       if (!userId) return;
+
+      const { key: id }: ThenableReference = push(ref(db, 'jobs'), data);
+
+      if (!id) return;
+
+      const jobAction = formatJob({ id, ...data }, []);
+
+      dispatch(addNewJobActions(jobAction));
 
       const dateInTimestamp = new Date().getTime();
 
-      const newJob: Job = {
-        id: null,
-        jobberId: data.jobberId,
-        userId,
-        type: data.type as JobType,
-        title: data.title,
-        status: 'developing',
-        hourEstimate: data.hourEstimate,
-        minutesEstimate: data.minutesEstimate,
-        totalSecondsAmount: data.totalSecondsAmount,
-        totalSecondsRemaining: data.totalSecondsAmount,
-        description: data.description,
-        isHighlight: data?.isHighlight,
-        createdAt: dateInTimestamp,
-        updatedAt: dateInTimestamp,
-      };
-
-      const { key: jobKey }: ThenableReference = push(ref(db, 'jobs'), newJob);
-
-      if (!jobKey) return;
-
-      dispatch(
-        addNewJobActions({
-          ...newJob,
-          id: jobKey,
-          createdAt: dateInTimestamp,
-          updatedAt: dateInTimestamp,
-        }),
-      );
-
       const cycle: Cycle = {
         id: null,
-        jobId: jobKey,
-        userId: userId,
+        jobId: id,
+        userId,
         isActive: true,
         startDate: dateInTimestamp,
       };
@@ -106,9 +82,9 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
         });
       }
 
-      navigate(`/jobs/${jobKey}`);
+      navigate(`/jobs/${id}`);
     },
-    [userId, navigate, dispatch],
+    [navigate, dispatch, userId, formatJob],
   );
 
   const updateJob = React.useCallback(
@@ -123,7 +99,7 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
 
         await set(ref(db, `jobs/${job.id}`), jobData);
 
-        dispatch(updateJobActions(jobData));
+        // dispatch(updateJobActions(jobData));
         showToast({
           title: 'Job atualizado',
           description: 'Informações salvas com sucesso.',
@@ -139,32 +115,28 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
         throw new Error('Erro to update job');
       }
     },
-    [showToast, dispatch],
+    [showToast],
   );
 
-  const fetchJob = React.useCallback(
-    (key: string) => {
-      if (!key) return;
+  const fetchJob = React.useCallback((key: string) => {
+    if (!key) return;
 
-      onValue(ref(db, `jobs/${key}`), (snapshot) => {
-        if (snapshot && snapshot.exists()) {
-          const val: Job = snapshot.val();
+    onValue(ref(db, `jobs/${key}`), (snapshot) => {
+      if (snapshot && snapshot.exists()) {
+        // const val: Job = snapshot.val();
 
-          if (!snapshot.key) return;
+        if (!snapshot.key) return;
 
-          dispatch(setActiveJobActions({ ...val, id: snapshot.key }));
-        }
-      });
-    },
-    [dispatch],
-  );
+        // dispatch(setActiveJobActions({ ...val, id: snapshot.key }));
+      }
+    });
+  }, []);
 
-  const updateActiveJob = React.useCallback(
-    (job: Job) => {
-      dispatch(setActiveJobActions(job));
-    },
-    [dispatch],
-  );
+  const updateActiveJob = React.useCallback((job: JobFormatted) => {
+    // dispatch(setActiveJobActions(job));
+    return;
+    job;
+  }, []);
 
   const deleteJob = React.useCallback(
     (id: string) => {
@@ -181,7 +153,6 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
 
   const values = React.useMemo(
     () => ({
-      data: jobsData,
       jobs,
       createNewJob,
       newCycle,
@@ -193,7 +164,6 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       showToast,
     }),
     [
-      jobsData,
       jobs,
       createNewJob,
       newCycle,

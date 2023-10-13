@@ -1,4 +1,4 @@
-import { JobInfo } from './job';
+// import { JobInfo } from './job';
 
 export interface CyclesProviderProps {
   children: React.ReactNode;
@@ -78,11 +78,11 @@ export interface CyclesContextData {
   finishCurrentCycle: (cycle: Cycle) => void;
   jobTotalHoursUsed: number;
   jobCycles: JobCycles[];
-  cycles: FilteredCycles[];
+  // cycles: FilteredCycles[];
   cyclesByUser: Cycle[];
   countdownText: string;
-  activeCycleInfo: ActiveCycleInfo | null;
-  jobInfo: JobInfo | undefined;
+  // activeCycleInfo: ActiveCycleInfo | null;
+  // jobInfo: JobInfo | undefined;
   deleteCycle: (id: string) => void;
 }
 

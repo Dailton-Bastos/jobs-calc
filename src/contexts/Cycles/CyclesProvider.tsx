@@ -7,22 +7,22 @@ import type {
   CreateNewCycleJobData,
   Cycle,
   CyclesProviderProps,
-  FilteredCycles,
+  // FilteredCycles,
   JobCycles,
   JobCyclesByDate,
 } from '~/@types/cycles';
-import { JobInfo } from '~/@types/job';
+// import { JobInfo } from '~/@types/job';
 import { db } from '~/config/firebase';
 import {
   formatJobCyclesByDate,
-  formatTime,
-  getJobReports,
-  getJobStatus,
-  getJobType,
+  // formatTime,
+  // getJobReports,
+  // getJobStatus,
+  // getJobType,
   groupBy,
   secondsToTime,
-  getTime,
-  uuid,
+  // getTime,
+  // uuid,
 } from '~/helpers/utils';
 import { useAuth } from '~/hooks/useAuth';
 import { useCycle } from '~/hooks/useCycle';
@@ -37,11 +37,11 @@ import {
 import { CyclesContext } from './CyclesContext';
 
 export const CyclesProvider = ({ children }: CyclesProviderProps) => {
-  const [jobInfo, setJobInfo] = React.useState<JobInfo>();
+  // const [jobInfo, setJobInfo] = React.useState<JobInfo>();
 
   const [countdownText, setCountdownText] = React.useState('00:00:00');
-  const [countdownTextActiveCycle, setCountdownTextActiveCycle] =
-    React.useState('00:00:00');
+  // const [countdownTextActiveCycle, setCountdownTextActiveCycle] =
+  //   React.useState('00:00:00');
 
   const [jobCycles, setJobCycles] = React.useState<JobCycles[]>([]);
 
@@ -49,45 +49,44 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
   const { user } = useAuth();
 
-  const { newCycle, activeJob, updateJob, jobs, updateActiveJob } =
-    useJobsContext();
+  const { newCycle, activeJob, jobs, updateActiveJob } = useJobsContext();
 
   const {
     formatJobCycles,
     getJobTotalHoursUsed,
-    getTotalHoursUsedActiveCycleJob,
-    getActiveCycleInfo,
+    // getTotalHoursUsedActiveCycleJob,
+    // getActiveCycleInfo,
   } = useCycle();
 
   const { cyclesByUser, activeCycleId } = state;
 
-  const cyclesData: FilteredCycles[] = React.useMemo(() => {
-    return cyclesByUser?.map((cycle: Cycle) => {
-      const job = jobs?.find((item) => item.id === cycle?.jobId);
+  // const cyclesData: FilteredCycles[] = React.useMemo(() => {
+  //   return cyclesByUser?.map((cycle: Cycle) => {
+  //     const job = jobs?.find((item) => item.id === cycle?.jobId);
 
-      const fineshedDate = cycle?.fineshedDate ?? 0;
+  //     const fineshedDate = cycle?.fineshedDate ?? 0;
 
-      const { time: startDate } = getTime(cycle?.startDate);
-      const { time: endDate } = getTime(fineshedDate);
+  //     const { time: startDate } = getTime(cycle?.startDate);
+  //     const { time: endDate } = getTime(fineshedDate);
 
-      const totalHours = cycle?.fineshedDate
-        ? differenceInSeconds(cycle?.fineshedDate, cycle?.startDate)
-        : 0;
-      const { hours, minutes } = secondsToTime(totalHours);
+  //     const totalHours = cycle?.fineshedDate
+  //       ? differenceInSeconds(cycle?.fineshedDate, cycle?.startDate)
+  //       : 0;
+  //     const { hours, minutes } = secondsToTime(totalHours);
 
-      return {
-        id: cycle?.id ?? uuid(),
-        jobId: cycle?.jobId,
-        jobTitle: job?.title ?? '',
-        startDate,
-        endDate: cycle?.fineshedDate ? endDate : null,
-        hours: cycle?.fineshedDate ? `${hours}h:${minutes}m` : '00h:00m',
-        totalInSeconds: totalHours,
-        createdAt: cycle?.startDate,
-        isActive: cycle?.isActive,
-      };
-    });
-  }, [cyclesByUser, jobs]);
+  //     return {
+  //       id: cycle?.id ?? uuid(),
+  //       jobId: cycle?.jobId,
+  //       jobTitle: job?.title ?? '',
+  //       startDate,
+  //       endDate: cycle?.fineshedDate ? endDate : null,
+  //       hours: cycle?.fineshedDate ? `${hours}h:${minutes}m` : '00h:00m',
+  //       totalInSeconds: totalHours,
+  //       createdAt: cycle?.startDate,
+  //       isActive: cycle?.isActive,
+  //     };
+  //   });
+  // }, [cyclesByUser, jobs]);
 
   const activeCycle = React.useMemo(() => {
     return cyclesByUser.find((cycle) => cycle.id === activeCycleId);
@@ -107,18 +106,18 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     return 0;
   });
 
-  const cyclesFromActiveCycleJob = cyclesByUser.filter((cycle) => {
-    return cycle?.jobId === activeCycle?.jobId;
-  });
+  // const cyclesFromActiveCycleJob = cyclesByUser.filter((cycle) => {
+  //   return cycle?.jobId === activeCycle?.jobId;
+  // });
 
   const { jobTotalHoursUsed } = getJobTotalHoursUsed(jobCycles);
-  const { totalHoursUsedActiveCycleJob } = getTotalHoursUsedActiveCycleJob(
-    cyclesFromActiveCycleJob,
-  );
-  const activeCycleInfo = getActiveCycleInfo(
-    activeCycleJob,
-    countdownTextActiveCycle,
-  );
+  // const { totalHoursUsedActiveCycleJob } = getTotalHoursUsedActiveCycleJob(
+  //   cyclesFromActiveCycleJob,
+  // );
+  // const activeCycleInfo = getActiveCycleInfo(
+  //   activeCycleJob,
+  //   countdownTextActiveCycle,
+  // );
 
   const activeCycleTotalSeconds = React.useMemo(() => {
     return activeJob ? activeJob?.totalSecondsRemaining : 0;
@@ -154,20 +153,20 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     activeJob,
   ]);
 
-  const countdownValueActiveCycle = React.useCallback(() => {
-    const totalSecondsRemaining = activeCycleJob?.totalSecondsRemaining ?? 0;
+  // const countdownValueActiveCycle = React.useCallback(() => {
+  //   const totalSecondsRemaining = activeCycleJob?.totalSecondsRemaining ?? 0;
 
-    const jobCurrentSeconds = totalSecondsRemaining - amountSecondsPassed;
+  //   const jobCurrentSeconds = totalSecondsRemaining - amountSecondsPassed;
 
-    const totalCount =
-      jobCurrentSeconds >= 1
-        ? jobCurrentSeconds
-        : totalHoursUsedActiveCycleJob + amountSecondsPassed;
+  //   const totalCount =
+  //     jobCurrentSeconds >= 1
+  //       ? jobCurrentSeconds
+  //       : totalHoursUsedActiveCycleJob + amountSecondsPassed;
 
-    const { formattedTime } = secondsToTime(totalCount);
+  //   const { formattedTime } = secondsToTime(totalCount);
 
-    setCountdownTextActiveCycle(formattedTime);
-  }, [activeCycleJob, amountSecondsPassed, totalHoursUsedActiveCycleJob]);
+  //   setCountdownTextActiveCycle(formattedTime);
+  // }, [activeCycleJob, amountSecondsPassed, totalHoursUsedActiveCycleJob]);
 
   const createNewCycleJob = React.useCallback(
     (data: CreateNewCycleJobData) => {
@@ -218,14 +217,14 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
       updateCycle(cycle);
 
-      updateJob({
-        ...activeJob,
-        totalSecondsRemaining: activeCycleCurrentSeconds,
-      });
+      // updateJob({
+      //   ...activeJob,
+      //   totalSecondsRemaining: activeCycleCurrentSeconds,
+      // });
 
       dispatch(finishCurrentCycleActions());
     },
-    [updateCycle, updateJob, activeJob, activeCycleCurrentSeconds, dispatch],
+    [updateCycle, activeJob, dispatch],
   );
 
   const deleteCycle = React.useCallback(
@@ -235,48 +234,48 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     [dispatch],
   );
 
-  const getJobInfo = React.useCallback(() => {
-    if (activeJob) {
-      const activeJobId = activeJob?.id ?? '';
+  // const getJobInfo = React.useCallback(() => {
+  //   if (activeJob) {
+  //     const activeJobId = activeJob?.id ?? '';
 
-      const listCycles = cyclesByUser.filter((cycle) => {
-        return cycle?.jobId === activeJobId;
-      });
+  //     const listCycles = cyclesByUser.filter((cycle) => {
+  //       return cycle?.jobId === activeJobId;
+  //     });
 
-      const totalSecondsAmount = activeJob?.totalSecondsAmount ?? 0;
-      const hourEstimate = activeJob?.hourEstimate ?? 0;
-      const minutesEstimate = activeJob?.minutesEstimate ?? 0;
-      const { hours, minutes } = secondsToTime(jobTotalHoursUsed);
+  //     const totalSecondsAmount = activeJob?.totalSecondsAmount ?? 0;
+  //     const hourEstimate = activeJob?.estimatedTime?.hours ?? 0;
+  //     const minutesEstimate = activeJob?.estimatedTime?.minutes ?? 0;
+  //     const { hours, minutes } = secondsToTime(jobTotalHoursUsed);
 
-      const { jobCyclesByDate } = getJobReports(listCycles);
+  //     const { jobCyclesByDate } = getJobReports(listCycles);
 
-      const { time: createdAt } = getTime(activeJob.createdAt);
-      const { time: updatedAt } = getTime(activeJob.updatedAt);
+  //     const { time: createdAt } = getTime(activeJob.createdAt?.timestamp);
+  //     const { time: updatedAt } = getTime(activeJob.updatedAt?.timestamp);
 
-      const info: JobInfo = {
-        id: activeJobId,
-        jobberId: activeJob?.jobberId,
-        title: activeJob.title,
-        description: activeJob?.description,
-        estimatedTime: formatTime(hourEstimate, minutesEstimate),
-        usedTime: {
-          time: `${hours}h:${minutes}m`,
-          statusColor: jobTotalHoursUsed > totalSecondsAmount ? 'red' : 'gray',
-        },
-        type: getJobType(activeJob?.type),
-        status: getJobStatus(activeJob?.status),
-        cyclesByDate: jobCyclesByDate,
-        createdAt,
-        updatedAt,
-      };
+  //     const info: JobInfo = {
+  //       id: activeJobId,
+  //       jobberId: activeJob?.jobberId,
+  //       title: activeJob.title,
+  //       description: activeJob?.description,
+  //       estimatedTime: formatTime(hourEstimate, minutesEstimate),
+  //       usedTime: {
+  //         time: `${hours}h:${minutes}m`,
+  //         statusColor: jobTotalHoursUsed > totalSecondsAmount ? 'red' : 'gray',
+  //       },
+  //       type: getJobType(activeJob?.type),
+  //       status: getJobStatus(activeJob?.status),
+  //       cyclesByDate: jobCyclesByDate,
+  //       createdAt,
+  //       updatedAt,
+  //     };
 
-      setJobInfo(info);
-    }
-  }, [activeJob, cyclesByUser, jobTotalHoursUsed]);
+  //     setJobInfo(info);
+  //   }
+  // }, [activeJob, cyclesByUser, jobTotalHoursUsed]);
 
-  React.useEffect(() => {
-    getJobInfo();
-  }, [getJobInfo]);
+  // React.useEffect(() => {
+  //   getJobInfo();
+  // }, [getJobInfo]);
 
   // Start Countdown
   React.useEffect(() => {
@@ -304,9 +303,9 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
   }, [countdownValue]);
 
   // Countdown Text Active Cycle
-  React.useEffect(() => {
-    countdownValueActiveCycle();
-  }, [countdownValueActiveCycle]);
+  // React.useEffect(() => {
+  //   countdownValueActiveCycle();
+  // }, [countdownValueActiveCycle]);
 
   // Job Cycles Filtered by Date
   React.useEffect(() => {
@@ -349,10 +348,10 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       jobTotalHoursUsed,
       jobCycles,
       cyclesByUser,
-      cycles: cyclesData,
+      // cycles: cyclesData,
       countdownText,
-      activeCycleInfo,
-      jobInfo,
+      // activeCycleInfo,
+      // jobInfo,
       deleteCycle,
     }),
     [
@@ -364,10 +363,10 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       jobTotalHoursUsed,
       jobCycles,
       cyclesByUser,
-      cyclesData,
+      // cyclesData,
       countdownText,
-      activeCycleInfo,
-      jobInfo,
+      // activeCycleInfo,
+      // jobInfo,
       deleteCycle,
     ],
   );

@@ -24,6 +24,7 @@ import { Head } from '~/components/Head';
 import { JobEstimate } from '~/components/Job/Estimate';
 import { Title } from '~/components/Title';
 import { getTotalTimeInSeconds, jobSelectTypes } from '~/helpers/utils';
+import { useAuth } from '~/hooks/useAuth';
 import { useJobsContext } from '~/hooks/useJobsContext';
 import {
   jobTypeBudgetAction,
@@ -49,6 +50,9 @@ export const NewJobPage = () => {
     jobTypeReducer,
     JOB_TYPE_INITIAL_STATE,
   );
+
+  const { user } = useAuth();
+  const userId = user?.uid;
 
   const { isDisableEstimateField, isDisableJobberIdField } = jobTypeState;
 
@@ -102,25 +106,35 @@ export const NewJobPage = () => {
 
   const handleCreateNewJob = React.useCallback(
     (data: NewJobFormData) => {
-      const hourEstimate = data?.hourEstimate ?? 0;
-      const minutesEstimate = data?.minutesEstimate ?? 0;
+      if (!userId) return;
+
+      const dateInTimestamp = new Date().getTime();
+
+      const hourEstimate = data.hourEstimate ?? 1;
+      const minutesEstimate = data.minutesEstimate ?? 0;
+      const totalSecondsAmount = getTotalTimeInSeconds(
+        hourEstimate,
+        minutesEstimate,
+        0,
+      );
 
       createNewJob({
         ...data,
+        userId,
         type: data.type as JobType,
+        totalSecondsAmount,
+        status: 'developing',
         hourEstimate,
         minutesEstimate,
-        totalSecondsAmount: getTotalTimeInSeconds(
-          hourEstimate,
-          minutesEstimate,
-          0,
-        ),
+        totalSecondsRemaining: totalSecondsAmount,
         isHighlight,
+        createdAt: dateInTimestamp,
+        updatedAt: dateInTimestamp,
       });
 
       reset();
     },
-    [createNewJob, reset, isHighlight],
+    [createNewJob, reset, isHighlight, userId],
   );
 
   return (
