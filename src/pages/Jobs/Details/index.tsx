@@ -1,49 +1,55 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
-// import { Flex, Box, VStack, Text } from '@chakra-ui/react';
+import { Flex, Box, VStack, Text } from '@chakra-ui/react';
 
 // import { ActiveCycleInfo } from '~/components/ActiveCycleInfo';
 import { Container } from '~/components/Container';
-// import { Head } from '~/components/Head';
-// import { Countdown } from '~/components/Job/Countdown';
-// import { Cycles } from '~/components/Job/Cycles';
-// import { InfoJob } from '~/components/Job/Info';
-// import { JobTime } from '~/components/Job/Time';
-// import { Title } from '~/components/Title';
-// import { STATUS_COLORS } from '~/helpers/utils';
+import { Head } from '~/components/Head';
+import { Countdown } from '~/components/Job/Countdown';
+import { Cycles } from '~/components/Job/Cycles';
+import { InfoJob } from '~/components/Job/Info';
+import { JobTime } from '~/components/Job/Time';
+import { Title } from '~/components/Title';
+import { STATUS_COLORS } from '~/helpers/utils';
+import { useJobs } from '~/hooks/useJobs';
 // import { useCyclesContext } from '~/hooks/useCyclesContext';
-import { useJobsContext } from '~/hooks/useJobsContext';
+// import { useJobsContext } from '~/hooks/useJobsContext';
 
 export const DetailsJobPage = () => {
   const { id } = useParams();
 
-  const { jobs, updateActiveJob } = useJobsContext();
+  const { getJobById } = useJobs();
+
+  const job = React.useMemo(() => getJobById(id), [getJobById, id]);
+
+  // const { jobs, updateActiveJob } = useJobsContext();
 
   // const { activeCycleInfo, jobInfo, countdownText } = useCyclesContext();
 
   // const pageTitle = `${countdownText} - ${activeJob?.title}`;
+  const pageTitle = job?.title.fullTitle ?? '';
 
   // const showActiveCycleInfo = activeJob?.id !== activeCycleInfo?.jobId;
 
-  React.useEffect(() => {
-    const job = jobs?.find((item) => item.id === id);
+  // React.useEffect(() => {
+  //   const job = jobs?.find((item) => item.id === id);
 
-    if (job) {
-      updateActiveJob(job);
-    }
-  }, [jobs, updateActiveJob, id]);
+  //   if (job) {
+  //     updateActiveJob(job);
+  //   }
+  // }, [jobs, updateActiveJob, id]);
 
   return (
     <>
-      {/* <Head title={pageTitle} /> */}
+      <Head title={pageTitle} />
 
       <Container title="Detalhes do Job">
         <>
           {/* {showActiveCycleInfo && <ActiveCycleInfo />} */}
 
-          {/* <Box as="section" bg="white" px="8" py="12" borderRadius="5px">
-            {jobInfo && (
+          <Box as="section" bg="white" px="8" py="12" borderRadius="5px">
+            {job && (
               <>
                 <Flex
                   alignItems="center"
@@ -54,45 +60,45 @@ export const DetailsJobPage = () => {
                     <Title
                       title="Descrição"
                       label="Editar Descrição"
-                      url={`/jobs/${activeJob?.id}/edit`}
+                      url={`/jobs/${job?.id}/edit`}
                       withTooltip
                     />
 
                     <VStack spacing="6" mt="8" align="flex-start">
                       <Flex align="center" justify="space-between" w="100%">
-                        {jobInfo.jobberId && (
+                        {job.jobberId && (
                           <InfoJob title="Jobber ID">
                             <a
-                              href={`https://jobber.team/jobs/details/${jobInfo.jobberId}`}
+                              href={`https://jobber.team/jobs/details/${job.jobberId}`}
                               target="_blank"
                               rel="noreferrer"
                             >
-                              <Text as="span">{jobInfo.jobberId}</Text>
+                              <Text as="span">{job.jobberId}</Text>
                             </a>
                           </InfoJob>
                         )}
 
                         <InfoJob title="Título">
-                          <Text as="span">{activeJob?.title}</Text>
+                          <Text as="span">{job?.title.fullTitle}</Text>
                         </InfoJob>
                       </Flex>
 
                       <Flex align="center" justify="space-between" w="100%">
                         <InfoJob title="Tempo estimado">
-                          <Text as="span">{jobInfo.estimatedTime}</Text>
+                          <Text as="span">{job.estimatedTime?.total}</Text>
                         </InfoJob>
 
                         <InfoJob
                           title="Tempo utilizado"
-                          statusColor={jobInfo.usedTime.statusColor}
+                          statusColor={job.usedTime.statusColor}
                         >
-                          <Text as="span">{jobInfo.usedTime.time}</Text>
+                          <Text as="span">{job.usedTime.total}</Text>
                         </InfoJob>
                       </Flex>
 
                       <Flex align="center" justify="space-between" w="100%">
                         <InfoJob title="Tipo">
-                          <Text as="span">{jobInfo.type}</Text>
+                          <Text as="span">{job.type}</Text>
                         </InfoJob>
 
                         <Box w="100%">
@@ -104,14 +110,14 @@ export const DetailsJobPage = () => {
                               w="8px"
                               h="8px"
                               borderRadius="50%"
-                              bg={STATUS_COLORS[jobInfo.status.statusColor]}
+                              bg={STATUS_COLORS[job.status.statusColor]}
                             />
 
                             <Text
                               fontSize="md"
-                              color={STATUS_COLORS[jobInfo.status.statusColor]}
+                              color={STATUS_COLORS[job.status.statusColor]}
                             >
-                              {jobInfo.status.type}
+                              {job.status.title}
                             </Text>
                           </Flex>
                         </Box>
@@ -120,19 +126,19 @@ export const DetailsJobPage = () => {
                       <Flex align="center" justify="space-between" w="100%">
                         <InfoJob title="Criado em">
                           <JobTime
-                            label={jobInfo.createdAt.label}
-                            dateTime={jobInfo.createdAt.dateTime}
+                            label={job.createdAt.label}
+                            dateTime={job.createdAt.datetime}
                           >
-                            {jobInfo.createdAt.title}
+                            {job.createdAt.title}
                           </JobTime>
                         </InfoJob>
 
                         <InfoJob title="Última atualização">
                           <JobTime
-                            label={jobInfo.updatedAt.label}
-                            dateTime={jobInfo.updatedAt.dateTime}
+                            label={job.updatedAt.label}
+                            dateTime={job.updatedAt.datetime}
                           >
-                            {jobInfo.updatedAt.title}
+                            {job.updatedAt.title}
                           </JobTime>
                         </InfoJob>
                       </Flex>
@@ -140,7 +146,7 @@ export const DetailsJobPage = () => {
                       <Box>
                         <Text fontWeight="bold">Briefing</Text>
 
-                        <Text fontSize="md">{jobInfo.description}</Text>
+                        <Text fontSize="md">{job.description}</Text>
                       </Box>
                     </VStack>
                   </Box>
@@ -160,7 +166,7 @@ export const DetailsJobPage = () => {
                 </Box>
               </>
             )}
-          </Box> */}
+          </Box>
         </>
       </Container>
     </>

@@ -13,9 +13,11 @@ import {
 } from '~/helpers/utils';
 
 import { useCycle } from './useCycle';
+import { useJobsContext } from './useJobsContext';
 
 export const useJobs = () => {
   const { getTotalHoursUsedActiveCycleJob } = useCycle();
+  const { jobs } = useJobsContext();
 
   const getJobTotalHoursUsed = React.useCallback(
     (cycles: Cycle[]) => {
@@ -93,5 +95,14 @@ export const useJobs = () => {
     [getJobTotalHoursUsed],
   );
 
-  return { formatJob };
+  const getJobById = React.useCallback(
+    (id: string | undefined) => {
+      if (!id) return;
+
+      return jobs?.find((job) => job?.id === id);
+    },
+    [jobs],
+  );
+
+  return { formatJob, getJobById };
 };
