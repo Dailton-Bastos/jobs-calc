@@ -49,7 +49,7 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
   const { user } = useAuth();
 
-  const { newCycle, activeJob, jobs, updateActiveJob } = useJobsContext();
+  const { activeJob, jobs, updateActiveJob } = useJobsContext();
 
   const {
     formatJobCycles,
@@ -320,11 +320,11 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     setJobCycles(data);
   }, [cyclesByUser, activeJob, formatJobCycles]);
 
-  React.useEffect(() => {
-    if (newCycle) {
-      dispatch(addNewCycleJobActions(newCycle));
-    }
-  }, [newCycle, dispatch]);
+  // React.useEffect(() => {
+  //   if (newCycle) {
+  //     dispatch(addNewCycleJobActions(newCycle));
+  //   }
+  // }, [newCycle, dispatch]);
 
   React.useEffect(() => {
     if (activeCycleJob) {

@@ -162,7 +162,7 @@ export const DetailsJobPage = () => {
                     withTooltip
                   />
 
-                  <Cycles />
+                  <Cycles reports={job?.reports} />
                 </Box>
               </>
             )}

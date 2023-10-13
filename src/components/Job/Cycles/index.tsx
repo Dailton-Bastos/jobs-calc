@@ -1,6 +1,8 @@
+import React from 'react';
+
 import {
   Flex,
-  // VStack,
+  VStack,
   Text,
   TableContainer,
   Table,
@@ -9,23 +11,33 @@ import {
   Tbody,
   Tr,
   Th,
-  // Td,
+  Td,
 } from '@chakra-ui/react';
 
-// import { useCyclesContext } from '~/hooks/useCyclesContext';
+import type { Report } from '~/@types/job';
 
-// import { JobTime } from '../Time';
+import { JobTime } from '../Time';
 
-export const Cycles = () => {
-  // const { jobInfo } = useCyclesContext();
+interface Props {
+  reports: Report[];
+}
+
+export const Cycles = ({ reports }: Props) => {
+  const totalReports = React.useMemo(() => {
+    const initialValue = 0;
+
+    return reports?.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue?.cycles?.length;
+    }, initialValue);
+  }, [reports]);
 
   return (
     <TableContainer mt="10">
       <Table colorScheme="blackAlpha">
         <TableCaption>
           <Flex gap="2" align="center" justify="flex-end">
-            <Text fontWeight="bold">Total de horas:</Text>
-            {/* <Text>{jobInfo?.usedTime.time}</Text> */}
+            <Text fontWeight="bold">Total:</Text>
+            <Text>{totalReports}</Text>
           </Flex>
         </TableCaption>
         <Thead>
@@ -37,20 +49,20 @@ export const Cycles = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {/* {jobInfo?.cyclesByDate?.map((cycleByDate) => (
-            <Tr key={cycleByDate?.id}>
+          {reports?.map((report) => (
+            <Tr key={report?.id}>
               <Td>
                 <JobTime
-                  label={cycleByDate?.time.label}
-                  dateTime={cycleByDate?.time.datetime}
+                  label={report?.date.label}
+                  dateTime={report?.date.datetime}
                 >
-                  {cycleByDate?.time.title}
+                  {report?.date.title}
                 </JobTime>
               </Td>
 
               <Td>
                 <VStack spacing="2" align="flex-start">
-                  {cycleByDate?.cycles?.map((cycle) => (
+                  {report?.cycles?.map((cycle) => (
                     <Text key={cycle.id}>
                       <Text as="time">{cycle.startHour}</Text> -{' '}
                       <Text as="time">{cycle.fineshedHour}</Text>
@@ -61,15 +73,15 @@ export const Cycles = () => {
 
               <Td>
                 <VStack spacing="2" align="flex-start">
-                  {cycleByDate?.cycles?.map((cycle) => (
+                  {report?.cycles?.map((cycle) => (
                     <Text key={cycle.id}>{cycle.total}</Text>
                   ))}
                 </VStack>
               </Td>
 
-              <Td>{cycleByDate.cycleTotalTime}</Td>
+              <Td>{report.totalUsedTime}</Td>
             </Tr>
-          ))} */}
+          ))}
         </Tbody>
       </Table>
     </TableContainer>
