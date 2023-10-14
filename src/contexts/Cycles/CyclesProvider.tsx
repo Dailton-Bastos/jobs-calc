@@ -7,6 +7,7 @@ import type {
   CreateNewCycleJobData,
   Cycle,
   CyclesProviderProps,
+  FormattedJobCycle,
   // FilteredCycles,
   JobCycles,
   JobCyclesByDate,
@@ -313,7 +314,10 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
     const { cycles } = formatJobCycles(cyclesByUser, activeJobId);
 
-    const groupByDate: JobCyclesByDate = groupBy(cycles, 'date');
+    const groupByDate: JobCyclesByDate = groupBy<FormattedJobCycle>(
+      cycles,
+      (cycle) => cycle.date,
+    );
 
     const { data } = formatJobCyclesByDate(groupByDate);
 

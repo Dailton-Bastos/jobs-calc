@@ -9,7 +9,7 @@ import {
   equalTo,
 } from 'firebase/database';
 
-import { Cycle } from '~/@types/cycles';
+import { CycleApiData } from '~/@types/cycles';
 import type { JobData, JobFormatted } from '~/@types/job';
 import { db } from '~/config/firebase';
 import { createInitialStateActions } from '~/reducers/jobs/actions';
@@ -41,7 +41,7 @@ export const useInitialJobsState = () => {
       query(child(ref(db), 'cycles'), orderByChild('userId'), equalTo(userId)),
     );
 
-    let val: { [key: string]: Cycle } = {};
+    let val: { [key: string]: CycleApiData } = {};
 
     if (snapshot && snapshot.exists()) {
       val = snapshot.val();
@@ -57,12 +57,12 @@ export const useInitialJobsState = () => {
       const { val: jobsVal } = await snapshotJobs(userId);
       const { val: cyclesVal } = await snapshotReports(userId);
 
-      const data: JobFormatted[] = [];
-      const cycles: Cycle[] = [];
+      const jobData: JobFormatted[] = [];
+      const cyclesData: CycleApiData[] = [];
 
       if (cyclesVal) {
         for (const property in cyclesVal) {
-          cycles.push({ ...cyclesVal[property] });
+          cyclesData.push({ ...cyclesVal[property] });
         }
       }
 
@@ -75,15 +75,15 @@ export const useInitialJobsState = () => {
             ...jobsVal[property],
           };
 
-          const reports = cycles?.filter((cycle) => cycle?.jobId === id);
+          const cycles = cyclesData?.filter((cycle) => cycle?.jobId === id);
 
-          const formattedJob = formatJob(job, reports);
+          const formattedJob = formatJob(job, cycles);
 
-          data.push(formattedJob);
+          jobData.push(formattedJob);
         }
       }
 
-      const jobs = data?.sort((a, b) => {
+      const jobs = jobData?.sort((a, b) => {
         return b?.createdAt?.timestamp - a?.createdAt.timestamp;
       });
 

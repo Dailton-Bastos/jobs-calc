@@ -3,19 +3,19 @@
 import { differenceInSeconds, format } from 'date-fns';
 import pt from 'date-fns/locale/pt-BR';
 
-import {
-  Cycle,
+import type {
   FormattedJobCycle,
   JobCycles,
   JobCyclesByDate,
+  CycleApiData,
+  CycleFormatted,
 } from '~/@types/cycles';
 import {
-  CycleData,
-  JobByDate,
   JobStatus,
   JobType,
-  CycleDataByCreatedAt,
-  CyclesByDate,
+  Report,
+  ReportCommon,
+  FormattedReportCommon,
 } from '~/@types/job';
 
 export function formatTime(hour: number, minutes: number) {
@@ -45,17 +45,15 @@ export function formatHour(timestamp: number) {
   });
 }
 
-export function groupBy(array: any[], key: string) {
-  return array.reduce(
-    (acc: Record<string, unknown[]>, item: Record<string, any>) => {
-      if (!acc[item[key]]) acc[item[key]] = [];
+export function groupBy<T>(
+  array: T[],
+  predicate: (value: T, index: number, array: T[]) => string,
+) {
+  return array.reduce((acc, value, index, items) => {
+    (acc[predicate(value, index, items)] ||= []).push(value);
 
-      acc[item[key]].push(item);
-
-      return acc;
-    },
-    {},
-  );
+    return acc;
+  }, {} as { [key: string]: T[] });
 }
 
 export function getTotalTimeInSeconds(
@@ -198,75 +196,26 @@ export const getTime = (time: number) => {
   };
 };
 
-export function getJobCyles(listCycles: Cycle[]) {
-  const jobCyles = listCycles.reduce(
-    (accumulator: CycleData[], currentValue: Cycle) => {
-      const cycleId = currentValue?.id ?? uuid();
-      const isActive = currentValue.isActive;
-      const startHour = formatHour(currentValue.startDate);
-      const fineshedHour = currentValue?.fineshedDate
-        ? formatHour(currentValue.fineshedDate)
-        : '';
-
-      const totalCycleInSeconds = currentValue?.fineshedDate
-        ? differenceInSeconds(
-            new Date(currentValue.fineshedDate),
-            new Date(currentValue.startDate),
-          )
-        : 0;
-
-      const {
-        hours: totalHours,
-        minutes: totalMinutes,
-        seconds: totalSeconds,
-      } = secondsToTime(totalCycleInSeconds);
-
-      const total = `${totalHours}h:${totalMinutes}m:${totalSeconds}s`;
-
-      const cycle: CycleData = {
-        id: cycleId,
-        isActive,
-        startHour,
-        fineshedHour,
-        total,
-        totalCycleInSeconds,
-        createdAt: format(new Date(currentValue.startDate), "dd'/'MM'/'yyyy"),
-      };
-
-      accumulator.push(cycle);
-
-      return accumulator;
-    },
-    [],
-  );
-
-  return { jobCyles };
-}
-
-export function getJobReports(listCycles: Cycle[]) {
-  const cycles = listCycles.reduce(
-    (accumulator: CycleDataByCreatedAt[], currentValue: Cycle) => {
-      const cycleId = currentValue?.id ?? uuid();
-
-      const { label, datetime } = getTime(currentValue.startDate);
-
-      const time = {
-        label,
-        title: format(new Date(currentValue.startDate), "dd'/'MM'/'yyyy", {
-          locale: pt,
-        }),
-        datetime,
-      };
-
-      const createdAt = format(
+function getFormattedReportCommon(data: CycleApiData[]) {
+  const reports = data.reduce(
+    (accumulator: FormattedReportCommon[], currentValue: CycleApiData) => {
+      const dateTitle = format(
         new Date(currentValue.startDate),
         "dd'/'MM'/'yyyy",
       );
 
-      const report = {
-        id: cycleId,
-        time,
-        createdAt,
+      const { label, datetime } = getTime(currentValue.startDate);
+
+      const timestamp = currentValue.startDate;
+
+      const report: FormattedReportCommon = {
+        ...currentValue,
+        date: {
+          title: dateTitle,
+          label,
+          datetime,
+          timestamp,
+        },
       };
 
       accumulator.push(report);
@@ -276,36 +225,81 @@ export function getJobReports(listCycles: Cycle[]) {
     [],
   );
 
-  const cyclesByDate: JobByDate = groupBy(cycles, 'createdAt');
+  return { reports };
+}
 
-  const { jobCyles } = getJobCyles(listCycles);
+const formatCycle = (cycle: FormattedReportCommon): CycleFormatted => {
+  const totalCycleInSeconds = cycle?.fineshedDate
+    ? differenceInSeconds(
+        new Date(cycle.fineshedDate),
+        new Date(cycle.startDate),
+      )
+    : 0;
+  const { hours, minutes } = secondsToTime(totalCycleInSeconds);
 
-  const jobCyclesByDate: CyclesByDate[] = Object.keys(cyclesByDate).map(
-    (key) => {
-      const data = jobCyles.filter(
-        (cycle) => cycle.createdAt === cyclesByDate[key][0].createdAt,
-      );
+  return {
+    id: cycle?.id,
+    jobId: cycle?.jobId,
+    isActive: cycle?.isActive,
+    startHour: formatHour(cycle?.startDate),
+    finishedHour: cycle?.fineshedDate ? formatHour(cycle?.fineshedDate) : '',
+    total: `${hours}h:${minutes}m`,
+  };
+};
 
-      const totalHoursByDate = data?.reduce(
-        (total: number, cycle: CycleData) => {
-          total += cycle?.totalCycleInSeconds;
+export function getJobReports(data: CycleApiData[], jobId: string) {
+  const jobCycles = data?.filter((cycle) => cycle.jobId === jobId);
 
-          return total;
-        },
-        0,
-      );
+  const { reports: jobCyclesToFilter } = getFormattedReportCommon(data);
 
-      const { hours, minutes } = secondsToTime(totalHoursByDate);
+  const { reports: ReportsCommon } = getFormattedReportCommon(jobCycles);
 
-      return {
-        ...cyclesByDate[key][0],
-        cycleTotalTime: `${hours}h:${minutes}m`,
-        cycles: data,
-      };
-    },
+  const filterCyclesByDate = groupBy<ReportCommon>(
+    ReportsCommon,
+    (value) => value.date?.title,
   );
 
-  return { jobCyclesByDate };
+  const jobReports = Object.keys(filterCyclesByDate)
+    .map((key) => {
+      const cycles = jobCyclesToFilter?.filter((cycle) => {
+        return cycle?.date?.title === filterCyclesByDate[key][0].date.title;
+      });
+
+      return { ...filterCyclesByDate[key][0], cycles };
+    })
+    .sort((a, b) => b.cycles[0].startDate - a.cycles[0].startDate);
+
+  const reports = jobReports?.map((report): Report => {
+    const cycles = report.cycles.map((cycle) => formatCycle(cycle));
+
+    const totalHoursByDate = report.cycles?.reduce(
+      (total: number, cycle: FormattedReportCommon) => {
+        const totalCycleInSeconds = cycle?.fineshedDate
+          ? differenceInSeconds(
+              new Date(cycle.fineshedDate),
+              new Date(cycle.startDate),
+            )
+          : 0;
+
+        total += totalCycleInSeconds;
+
+        return total;
+      },
+      0,
+    );
+
+    const { hours, minutes } = secondsToTime(totalHoursByDate);
+
+    return {
+      id: report?.id,
+      jobId: report?.jobId,
+      date: report?.date,
+      totalUsedTime: `${hours}h:${minutes}m`,
+      cycles,
+    };
+  });
+
+  return { reports };
 }
 
 export function range(start: number, end: number) {

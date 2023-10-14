@@ -2,11 +2,12 @@ import React from 'react';
 
 import { differenceInSeconds } from 'date-fns';
 
-import {
+import type {
   ActiveCycleInfo,
   Cycle,
   FormattedJobCycle,
   JobCycles,
+  CycleApiData,
 } from '~/@types/cycles';
 import { Job } from '~/@types/job';
 import {
@@ -73,9 +74,9 @@ export const useCycle = () => {
   }, []);
 
   const getTotalHoursUsedActiveCycleJob = React.useCallback(
-    (cycles: Cycle[]) => {
+    (cycles: CycleApiData[]) => {
       const totalHoursUsedActiveCycleJob = cycles.reduce(
-        (accumulator: number, currentValue: Cycle) => {
+        (accumulator: number, currentValue: CycleApiData) => {
           const totalCycleInSeconds = currentValue?.fineshedDate
             ? differenceInSeconds(
                 new Date(currentValue.fineshedDate),

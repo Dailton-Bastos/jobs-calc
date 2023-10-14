@@ -2,7 +2,7 @@ import { ToastId, UseToastOptions } from '@chakra-ui/react';
 
 import { STATUS_COLORS } from '~/helpers/utils';
 
-// import { Cycle } from './cycles';
+import { CycleFormatted } from './cycles';
 
 export type JobStatus = 'opened' | 'developing' | 'done' | 'paused';
 export type JobType = 'other' | 'budget' | 'development';
@@ -16,20 +16,20 @@ interface Date {
   timestamp: number;
 }
 
-interface ReportCycle {
+interface ReportCommon {
   id: string;
-  isActive: boolean;
-  startHour: string;
-  fineshedHour: string;
-  total: string;
-  totalCycleInSeconds: number;
-  createdAt: string;
+  jobId: string;
+  date: Date;
 }
 
-interface Report {
-  id: string;
-  date: Date;
-  cycles: ReportCycle[];
+export interface FormattedReportCommon extends ReportCommon {
+  startDate: number;
+  fineshedDate?: number;
+  isActive: boolean;
+}
+
+interface Report extends ReportCommon {
+  cycles: CycleFormatted[];
   totalUsedTime: string;
 }
 

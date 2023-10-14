@@ -1,4 +1,20 @@
-// import { JobInfo } from './job';
+interface CycleCommon {
+  jobId: string;
+  isActive: boolean;
+}
+
+export interface CycleApiData extends CycleCommon {
+  id: string;
+  startDate: number;
+  fineshedDate?: number;
+}
+
+export interface CycleFormatted extends CycleCommon {
+  id: string;
+  startHour: string;
+  finishedHour: string;
+  total: string;
+}
 
 export interface CyclesProviderProps {
   children: React.ReactNode;

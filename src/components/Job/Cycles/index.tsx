@@ -12,32 +12,62 @@ import {
   Tr,
   Th,
   Td,
+  Box,
 } from '@chakra-ui/react';
 
-import type { Report } from '~/@types/job';
+import type { JobFormatted } from '~/@types/job';
+import { Pagination } from '~/components/Pagination';
 
 import { JobTime } from '../Time';
 
 interface Props {
-  reports: Report[];
+  job: JobFormatted;
 }
 
-export const Cycles = ({ reports }: Props) => {
+export const Cycles = ({ job }: Props) => {
+  const [currentPage, setCurrentPage] = React.useState(1);
+
+  const PAGE_SIZE = 3;
+
   const totalReports = React.useMemo(() => {
     const initialValue = 0;
 
-    return reports?.reduce((accumulator, currentValue) => {
+    return job?.reports?.reduce((accumulator, currentValue) => {
       return accumulator + currentValue?.cycles?.length;
     }, initialValue);
-  }, [reports]);
+  }, [job]);
+
+  const totalCount = React.useMemo(() => job?.reports?.length, [job]);
+
+  const reports = React.useMemo(() => {
+    const firstPageIndex = (currentPage - 1) * PAGE_SIZE;
+    const lastPageIndex = firstPageIndex + PAGE_SIZE;
+
+    return job?.reports.slice(firstPageIndex, lastPageIndex);
+  }, [job, currentPage]);
 
   return (
     <TableContainer mt="10">
       <Table colorScheme="blackAlpha">
         <TableCaption>
-          <Flex gap="2" align="center" justify="flex-end">
-            <Text fontWeight="bold">Total:</Text>
-            <Text>{totalReports}</Text>
+          <Flex align="center" justify="space-between">
+            <Box>
+              <Text fontWeight="bold">
+                Horas:{' '}
+                <Text as="span" fontWeight="normal">
+                  {job?.usedTime.total}
+                </Text>
+              </Text>
+            </Box>
+
+            <Box>
+              <Text fontWeight="bold">
+                Apontamentos:{' '}
+                <Text as="span" fontWeight="normal">
+                  {totalReports}
+                </Text>
+              </Text>
+            </Box>
           </Flex>
         </TableCaption>
         <Thead>
@@ -65,7 +95,7 @@ export const Cycles = ({ reports }: Props) => {
                   {report?.cycles?.map((cycle) => (
                     <Text key={cycle.id}>
                       <Text as="time">{cycle.startHour}</Text> -{' '}
-                      <Text as="time">{cycle.fineshedHour}</Text>
+                      <Text as="time">{cycle.finishedHour}</Text>
                     </Text>
                   ))}
                 </VStack>
@@ -84,6 +114,14 @@ export const Cycles = ({ reports }: Props) => {
           ))}
         </Tbody>
       </Table>
+
+      <Pagination
+        currentPage={currentPage}
+        totalCount={totalCount}
+        pageSize={PAGE_SIZE}
+        siblingCount={1}
+        onPageChange={(page) => setCurrentPage(page)}
+      />
     </TableContainer>
   );
 };
