@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { UseToastOptions, useToast } from '@chakra-ui/react';
 import { ref, push, set, onValue, ThenableReference } from 'firebase/database';
 
-import { Cycle } from '~/@types/cycles';
+// import { Cycle } from '~/@types/cycles';
 import type {
   JobsProviderProps,
   JobData,
@@ -20,13 +20,24 @@ import { addNewJobActions, deleteJobActions } from '~/reducers/jobs/actions';
 import { JobsContext } from './JobsContext';
 
 export const JobsProvider = ({ children }: JobsProviderProps) => {
-  const [newCycle, setNewCycle] = React.useState<Cycle | null>(null);
+  const [activeJob, setActiveJob] = React.useState<JobFormatted | undefined>(
+    undefined,
+  );
+  // const [newCycle, setNewCycle] = React.useState<Cycle | null>(null);
 
   const { state, dispatch, createInitialState } = useInitialJobsState();
 
-  const { jobs, activeJob } = state;
+  const { jobsData, cyclesData, activeJobData } = state;
 
   const { formatJob } = useJobs();
+
+  const jobs = React.useMemo(() => {
+    return jobsData.map((job) => {
+      const cycles = cyclesData?.filter((cycle) => cycle?.jobId === job.id);
+
+      return formatJob(job, cycles);
+    });
+  }, [jobsData, cyclesData, formatJob]);
 
   const { user } = useAuth();
   const userId = user?.uid;
@@ -58,33 +69,33 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
 
       if (!id) return;
 
-      const jobAction = formatJob({ id, ...data }, []);
+      const jobAction = { id, ...data };
 
       dispatch(addNewJobActions(jobAction));
 
-      const dateInTimestamp = new Date().getTime();
+      // const dateInTimestamp = new Date().getTime();
 
-      const cycle: Cycle = {
-        id: null,
-        jobId: id,
-        userId,
-        isActive: true,
-        startDate: dateInTimestamp,
-      };
+      // const cycle: Cycle = {
+      //   id: null,
+      //   jobId: id,
+      //   userId,
+      //   isActive: true,
+      //   startDate: dateInTimestamp,
+      // };
 
-      const { key: cycleKey } = push(ref(db, 'cycles'), cycle);
+      // const { key: cycleKey } = push(ref(db, 'cycles'), cycle);
 
-      if (cycleKey) {
-        setNewCycle({
-          ...cycle,
-          id: cycleKey,
-          startDate: dateInTimestamp,
-        });
-      }
+      // if (cycleKey) {
+      //   setNewCycle({
+      //     ...cycle,
+      //     id: cycleKey,
+      //     startDate: dateInTimestamp,
+      //   });
+      // }
 
       navigate(`/jobs/${id}`);
     },
-    [navigate, dispatch, userId, formatJob],
+    [navigate, dispatch, userId],
   );
 
   const updateJob = React.useCallback(
@@ -151,11 +162,21 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
     createInitialState(user?.uid);
   }, [createInitialState, user]);
 
+  // Set Active Job
+  React.useEffect(() => {
+    if (activeJobData) {
+      const job = formatJob(activeJobData, cyclesData);
+
+      setActiveJob(job);
+    }
+  }, [activeJobData, formatJob, cyclesData]);
+
   const values = React.useMemo(
     () => ({
       jobs,
+      cyclesData,
       createNewJob,
-      newCycle,
+      // newCycle,
       fetchJob,
       activeJob,
       updateActiveJob,
@@ -165,8 +186,9 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
     }),
     [
       jobs,
+      cyclesData,
       createNewJob,
-      newCycle,
+      // newCycle,
       fetchJob,
       activeJob,
       updateActiveJob,

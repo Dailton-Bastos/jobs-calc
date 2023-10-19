@@ -34,7 +34,7 @@ export const useJobs = () => {
   );
 
   const formatJob = React.useCallback(
-    (data: JobApiData, cycles: CycleApiData[]): JobFormatted => {
+    (job: JobApiData, cycles: CycleApiData[]): JobFormatted => {
       const {
         title,
         hourEstimate,
@@ -44,14 +44,14 @@ export const useJobs = () => {
         createdAt,
         updatedAt,
         totalSecondsAmount,
-      } = data;
+      } = job;
 
       const { time: createdAtTime } = getTime(createdAt);
       const { time: updatedAtTime } = getTime(updatedAt);
 
       const { hours, minutes, totalHoursUsed } = getJobTotalHoursUsed(cycles);
 
-      const jobId = data.id;
+      const jobId = job.id;
 
       const { reports } = getJobReports(cycles, jobId);
 
@@ -61,7 +61,7 @@ export const useJobs = () => {
           : ('green' as const);
 
       return {
-        ...data,
+        ...job,
         title: {
           shortTitle: truncateString(title, 40),
           fullTitle: title,

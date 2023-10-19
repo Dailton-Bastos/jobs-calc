@@ -1,17 +1,20 @@
 import { produce } from 'immer';
 
-import { JobFormatted } from '~/@types/job';
+import { CycleApiData } from '~/@types/cycles';
+import { JobApiData } from '~/@types/job';
 
 import { Action, ActionTypes } from './actions';
 
 interface JobsState {
-  jobs: JobFormatted[];
-  activeJob: JobFormatted | null;
+  jobsData: JobApiData[];
+  cyclesData: CycleApiData[];
+  activeJobData: JobApiData | undefined;
 }
 
 export const initialJobsState: JobsState = {
-  jobs: [],
-  activeJob: null,
+  jobsData: [],
+  cyclesData: [],
+  activeJobData: undefined,
 };
 
 export const jobsReducer = (state: JobsState, action: Action): JobsState => {
@@ -20,38 +23,41 @@ export const jobsReducer = (state: JobsState, action: Action): JobsState => {
   switch (type) {
     case ActionTypes.CREATE_INITIAL_STATE:
       return produce(state, (draft) => {
-        draft.jobs = payload.jobs;
-        draft.activeJob = null;
+        draft.jobsData = payload.jobs;
+        draft.cyclesData = payload.cycles;
+        draft.activeJobData = payload.activeJob;
       });
 
     case ActionTypes.ADD_NEW_JOB:
       return produce(state, (draft) => {
-        draft.jobs.push(payload.data);
-        draft.activeJob = payload.data;
+        draft.jobsData.unshift(payload.job);
+        draft.activeJobData = payload.job;
       });
 
     case ActionTypes.SET_ACTIVE_JOB:
       return produce(state, (draft) => {
-        draft.activeJob = payload.activeJob;
+        draft.activeJobData = payload.activeJob;
       });
 
     case ActionTypes.UPDATE_JOB: {
-      const currentJobIndex = state.jobs.findIndex((job) => {
+      const currentJobIndex = state.jobsData.findIndex((job) => {
         return job.id === payload.job.id;
       });
 
       if (currentJobIndex < 0) return state;
 
       return produce(state, (draft) => {
-        draft.jobs[currentJobIndex] = payload.job;
+        draft.jobsData[currentJobIndex] = payload.job;
       });
     }
 
     case ActionTypes.DELETE_JOB: {
       return produce(state, (draft) => {
-        const index = draft.jobs?.findIndex((job) => job?.id === payload?.id);
+        const index = draft.jobsData?.findIndex(
+          (job) => job?.id === payload?.id,
+        );
 
-        if (index !== -1) draft.jobs.splice(index, 1);
+        if (index !== -1) draft.jobsData.splice(index, 1);
       });
     }
 

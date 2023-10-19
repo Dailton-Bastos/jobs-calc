@@ -2,7 +2,7 @@ import { ToastId, UseToastOptions } from '@chakra-ui/react';
 
 import { STATUS_COLORS } from '~/helpers/utils';
 
-import { CycleFormatted } from './cycles';
+import { CycleApiData, CycleFormatted } from './cycles';
 
 export type JobStatus = 'opened' | 'developing' | 'done' | 'paused';
 export type JobType = 'other' | 'budget' | 'development';
@@ -154,9 +154,10 @@ export interface JobInfo {
 
 export interface JobsContextProps {
   jobs: JobFormatted[];
+  cyclesData: CycleApiData[];
   createNewJob: (data: JobData) => void;
   fetchJob: (id: string) => void;
-  activeJob: JobFormatted | null;
+  activeJob: JobFormatted | undefined;
   updateActiveJob: (job: JobFormatted) => void;
   // newCycle: CycleData | null;
   updateJob: (job: Job) => void;

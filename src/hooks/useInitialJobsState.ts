@@ -10,17 +10,17 @@ import {
 } from 'firebase/database';
 
 import { CycleApiData } from '~/@types/cycles';
-import type { JobData, JobFormatted } from '~/@types/job';
+import type { JobApiData, JobData } from '~/@types/job';
 import { db } from '~/config/firebase';
 import { createInitialStateActions } from '~/reducers/jobs/actions';
 import { initialJobsState, jobsReducer } from '~/reducers/jobs/reducer';
 
-import { useJobs } from './useJobs';
+// import { useJobs } from './useJobs';
 
 export const useInitialJobsState = () => {
   const [state, dispatch] = React.useReducer(jobsReducer, initialJobsState);
 
-  const { formatJob } = useJobs();
+  // const { formatJob } = useJobs();
 
   const snapshotJobs = React.useCallback(async (userId: string) => {
     const snapshot = await get(
@@ -57,7 +57,7 @@ export const useInitialJobsState = () => {
       const { val: jobsVal } = await snapshotJobs(userId);
       const { val: cyclesVal } = await snapshotReports(userId);
 
-      const jobData: JobFormatted[] = [];
+      const jobData: JobApiData[] = [];
       const cyclesData: CycleApiData[] = [];
 
       if (cyclesVal) {
@@ -70,26 +70,33 @@ export const useInitialJobsState = () => {
         for (const property in jobsVal) {
           const id = property;
 
-          const job = {
+          // const job = {
+          //   id,
+          //   ...jobsVal[property],
+          // };
+
+          // const cycles = cyclesData?.filter((cycle) => cycle?.jobId === id);
+
+          // const formattedJob = formatJob(job, cycles);
+
+          jobData.push({
             id,
             ...jobsVal[property],
-          };
-
-          const cycles = cyclesData?.filter((cycle) => cycle?.jobId === id);
-
-          const formattedJob = formatJob(job, cycles);
-
-          jobData.push(formattedJob);
+          });
         }
       }
 
       const jobs = jobData?.sort((a, b) => {
-        return b?.createdAt?.timestamp - a?.createdAt.timestamp;
+        return b?.createdAt - a?.createdAt;
       });
 
-      dispatch(createInitialStateActions(jobs));
+      const activeJobId = cyclesData.find((cycle) => cycle.isActive)?.jobId;
+
+      const activeJob = jobs.find((job) => job.id === activeJobId);
+
+      dispatch(createInitialStateActions(jobs, cyclesData, activeJob));
     },
-    [snapshotJobs, snapshotReports, formatJob],
+    [snapshotJobs, snapshotReports],
   );
 
   return { state, dispatch, createInitialState };
