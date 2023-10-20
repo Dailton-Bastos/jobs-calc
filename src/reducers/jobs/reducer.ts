@@ -3,7 +3,7 @@ import { produce } from 'immer';
 // import { CycleApiData } from '~/@types/cycles';
 import { JobApiData } from '~/@types/job';
 
-import { Action, ActionTypes } from './actions';
+import { JobActions, ActionTypes } from './actions';
 
 interface JobsState {
   jobsData: JobApiData[];
@@ -17,7 +17,10 @@ export const initialJobsState: JobsState = {
   // activeJobData: undefined,
 };
 
-export const jobsReducer = (state: JobsState, action: Action): JobsState => {
+export const jobsReducer = (
+  state: JobsState,
+  action: JobActions,
+): JobsState => {
   const { type, payload } = action;
 
   switch (type) {

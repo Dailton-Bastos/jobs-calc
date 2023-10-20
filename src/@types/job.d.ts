@@ -1,6 +1,7 @@
-import { ToastId, UseToastOptions } from '@chakra-ui/react';
+// import { ToastId, UseToastOptions } from '@chakra-ui/react';
 
 import { STATUS_COLORS } from '~/helpers/utils';
+import { JobActions } from '~/reducers/jobs/actions';
 
 import { CycleFormatted } from './cycles';
 
@@ -154,15 +155,16 @@ export interface JobInfo {
 
 export interface JobsContextProps {
   jobsData: JobApiData[];
+  jobDispatch: (value: JobActions) => void;
   // cyclesData: CycleApiData[];
-  createNewJob: (data: JobData) => void;
-  fetchJob: (id: string) => void;
+  // createNewJob: (data: JobData) => void;
+  // fetchJob: (id: string) => void;
   // activeJob: JobFormatted | undefined;
-  updateActiveJob: (job: JobFormatted) => void;
+  // updateActiveJob: (job: JobFormatted) => void;
   // newCycle: CycleData | null;
-  updateJob: (job: Job) => void;
+  // updateJob: (job: Job) => void;
   deleteJob: (id: string) => void;
-  showToast: (options: UseToastOptions) => ToastId | undefined;
+  // showToast: (options: UseToastOptions) => ToastId | undefined;
 }
 
 export interface JobsProviderProps {

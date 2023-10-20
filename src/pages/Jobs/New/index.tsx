@@ -1,5 +1,6 @@
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 
 import {
   Box,
@@ -12,9 +13,10 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { ref, push, ThenableReference } from 'firebase/database';
 import * as yup from 'yup';
 
-import { JobType } from '~/@types/job';
+import { JobData, JobType } from '~/@types/job';
 import { ActiveCycleInfo } from '~/components/ActiveCycleInfo';
 import { Container } from '~/components/Container';
 import { Input } from '~/components/Form/Input';
@@ -23,9 +25,12 @@ import { Textarea } from '~/components/Form/Textarea';
 import { Head } from '~/components/Head';
 import { JobEstimate } from '~/components/Job/Estimate';
 import { Title } from '~/components/Title';
+import { db } from '~/config/firebase';
 import { getTotalTimeInSeconds, jobSelectTypes } from '~/helpers/utils';
 import { useAuth } from '~/hooks/useAuth';
+import { useCustomToast } from '~/hooks/useCustomToast';
 import { useJobsContext } from '~/hooks/useJobsContext';
+import { addNewJobActions } from '~/reducers/jobs/actions';
 import {
   jobTypeBudgetAction,
   jobTypeOtherAction,
@@ -54,6 +59,8 @@ export const NewJobPage = () => {
   const { user } = useAuth();
   const userId = user?.uid;
 
+  const { customToast } = useCustomToast();
+
   const { isDisableEstimateField, isDisableJobberIdField } = jobTypeState;
 
   const newJobForm = useForm<NewJobFormDataProps>({
@@ -71,7 +78,52 @@ export const NewJobPage = () => {
 
   const { errors } = formState;
 
-  const { createNewJob } = useJobsContext();
+  const navigate = useNavigate();
+
+  const { jobDispatch } = useJobsContext();
+
+  const createNewJob = React.useCallback(
+    (data: JobData) => {
+      if (!userId) return;
+
+      const { key: id }: ThenableReference = push(ref(db, 'jobs'), data);
+
+      if (!id) return;
+
+      const jobAction = { id, ...data };
+
+      jobDispatch(addNewJobActions(jobAction));
+
+      customToast({
+        title: 'Novo Job',
+        description: 'Um novo job foi iniciado',
+        status: 'success',
+      });
+
+      // const dateInTimestamp = new Date().getTime();
+
+      // const cycle: Cycle = {
+      //   id: null,
+      //   jobId: id,
+      //   userId,
+      //   isActive: true,
+      //   startDate: dateInTimestamp,
+      // };
+
+      // const { key: cycleKey } = push(ref(db, 'cycles'), cycle);
+
+      // if (cycleKey) {
+      //   setNewCycle({
+      //     ...cycle,
+      //     id: cycleKey,
+      //     startDate: dateInTimestamp,
+      //   });
+      // }
+
+      navigate(`/jobs/${id}`);
+    },
+    [navigate, jobDispatch, userId, customToast],
+  );
 
   const type = watch('type') as JobType;
 

@@ -1,21 +1,20 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
-import { UseToastOptions, useToast } from '@chakra-ui/react';
-import { ref, push, set, onValue, ThenableReference } from 'firebase/database';
+// import { ref, push, set, onValue, ThenableReference } from 'firebase/database';
 
 // import { Cycle } from '~/@types/cycles';
 import type {
   JobsProviderProps,
-  JobData,
-  JobFormatted,
-  Job,
+  // JobData,
+  // JobFormatted,
+  // Job,
 } from '~/@types/job';
-import { db } from '~/config/firebase';
+// import { db } from '~/config/firebase';
 import { useAuth } from '~/hooks/useAuth';
 import { useInitialJobsState } from '~/hooks/useInitialJobsState';
 // import { useJobs } from '~/hooks/useJobs';
-import { addNewJobActions, deleteJobActions } from '~/reducers/jobs/actions';
+import { deleteJobActions } from '~/reducers/jobs/actions';
 
 import { JobsContext } from './JobsContext';
 
@@ -29,125 +28,60 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
 
   const { jobsData } = state;
 
-  // const { formatJob } = useJobs();
-
-  // const jobs = React.useMemo(() => {
-  //   return jobsData.map((job) => {
-  //     // const cycles = cyclesData?.filter((cycle) => cycle?.jobId === job.id);
-
-  //     return formatJob(job, );
-  //   });
-  // }, [jobsData, formatJob]);
-
   const { user } = useAuth();
-  const userId = user?.uid;
+  // const userId = user?.uid;
 
-  const navigate = useNavigate();
-  const toast = useToast();
+  // const navigate = useNavigate();
+  // const updateJob = React.useCallback(
+  //   async (job: Job) => {
+  //     if (!job.id) return;
 
-  const showToast = React.useCallback(
-    (options: UseToastOptions) => {
-      const id = 'customToast';
+  //     try {
+  //       const jobData = {
+  //         ...job,
+  //         updatedAt: new Date().getTime(),
+  //       };
 
-      if (!toast.isActive(id)) {
-        return toast({
-          ...options,
-          variant: 'left-accent',
-          position: 'bottom-left',
-          isClosable: true,
-        });
-      }
-    },
-    [toast],
-  );
+  //       await set(ref(db, `jobs/${job.id}`), jobData);
 
-  const createNewJob = React.useCallback(
-    (data: JobData) => {
-      if (!userId) return;
+  //       // dispatch(updateJobActions(jobData));
+  //       showToast({
+  //         title: 'Job atualizado',
+  //         description: 'Informações salvas com sucesso.',
+  //         status: 'success',
+  //       });
+  //     } catch (error) {
+  //       showToast({
+  //         title: 'Ocorreu um erro',
+  //         description: 'Tente novamente, por favor.',
+  //         status: 'error',
+  //       });
 
-      const { key: id }: ThenableReference = push(ref(db, 'jobs'), data);
+  //       throw new Error('Erro to update job');
+  //     }
+  //   },
+  //   [showToast],
+  // );
 
-      if (!id) return;
+  // const fetchJob = React.useCallback((key: string) => {
+  //   if (!key) return;
 
-      const jobAction = { id, ...data };
+  //   onValue(ref(db, `jobs/${key}`), (snapshot) => {
+  //     if (snapshot && snapshot.exists()) {
+  //       // const val: Job = snapshot.val();
 
-      dispatch(addNewJobActions(jobAction));
+  //       if (!snapshot.key) return;
 
-      // const dateInTimestamp = new Date().getTime();
+  //       // dispatch(setActiveJobActions({ ...val, id: snapshot.key }));
+  //     }
+  //   });
+  // }, []);
 
-      // const cycle: Cycle = {
-      //   id: null,
-      //   jobId: id,
-      //   userId,
-      //   isActive: true,
-      //   startDate: dateInTimestamp,
-      // };
-
-      // const { key: cycleKey } = push(ref(db, 'cycles'), cycle);
-
-      // if (cycleKey) {
-      //   setNewCycle({
-      //     ...cycle,
-      //     id: cycleKey,
-      //     startDate: dateInTimestamp,
-      //   });
-      // }
-
-      navigate(`/jobs/${id}`);
-    },
-    [navigate, dispatch, userId],
-  );
-
-  const updateJob = React.useCallback(
-    async (job: Job) => {
-      if (!job.id) return;
-
-      try {
-        const jobData = {
-          ...job,
-          updatedAt: new Date().getTime(),
-        };
-
-        await set(ref(db, `jobs/${job.id}`), jobData);
-
-        // dispatch(updateJobActions(jobData));
-        showToast({
-          title: 'Job atualizado',
-          description: 'Informações salvas com sucesso.',
-          status: 'success',
-        });
-      } catch (error) {
-        showToast({
-          title: 'Ocorreu um erro',
-          description: 'Tente novamente, por favor.',
-          status: 'error',
-        });
-
-        throw new Error('Erro to update job');
-      }
-    },
-    [showToast],
-  );
-
-  const fetchJob = React.useCallback((key: string) => {
-    if (!key) return;
-
-    onValue(ref(db, `jobs/${key}`), (snapshot) => {
-      if (snapshot && snapshot.exists()) {
-        // const val: Job = snapshot.val();
-
-        if (!snapshot.key) return;
-
-        // dispatch(setActiveJobActions({ ...val, id: snapshot.key }));
-      }
-    });
-  }, []);
-
-  const updateActiveJob = React.useCallback((job: JobFormatted) => {
-    // dispatch(setActiveJobActions(job));
-    return;
-    job;
-  }, []);
+  // const updateActiveJob = React.useCallback((job: JobFormatted) => {
+  //   // dispatch(setActiveJobActions(job));
+  //   return;
+  //   job;
+  // }, []);
 
   const deleteJob = React.useCallback(
     (id: string) => {
@@ -174,27 +108,29 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
   const values = React.useMemo(
     () => ({
       jobsData,
+      jobDispatch: dispatch,
       // cyclesData,
-      createNewJob,
+      // createNewJob,
       // newCycle,
-      fetchJob,
+      // fetchJob,
       // activeJob,
-      updateActiveJob,
-      updateJob,
+      // updateActiveJob,
+      // updateJob,
       deleteJob,
-      showToast,
+      // showToast,
     }),
     [
       jobsData,
+      dispatch,
       // cyclesData,
-      createNewJob,
+      // createNewJob,
       // newCycle,
-      fetchJob,
+      // fetchJob,
       // activeJob,
-      updateActiveJob,
-      updateJob,
+      // updateActiveJob,
+      // updateJob,
       deleteJob,
-      showToast,
+      // showToast,
     ],
   );
 

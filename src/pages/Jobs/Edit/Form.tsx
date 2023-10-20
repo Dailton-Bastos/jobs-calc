@@ -20,8 +20,8 @@ import { Select } from '~/components/Form/Select';
 import { Textarea } from '~/components/Form/Textarea';
 import { Status } from '~/components/Job/Status';
 import { Title } from '~/components/Title';
-import { getTotalTimeInSeconds, jobSelectTypes } from '~/helpers/utils';
-import { useJobsContext } from '~/hooks/useJobsContext';
+import { jobSelectTypes } from '~/helpers/utils';
+// import { useJobsContext } from '~/hooks/useJobsContext';
 import {
   jobTypeBudgetAction,
   jobTypeDevelopmentAction,
@@ -54,7 +54,7 @@ export const Form = ({ job }: Props) => {
     JOB_TYPE_INITIAL_STATE,
   );
 
-  const { updateJob } = useJobsContext();
+  // const { updateJob } = useJobsContext();
 
   const { isDisableEstimateField, isDisableJobberIdField } = jobTypeState;
 
@@ -91,23 +91,23 @@ export const Form = ({ job }: Props) => {
       const jobHourEstimate = data?.hourEstimate ?? 0;
       const jobMinutesEstimate = data?.minutesEstimate ?? 0;
       const jobType = data?.type as JobType;
-      const totalSecondsAmount = getTotalTimeInSeconds(
-        jobHourEstimate,
-        jobMinutesEstimate,
-        0,
-      );
+      // const totalSecondsAmount = getTotalTimeInSeconds(
+      //   jobHourEstimate,
+      //   jobMinutesEstimate,
+      //   0,
+      // );
 
       if (job) {
-        updateJob({
-          ...job,
-          ...data,
-          type: jobType,
-          hourEstimate: jobHourEstimate,
-          minutesEstimate: jobMinutesEstimate,
-          totalSecondsAmount,
-          status,
-          isHighlight,
-        });
+        // updateJob({
+        //   ...job,
+        //   ...data,
+        //   type: jobType,
+        //   hourEstimate: jobHourEstimate,
+        //   minutesEstimate: jobMinutesEstimate,
+        //   totalSecondsAmount,
+        //   status,
+        //   isHighlight,
+        // });
       }
 
       reset({
@@ -121,7 +121,7 @@ export const Form = ({ job }: Props) => {
       });
     },
 
-    [status, isHighlight, updateJob, job, reset],
+    [status, isHighlight, job, reset],
   );
 
   const handleResetForm = React.useCallback(() => {

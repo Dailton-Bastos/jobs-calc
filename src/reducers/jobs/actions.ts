@@ -9,7 +9,7 @@ export enum ActionTypes {
   DELETE_JOB = 'DELETE_JOB',
 }
 
-export type Action =
+export type JobActions =
   | {
       type: ActionTypes.CREATE_INITIAL_STATE;
       payload: {
