@@ -5,14 +5,14 @@ import { Radio } from '~/components/Form/Radio';
 import { jobSelectStatus } from '~/helpers/utils';
 
 interface Props {
-  defaultValue: JobStatus;
+  value: JobStatus;
   onChange: (nextValue: JobStatus) => void;
 }
 
-export const Status = ({ defaultValue, onChange }: Props) => {
+export const Status = ({ value, onChange }: Props) => {
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: 'status',
-    defaultValue,
+    value,
     onChange: onChange,
   });
 
@@ -20,11 +20,11 @@ export const Status = ({ defaultValue, onChange }: Props) => {
 
   return (
     <HStack {...group} mt="2">
-      {jobSelectStatus?.map(({ name, value, color }) => {
-        const radio = getRadioProps({ value });
+      {jobSelectStatus?.map(({ name, value: optionValue, color }) => {
+        const radio = getRadioProps({ value: optionValue });
 
         return (
-          <Radio key={value} {...radio} statusColor={color}>
+          <Radio key={optionValue} {...radio} statusColor={color}>
             {name}
           </Radio>
         );

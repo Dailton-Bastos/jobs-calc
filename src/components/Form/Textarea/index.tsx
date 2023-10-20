@@ -19,7 +19,7 @@ export const Textarea = ({ label, error, registerName, ...rest }: Props) => {
   const { register } = useFormContext();
   return (
     <FormControl isInvalid={!!error}>
-      {!!label && <Label>{label}</Label>}
+      {!!label && <Label fontWeight="bold">{label}</Label>}
 
       <ChackraTextarea
         bg="white"

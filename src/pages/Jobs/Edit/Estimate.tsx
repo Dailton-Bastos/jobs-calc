@@ -22,30 +22,35 @@ export const Estimate = ({
       justifyContent="center"
       bg="gray.100"
       boxShadow="xs"
-      borderRadius="5px"
-      py="8"
-      px="8"
-      maxW="352px"
+      borderRadius="8px"
+      p="8"
+      // maxW="460px"
+      // w="100%"
+      h="260px"
     >
-      <Text as="time" fontSize="5xl" color="purple.700">
+      <Text as="time" fontSize="6xl" color="purple.700">
         {`${hourEstimate}h:${minutesEstimate}m`}
       </Text>
 
-      <HStack mt={4}>
+      <HStack mt={4} w="100%">
         <Button
           type="submit"
           colorScheme="green"
-          leftIcon={<RiSave3Line />}
+          leftIcon={<RiSave3Line size={28} />}
           isLoading={isLoading}
+          w="100%"
+          fontSize="lg"
         >
           Salvar
         </Button>
 
         <Button
           colorScheme="red"
-          leftIcon={<RiRefreshLine />}
+          leftIcon={<RiRefreshLine size={28} />}
           onClick={resetForm}
           disabled={isLoading}
+          w="100%"
+          fontSize="lg"
         >
           Resetar
         </Button>

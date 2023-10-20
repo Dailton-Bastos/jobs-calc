@@ -318,7 +318,7 @@ export const jobSelectTypes = [
     value: 'development',
   },
   {
-    name: 'Outro',
+    name: 'Interno',
     value: 'other',
   },
 ];
@@ -333,6 +333,11 @@ export const jobSelectStatus = [
     name: 'Em andamento',
     value: 'developing',
     color: 'yellow' as const,
+  },
+  {
+    name: 'Em pausa',
+    value: 'paused',
+    color: 'gray' as const,
   },
   {
     name: 'Concluído',

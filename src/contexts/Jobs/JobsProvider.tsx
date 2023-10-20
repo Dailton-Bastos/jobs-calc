@@ -32,36 +32,6 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
   // const userId = user?.uid;
 
   // const navigate = useNavigate();
-  // const updateJob = React.useCallback(
-  //   async (job: Job) => {
-  //     if (!job.id) return;
-
-  //     try {
-  //       const jobData = {
-  //         ...job,
-  //         updatedAt: new Date().getTime(),
-  //       };
-
-  //       await set(ref(db, `jobs/${job.id}`), jobData);
-
-  //       // dispatch(updateJobActions(jobData));
-  //       showToast({
-  //         title: 'Job atualizado',
-  //         description: 'Informações salvas com sucesso.',
-  //         status: 'success',
-  //       });
-  //     } catch (error) {
-  //       showToast({
-  //         title: 'Ocorreu um erro',
-  //         description: 'Tente novamente, por favor.',
-  //         status: 'error',
-  //       });
-
-  //       throw new Error('Erro to update job');
-  //     }
-  //   },
-  //   [showToast],
-  // );
 
   // const fetchJob = React.useCallback((key: string) => {
   //   if (!key) return;

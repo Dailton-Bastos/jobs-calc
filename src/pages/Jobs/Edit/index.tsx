@@ -1,31 +1,29 @@
-// import React from 'react';
-// import { useParams } from 'react-router-dom';
+import React from 'react';
+import { useParams } from 'react-router-dom';
 
 import { Box } from '@chakra-ui/react';
 
 import { Container } from '~/components/Container';
-// import { Head } from '~/components/Head';
-// import { useJobsContext } from '~/hooks/useJobsContext';
+import { Head } from '~/components/Head';
+import { useJobs } from '~/hooks/useJobs';
 
-// import { Form } from './Form';
+import { Form } from './Form';
 
 export const EditJobPage = () => {
-  // const { id } = useParams();
+  const { id } = useParams();
 
-  // const { jobs } = useJobsContext();
+  const { getJobById } = useJobs();
 
-  // const data = React.useMemo(() => {
-  //   return jobs?.find((job) => job?.id === id);
-  // }, [jobs, id]);
+  const job = React.useMemo(() => getJobById(id), [getJobById, id]);
 
-  // const pageTitle = data?.title ?? 'Editar Job';
+  const pageTitle = job?.title.fullTitle ?? 'Editar Job';
 
   return (
     <>
-      {/* <Head title={pageTitle} /> */}
+      <Head title={`Editar - ${pageTitle}`} />
 
       <Container title="Editar Job">
-        <Box as="section">{/* <Form job={data} /> */}</Box>
+        <Box as="section">{job && <Form jobId={job.id} />}</Box>
       </Container>
     </>
   );

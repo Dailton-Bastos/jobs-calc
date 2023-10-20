@@ -1,20 +1,21 @@
-import { Box, UseRadioProps, useRadio } from '@chakra-ui/react';
+import { Box, UseRadioProps, useRadio, BoxProps } from '@chakra-ui/react';
 
 import { STATUS_COLORS } from '~/helpers/utils';
 
 interface Props extends UseRadioProps {
   children: string;
   statusColor: keyof typeof STATUS_COLORS;
+  boxProps?: BoxProps;
 }
 
-export const Radio = ({ children, statusColor, ...rest }: Props) => {
+export const Radio = ({ children, statusColor, boxProps, ...rest }: Props) => {
   const { getInputProps, getCheckboxProps } = useRadio({ ...rest });
 
   const input = getInputProps();
   const checkbox = getCheckboxProps();
 
   return (
-    <Box as="label">
+    <Box as="label" {...boxProps}>
       <input {...input} />
       <Box
         {...checkbox}

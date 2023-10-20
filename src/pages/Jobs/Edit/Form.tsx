@@ -1,5 +1,6 @@
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 
 import {
   Box,
@@ -14,14 +15,15 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
-import { Job, JobStatus, JobType } from '~/@types/job';
+import { JobStatus, JobType } from '~/@types/job';
 import { Input } from '~/components/Form/Input';
-import { Select } from '~/components/Form/Select';
 import { Textarea } from '~/components/Form/Textarea';
 import { Status } from '~/components/Job/Status';
+import { Type } from '~/components/Job/Type';
 import { Title } from '~/components/Title';
-import { jobSelectTypes } from '~/helpers/utils';
-// import { useJobsContext } from '~/hooks/useJobsContext';
+import { getTotalTimeInSeconds } from '~/helpers/utils';
+import { useJobs } from '~/hooks/useJobs';
+import { useJobsContext } from '~/hooks/useJobsContext';
 import {
   jobTypeBudgetAction,
   jobTypeDevelopmentAction,
@@ -34,33 +36,36 @@ import {
 import { jobFormValidationSchema } from '~/schemas/jobFormSchema';
 
 import { Estimate } from './Estimate';
-
 type EditJobFormData = yup.InferType<typeof jobFormValidationSchema>;
 
 interface Props {
-  job: Job | undefined;
+  jobId: string;
 }
 
-export const Form = ({ job }: Props) => {
-  const [status, setStatus] = React.useState<JobStatus>(() => {
-    return job?.status ?? 'opened';
-  });
-  const [isHighlight, setIsHighlight] = React.useState(() => {
-    return job?.isHighlight ?? false;
-  });
+export const Form = ({ jobId }: Props) => {
+  const [status, setStatus] = React.useState<JobStatus>('opened');
+
+  const [type, setType] = React.useState<JobType>('other');
+
+  const [isHighlight, setIsHighlight] = React.useState(false);
+
+  const { jobsData } = useJobsContext();
+  const { updateJob } = useJobs();
+
+  const navigate = useNavigate();
+
+  const jobApiData = jobsData.find((job) => job.id === jobId);
 
   const [jobTypeState, dispatch] = React.useReducer(
     jobTypeReducer,
     JOB_TYPE_INITIAL_STATE,
   );
 
-  // const { updateJob } = useJobsContext();
-
   const { isDisableEstimateField, isDisableJobberIdField } = jobTypeState;
 
   const editJobForm = useForm<EditJobFormData>({
     mode: 'all',
-    defaultValues: job,
+    defaultValues: jobApiData,
     resolver: yupResolver(jobFormValidationSchema),
   });
 
@@ -76,10 +81,12 @@ export const Form = ({ job }: Props) => {
     .toString()
     .padStart(2, '0');
 
-  const type = watch('type') as JobType;
-
   const handleChangeJobStatus = React.useCallback((nextValue: JobStatus) => {
     setStatus(nextValue);
+  }, []);
+
+  const handleChangeJobType = React.useCallback((nextValue: JobType) => {
+    setType(nextValue);
   }, []);
 
   const handleChangeJobHighlight = React.useCallback(() => {
@@ -87,70 +94,67 @@ export const Form = ({ job }: Props) => {
   }, []);
 
   const handleUpdateJob = React.useCallback(
-    (data: EditJobFormData) => {
+    async (data: EditJobFormData) => {
       const jobHourEstimate = data?.hourEstimate ?? 0;
       const jobMinutesEstimate = data?.minutesEstimate ?? 0;
       const jobType = data?.type as JobType;
-      // const totalSecondsAmount = getTotalTimeInSeconds(
-      //   jobHourEstimate,
-      //   jobMinutesEstimate,
-      //   0,
-      // );
+      const totalSecondsAmount = getTotalTimeInSeconds(
+        jobHourEstimate,
+        jobMinutesEstimate,
+        0,
+      );
 
-      if (job) {
-        // updateJob({
-        //   ...job,
-        //   ...data,
-        //   type: jobType,
-        //   hourEstimate: jobHourEstimate,
-        //   minutesEstimate: jobMinutesEstimate,
-        //   totalSecondsAmount,
-        //   status,
-        //   isHighlight,
-        // });
+      if (jobApiData) {
+        await updateJob({
+          ...jobApiData,
+          ...data,
+          type: jobType,
+          hourEstimate: jobHourEstimate,
+          minutesEstimate: jobMinutesEstimate,
+          totalSecondsAmount,
+          status,
+          isHighlight,
+        });
+
+        navigate(`/jobs/${jobApiData.id}`);
       }
-
-      reset({
-        ...job,
-        ...data,
-        type: jobType,
-        hourEstimate: jobHourEstimate,
-        minutesEstimate: jobMinutesEstimate,
-        status,
-        isHighlight,
-      });
     },
 
-    [status, isHighlight, job, reset],
+    [status, isHighlight, jobApiData, updateJob, navigate],
   );
 
   const handleResetForm = React.useCallback(() => {
-    if (job) {
-      reset({ ...job });
-      setIsHighlight(job?.isHighlight ?? false);
+    if (jobApiData) {
+      reset({ ...jobApiData });
+
+      setIsHighlight(jobApiData?.isHighlight);
+
+      setStatus(jobApiData?.status);
+
+      setType(jobApiData?.type);
     }
-  }, [job, reset]);
+  }, [jobApiData, reset]);
 
   const jobTypeBudget = React.useCallback(() => {
     dispatch(jobTypeBudgetAction());
     setValue('hourEstimate', 1);
     setValue('minutesEstimate', 0);
-    setValue('jobberId', job?.jobberId);
-  }, [setValue, job]);
+    setValue('jobberId', jobApiData?.jobberId);
+  }, [setValue, jobApiData]);
 
   const jobTypeInternal = React.useCallback(() => {
     dispatch(jobTypeOtherAction());
     setValue('jobberId', '');
-    setValue('hourEstimate', job?.hourEstimate);
-    setValue('minutesEstimate', job?.minutesEstimate);
-  }, [setValue, job]);
+    setValue('hourEstimate', jobApiData?.hourEstimate);
+    setValue('minutesEstimate', jobApiData?.minutesEstimate);
+  }, [setValue, jobApiData]);
 
   const jobTypeDevelopment = React.useCallback(() => {
     dispatch(jobTypeDevelopmentAction());
-    setValue('jobberId', job?.jobberId);
-    setValue('hourEstimate', job?.hourEstimate);
-    setValue('minutesEstimate', job?.minutesEstimate);
-  }, [setValue, job]);
+    setValue('jobberId', jobApiData?.jobberId);
+    setValue('hourEstimate', jobApiData?.hourEstimate);
+    setValue('minutesEstimate', jobApiData?.minutesEstimate);
+  }, [setValue, jobApiData]);
 
   const jobTypeActions = React.useCallback(
     (jobType: JobType) => {
@@ -174,102 +178,104 @@ export const Form = ({ job }: Props) => {
     jobTypeActions(type);
   }, [type, jobTypeActions]);
 
+  React.useEffect(() => {
+    if (jobApiData) {
+      setStatus(jobApiData.status);
+      setType(jobApiData.type);
+      setIsHighlight(jobApiData.isHighlight);
+    }
+  }, [jobApiData]);
+
   return (
     <FormProvider {...editJobForm}>
-      <Flex
-        alignItems="center"
-        justifyContent="space-between"
-        gap="8"
-        as="form"
-        onSubmit={handleSubmit(handleUpdateJob)}
-      >
-        <Box w="100%" maxW="640px">
-          <Title title="Dados do Job" />
+      <Box w="100%" as="form" onSubmit={handleSubmit(handleUpdateJob)}>
+        <Title title="Dados do Job" />
 
-          <Box mt="8">
-            <VStack spacing="6" align="flex-start">
-              <Flex gap="6" w="100%">
-                {!isDisableJobberIdField && (
-                  <Box maxW="110px">
-                    <Input
-                      registerName="jobberId"
-                      label="Jobber ID"
-                      error={errors?.jobberId}
-                      isDisabled={isDisableJobberIdField}
-                    />
-                  </Box>
-                )}
+        <Flex mt="8" alignItems="start" justifyContent="space-between" gap="8">
+          <VStack spacing="6" align="flex-start" flex="1" pr="12">
+            <Box w="100%">
+              <Text fontWeight="bold">Tipo</Text>
+              <Type value={type} onChange={handleChangeJobType} />
+            </Box>
 
-                <Box width="100%">
+            <Flex gap="6" w="100%">
+              {!isDisableJobberIdField && (
+                <Box maxW="110px">
                   <Input
-                    registerName="title"
-                    label="Título"
-                    error={errors?.title}
+                    registerName="jobberId"
+                    label="Jobber ID"
+                    error={errors?.jobberId}
+                    isDisabled={isDisableJobberIdField}
                   />
                 </Box>
-              </Flex>
+              )}
 
-              <Select
-                registerName="type"
-                label="Tipo"
-                options={jobSelectTypes}
-                error={errors?.type}
-              />
-
-              <Grid gap="6" templateColumns="repeat(2, 1fr)" w="100%">
+              <Box width="100%">
                 <Input
-                  registerName="hourEstimate"
-                  label="Tempo Estimado (h)"
-                  type="number"
-                  error={errors?.hourEstimate}
-                  isDisabled={isDisableEstimateField}
-                />
-
-                <Input
-                  registerName="minutesEstimate"
-                  label="Tempo Estimado (min)"
-                  type="number"
-                  error={errors?.minutesEstimate}
-                  isDisabled={isDisableEstimateField}
-                />
-              </Grid>
-
-              <Textarea
-                registerName="description"
-                label="Briefing (Opcional)"
-              />
-
-              <Box>
-                <Text>Status</Text>
-
-                <Status
-                  defaultValue={status}
-                  onChange={handleChangeJobStatus}
+                  registerName="title"
+                  label="Título"
+                  error={errors?.title}
                 />
               </Box>
+            </Flex>
 
-              <FormControl display="flex" alignItems="center">
-                <FormLabel htmlFor="highlight" mb="0">
-                  Destaque?
-                </FormLabel>
-                <Switch
-                  id="highlight"
-                  colorScheme="green"
-                  isChecked={isHighlight}
-                  onChange={handleChangeJobHighlight}
-                />
-              </FormControl>
-            </VStack>
+            <Grid gap="6" templateColumns="repeat(2, 1fr)" w="100%">
+              <Input
+                registerName="hourEstimate"
+                label="Tempo Estimado (h)"
+                type="number"
+                error={errors?.hourEstimate}
+                isDisabled={isDisableEstimateField}
+              />
+
+              <Input
+                registerName="minutesEstimate"
+                label="Tempo Estimado (min)"
+                type="number"
+                error={errors?.minutesEstimate}
+                isDisabled={isDisableEstimateField}
+              />
+            </Grid>
+
+            <Textarea
+              registerName="description"
+              label="Briefing (Opcional)"
+              h="180px"
+            />
+
+            <Box w="100%">
+              <Text fontWeight="bold">Status</Text>
+
+              <Status value={status} onChange={handleChangeJobStatus} />
+            </Box>
+
+            <FormControl display="flex" alignItems="center">
+              <FormLabel htmlFor="highlight" mb="0" fontWeight="bold">
+                Destaque?
+              </FormLabel>
+              <Switch
+                id="highlight"
+                colorScheme="green"
+                isChecked={isHighlight}
+                onChange={handleChangeJobHighlight}
+              />
+            </FormControl>
+          </VStack>
+
+          <Box maxW="460px" w="100%">
+            <Text fontWeight="bold" textAlign="center" mb={2}>
+              Tempo Estimado
+            </Text>
+
+            <Estimate
+              hourEstimate={hourEstimate}
+              minutesEstimate={minutesEstimate}
+              resetForm={handleResetForm}
+              isLoading={isSubmitting}
+            />
           </Box>
-        </Box>
-
-        <Estimate
-          hourEstimate={hourEstimate}
-          minutesEstimate={minutesEstimate}
-          resetForm={handleResetForm}
-          isLoading={isSubmitting}
-        />
-      </Flex>
+        </Flex>
+      </Box>
     </FormProvider>
   );
 };

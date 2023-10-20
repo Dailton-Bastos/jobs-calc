@@ -17,6 +17,8 @@ import {
 } from '@chakra-ui/react';
 
 import type { JobFormatted } from '~/@types/job';
+import { useJobs } from '~/hooks/useJobs';
+import { useJobsContext } from '~/hooks/useJobsContext';
 
 import { ModalDelete } from './Modal';
 
@@ -29,9 +31,22 @@ export const Actions = ({ job }: Props) => {
 
   const id = job?.id;
 
-  const handleIsHighlight = React.useCallback((isHighlight: boolean) => {
-    return isHighlight;
-  }, []);
+  const { updateJob } = useJobs();
+  const { jobsData } = useJobsContext();
+
+  const jobApiData = jobsData.find((item) => item.id === id);
+
+  const handleIsHighlight = React.useCallback(
+    async (isHighlight: boolean) => {
+      if (jobApiData) {
+        await updateJob({
+          ...jobApiData,
+          isHighlight,
+        });
+      }
+    },
+    [updateJob, jobApiData],
+  );
 
   return (
     <>
@@ -53,7 +68,7 @@ export const Actions = ({ job }: Props) => {
               _hover={{
                 bg: 'gray.200',
               }}
-              onClick={() => handleIsHighlight(true)}
+              onClick={() => handleIsHighlight(false)}
             >
               <RiUnpinLine size={22} />
             </Button>
@@ -75,7 +90,7 @@ export const Actions = ({ job }: Props) => {
               _hover={{
                 bg: 'gray.200',
               }}
-              onClick={() => handleIsHighlight(false)}
+              onClick={() => handleIsHighlight(true)}
             >
               <RiPushpinLine size={22} />
             </Button>

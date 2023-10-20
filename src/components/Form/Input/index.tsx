@@ -31,7 +31,7 @@ export const Input = ({
   const { register } = useFormContext();
   return (
     <FormControl isInvalid={!!error}>
-      {!!label && <Label>{label}</Label>}
+      {!!label && <Label fontWeight="bold">{label}</Label>}
 
       <InputGroup>
         {!!LeftIcon && (
