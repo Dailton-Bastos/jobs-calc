@@ -1,10 +1,17 @@
 import { produce } from 'immer';
 
-import type { CyclesState } from '~/@types/cycles';
+import type { Cycle, CycleApiData } from '~/@types/cycles';
 
 import { Action, ActionTypes } from './actions';
 
+interface CyclesState {
+  cyclesData: CycleApiData[];
+  cyclesByUser: Cycle[];
+  activeCycleId: string | null;
+}
+
 export const initialCyclesState: CyclesState = {
+  cyclesData: [],
   cyclesByUser: [],
   activeCycleId: null,
 };
@@ -47,8 +54,9 @@ export const CyclesReducer = (state: CyclesState, action: Action) => {
 
     case ActionTypes.CREATE_INITIAL_STATE:
       return produce(state, (draft) => {
-        draft.cyclesByUser = payload.cyclesByUser;
-        draft.activeCycleId = payload.activeCycle?.id ?? null;
+        draft.cyclesData = payload.cycles;
+        // draft.cyclesByUser = payload.cyclesByUser;
+        // draft.activeCycleId = payload.activeCycle?.id ?? null;
       });
 
     default:

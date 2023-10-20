@@ -17,6 +17,8 @@ import {
 
 import type { JobFormatted } from '~/@types/job';
 import { Pagination } from '~/components/Pagination';
+import { getJobReports } from '~/helpers/utils';
+import { useCyclesContext } from '~/hooks/useCyclesContext';
 
 import { JobTime } from '../Time';
 
@@ -29,22 +31,28 @@ export const Cycles = ({ job }: Props) => {
 
   const PAGE_SIZE = 3;
 
+  const { cyclesData } = useCyclesContext();
+
+  const cycles = cyclesData?.filter((cycle) => cycle?.jobId === job.id);
+
+  const { reports: jobReports } = getJobReports(cycles, job.id);
+
   const totalReports = React.useMemo(() => {
     const initialValue = 0;
 
-    return job?.reports?.reduce((accumulator, currentValue) => {
+    return jobReports?.reduce((accumulator, currentValue) => {
       return accumulator + currentValue?.cycles?.length;
     }, initialValue);
-  }, [job]);
+  }, [jobReports]);
 
-  const totalCount = React.useMemo(() => job?.reports?.length, [job]);
+  const totalCount = React.useMemo(() => jobReports?.length, [jobReports]);
 
   const reports = React.useMemo(() => {
     const firstPageIndex = (currentPage - 1) * PAGE_SIZE;
     const lastPageIndex = firstPageIndex + PAGE_SIZE;
 
-    return job?.reports.slice(firstPageIndex, lastPageIndex);
-  }, [job, currentPage]);
+    return jobReports.slice(firstPageIndex, lastPageIndex);
+  }, [jobReports, currentPage]);
 
   return (
     <TableContainer mt="10">

@@ -9,7 +9,7 @@ import {
   equalTo,
 } from 'firebase/database';
 
-import type { Cycle } from '~/@types/cycles';
+import type { CycleApiData } from '~/@types/cycles';
 import { db } from '~/config/firebase';
 import { createInitialStateActions } from '~/reducers/cycles/actions';
 import { CyclesReducer, initialCyclesState } from '~/reducers/cycles/reducer';
@@ -17,32 +17,38 @@ import { CyclesReducer, initialCyclesState } from '~/reducers/cycles/reducer';
 export const useInitialCyclesState = () => {
   const [state, dispatch] = React.useReducer(CyclesReducer, initialCyclesState);
 
-  const createInitialState = React.useCallback(async (userId: string) => {
-    if (!userId) return;
-
+  const snapshotReports = React.useCallback(async (userId: string) => {
     const snapshot = await get(
       query(child(ref(db), 'cycles'), orderByChild('userId'), equalTo(userId)),
     );
 
-    const cyclesList: Cycle[] = [];
+    let val: { [key: string]: CycleApiData } = {};
 
     if (snapshot && snapshot.exists()) {
-      const data = snapshot.val();
-
-      for (const property in data) {
-        cyclesList.push({ id: property, ...data[property] });
-      }
+      val = snapshot.val();
     }
 
-    const currentActiveCycle = cyclesList?.find((cycle) => cycle.isActive);
-
-    const initialStateData = {
-      cyclesByUser: cyclesList,
-      activeCycle: currentActiveCycle,
-    };
-
-    dispatch(createInitialStateActions(initialStateData));
+    return { val };
   }, []);
+
+  const createInitialState = React.useCallback(
+    async (userId: string) => {
+      if (!userId) return;
+
+      const { val } = await snapshotReports(userId);
+
+      const cyclesData: CycleApiData[] = [];
+
+      if (val) {
+        for (const property in val) {
+          cyclesData.push({ ...val[property] });
+        }
+      }
+
+      dispatch(createInitialStateActions(cyclesData));
+    },
+    [snapshotReports],
+  );
 
   return { state, dispatch, createInitialState };
 };

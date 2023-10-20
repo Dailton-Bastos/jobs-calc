@@ -17,7 +17,7 @@ import {
 } from '@chakra-ui/react';
 
 import { STATUS_COLORS } from '~/helpers/utils';
-import { useJobsContext } from '~/hooks/useJobsContext';
+import { useCyclesContext } from '~/hooks/useCyclesContext';
 
 import { Pagination } from '../Pagination';
 
@@ -26,7 +26,7 @@ const PageSize = 10;
 export const Highlights = () => {
   const [currentPage, setCurrentPage] = React.useState(1);
 
-  const { jobs: data } = useJobsContext();
+  const { jobs: data } = useCyclesContext();
 
   const totalCount = React.useMemo(() => {
     return data?.filter((job) => job?.isHighlight)?.length;

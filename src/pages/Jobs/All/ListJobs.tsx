@@ -19,7 +19,7 @@ import {
 
 import { Pagination } from '~/components/Pagination';
 import { STATUS_COLORS } from '~/helpers/utils';
-import { useJobsContext } from '~/hooks/useJobsContext';
+import { useCyclesContext } from '~/hooks/useCyclesContext';
 
 import { Actions } from './Actions';
 
@@ -28,7 +28,7 @@ const PageSize = 7;
 const ListJobs = () => {
   const [currentPage, setCurrentPage] = React.useState(1);
 
-  const { jobs: data } = useJobsContext();
+  const { jobs: data } = useCyclesContext();
 
   const totalCount = React.useMemo(() => data?.length, [data]);
 

@@ -1,16 +1,17 @@
-import { Cycle } from '~/@types/cycles';
+import { Cycle, CycleApiData } from '~/@types/cycles';
 
 export enum ActionTypes {
-  ADD_NEW_CYCLE_JOB = 'ADD_NEW_CYCLE_JOB',
   CREATE_INITIAL_STATE = 'CREATE_INITIAL_STATE',
+  ADD_NEW_CYCLE_JOB = 'ADD_NEW_CYCLE_JOB',
   FINISH_CURRENT_CYCLE = 'FINISH_CURRENT_CYCLE',
   DELETE_CYCLE = 'DELETE_CYCLE',
 }
 
-interface InitialStateData {
-  cyclesByUser: Cycle[];
-  activeCycle: Cycle | undefined;
-}
+// interface InitialStateData {
+//   cyclesData: CycleApiData[];
+//   cyclesByUser: Cycle[];
+//   activeCycle: Cycle | undefined;
+// }
 
 export type Action =
   | {
@@ -31,7 +32,7 @@ export type Action =
     }
   | {
       type: ActionTypes.CREATE_INITIAL_STATE;
-      payload: InitialStateData;
+      payload: { cycles: CycleApiData[] };
     };
 
 export const addNewCycleJobActions = (newCycle: Cycle) => {
@@ -57,9 +58,9 @@ export const deleteCycleActions = (id: string) => {
   };
 };
 
-export const createInitialStateActions = (data: InitialStateData) => {
+export const createInitialStateActions = (cycles: CycleApiData[]) => {
   return {
     type: ActionTypes.CREATE_INITIAL_STATE as const,
-    payload: data,
+    payload: { cycles },
   };
 };

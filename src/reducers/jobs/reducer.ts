@@ -1,20 +1,20 @@
 import { produce } from 'immer';
 
-import { CycleApiData } from '~/@types/cycles';
+// import { CycleApiData } from '~/@types/cycles';
 import { JobApiData } from '~/@types/job';
 
 import { Action, ActionTypes } from './actions';
 
 interface JobsState {
   jobsData: JobApiData[];
-  cyclesData: CycleApiData[];
-  activeJobData: JobApiData | undefined;
+  // cyclesData: CycleApiData[];
+  // activeJobData: JobApiData | undefined;
 }
 
 export const initialJobsState: JobsState = {
   jobsData: [],
-  cyclesData: [],
-  activeJobData: undefined,
+  // cyclesData: [],
+  // activeJobData: undefined,
 };
 
 export const jobsReducer = (state: JobsState, action: Action): JobsState => {
@@ -24,19 +24,20 @@ export const jobsReducer = (state: JobsState, action: Action): JobsState => {
     case ActionTypes.CREATE_INITIAL_STATE:
       return produce(state, (draft) => {
         draft.jobsData = payload.jobs;
-        draft.cyclesData = payload.cycles;
-        draft.activeJobData = payload.activeJob;
+        // draft.cyclesData = payload.cycles;
+        // draft.activeJobData = payload.activeJob;
       });
 
     case ActionTypes.ADD_NEW_JOB:
       return produce(state, (draft) => {
         draft.jobsData.unshift(payload.job);
-        draft.activeJobData = payload.job;
+        // draft.activeJobData = payload.job;
       });
 
     case ActionTypes.SET_ACTIVE_JOB:
       return produce(state, (draft) => {
-        draft.activeJobData = payload.activeJob;
+        return draft;
+        // draft.activeJobData = payload.activeJob;
       });
 
     case ActionTypes.UPDATE_JOB: {

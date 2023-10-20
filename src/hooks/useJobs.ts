@@ -4,7 +4,6 @@ import type { CycleApiData } from '~/@types/cycles';
 import type { JobApiData, JobFormatted } from '~/@types/job';
 import {
   formatTime,
-  getJobReports,
   getJobStatus,
   getJobType,
   getTime,
@@ -13,11 +12,11 @@ import {
 } from '~/helpers/utils';
 
 import { useCycle } from './useCycle';
-import { useJobsContext } from './useJobsContext';
+import { useCyclesContext } from './useCyclesContext';
 
 export const useJobs = () => {
   const { getTotalHoursUsedActiveCycleJob } = useCycle();
-  const { jobs } = useJobsContext();
+  const { jobs } = useCyclesContext();
 
   const getJobTotalHoursUsed = React.useCallback(
     (cycles: CycleApiData[]) => {
@@ -51,10 +50,6 @@ export const useJobs = () => {
 
       const { hours, minutes, totalHoursUsed } = getJobTotalHoursUsed(cycles);
 
-      const jobId = job.id;
-
-      const { reports } = getJobReports(cycles, jobId);
-
       const statusColor =
         totalHoursUsed > totalSecondsAmount
           ? ('red' as const)
@@ -79,7 +74,6 @@ export const useJobs = () => {
         },
         type: getJobType(type),
         status: getJobStatus(status),
-        reports,
         createdAt: {
           timestamp: createdAt,
           ...createdAtTime,

@@ -14,30 +14,30 @@ import type {
 import { db } from '~/config/firebase';
 import { useAuth } from '~/hooks/useAuth';
 import { useInitialJobsState } from '~/hooks/useInitialJobsState';
-import { useJobs } from '~/hooks/useJobs';
+// import { useJobs } from '~/hooks/useJobs';
 import { addNewJobActions, deleteJobActions } from '~/reducers/jobs/actions';
 
 import { JobsContext } from './JobsContext';
 
 export const JobsProvider = ({ children }: JobsProviderProps) => {
-  const [activeJob, setActiveJob] = React.useState<JobFormatted | undefined>(
-    undefined,
-  );
+  // const [activeJob, setActiveJob] = React.useState<JobFormatted | undefined>(
+  //   undefined,
+  // );
   // const [newCycle, setNewCycle] = React.useState<Cycle | null>(null);
 
   const { state, dispatch, createInitialState } = useInitialJobsState();
 
-  const { jobsData, cyclesData, activeJobData } = state;
+  const { jobsData } = state;
 
-  const { formatJob } = useJobs();
+  // const { formatJob } = useJobs();
 
-  const jobs = React.useMemo(() => {
-    return jobsData.map((job) => {
-      const cycles = cyclesData?.filter((cycle) => cycle?.jobId === job.id);
+  // const jobs = React.useMemo(() => {
+  //   return jobsData.map((job) => {
+  //     // const cycles = cyclesData?.filter((cycle) => cycle?.jobId === job.id);
 
-      return formatJob(job, cycles);
-    });
-  }, [jobsData, cyclesData, formatJob]);
+  //     return formatJob(job, );
+  //   });
+  // }, [jobsData, formatJob]);
 
   const { user } = useAuth();
   const userId = user?.uid;
@@ -162,35 +162,35 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
     createInitialState(user?.uid);
   }, [createInitialState, user]);
 
-  // Set Active Job
-  React.useEffect(() => {
-    if (activeJobData) {
-      const job = formatJob(activeJobData, cyclesData);
+  // // Set Active Job
+  // React.useEffect(() => {
+  //   if (activeJobData) {
+  //     const job = formatJob(activeJobData, cyclesData);
 
-      setActiveJob(job);
-    }
-  }, [activeJobData, formatJob, cyclesData]);
+  //     setActiveJob(job);
+  //   }
+  // }, [activeJobData, formatJob, cyclesData]);
 
   const values = React.useMemo(
     () => ({
-      jobs,
-      cyclesData,
+      jobsData,
+      // cyclesData,
       createNewJob,
       // newCycle,
       fetchJob,
-      activeJob,
+      // activeJob,
       updateActiveJob,
       updateJob,
       deleteJob,
       showToast,
     }),
     [
-      jobs,
-      cyclesData,
+      jobsData,
+      // cyclesData,
       createNewJob,
       // newCycle,
       fetchJob,
-      activeJob,
+      // activeJob,
       updateActiveJob,
       updateJob,
       deleteJob,

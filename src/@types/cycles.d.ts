@@ -1,3 +1,5 @@
+import { JobFormatted } from './job';
+
 interface CycleCommon {
   jobId: string;
   isActive: boolean;
@@ -87,22 +89,16 @@ interface FilteredCycles {
 }
 
 export interface CyclesContextData {
-  activeCycle: Cycle | undefined;
-  createNewCycleJob: (data: CreateNewCycleJobData) => void;
-  activeCycleCurrentSeconds: number;
-  activeCycleTotalSeconds: number;
-  finishCurrentCycle: (cycle: Cycle) => void;
-  jobTotalHoursUsed: number;
-  jobCycles: JobCycles[];
-  // cycles: FilteredCycles[];
-  cyclesByUser: Cycle[];
-  countdownText: string;
-  // activeCycleInfo: ActiveCycleInfo | null;
-  // jobInfo: JobInfo | undefined;
-  deleteCycle: (id: string) => void;
-}
-
-export interface CyclesState {
-  cyclesByUser: Cycle[];
-  activeCycleId: string | null;
+  cyclesData: CycleApiData[];
+  jobs: JobFormatted[];
+  // activeCycle: Cycle | undefined;
+  // createNewCycleJob: (data: CreateNewCycleJobData) => void;
+  // activeCycleCurrentSeconds: number;
+  // activeCycleTotalSeconds: number;
+  // finishCurrentCycle: (cycle: Cycle) => void;
+  // jobTotalHoursUsed: number;
+  // jobCycles: JobCycles[];
+  // cyclesByUser: Cycle[];
+  // countdownText: string;
+  // deleteCycle: (id: string) => void;
 }
