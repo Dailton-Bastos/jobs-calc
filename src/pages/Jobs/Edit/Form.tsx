@@ -17,9 +17,8 @@ import * as yup from 'yup';
 
 import { JobStatus, JobType } from '~/@types/job';
 import { Input } from '~/components/Form/Input';
+import { RadioGroup } from '~/components/Form/RadioGroup';
 import { Textarea } from '~/components/Form/Textarea';
-import { Status } from '~/components/Job/Status';
-import { Type } from '~/components/Job/Type';
 import { Title } from '~/components/Title';
 import { getTotalTimeInSeconds } from '~/helpers/utils';
 import { useJobs } from '~/hooks/useJobs';
@@ -43,10 +42,6 @@ interface Props {
 }
 
 export const Form = ({ jobId }: Props) => {
-  const [status, setStatus] = React.useState<JobStatus>('opened');
-
-  const [type, setType] = React.useState<JobType>('other');
-
   const [isHighlight, setIsHighlight] = React.useState(false);
 
   const { jobsData } = useJobsContext();
@@ -73,6 +68,53 @@ export const Form = ({ jobId }: Props) => {
 
   const { errors, isSubmitting } = formState;
 
+  const jobTypeOptions = React.useMemo(
+    () => [
+      {
+        name: 'Interno',
+        value: 'other',
+        statusColor: 'orange' as const,
+      },
+      {
+        name: 'Orçamento',
+        value: 'budget',
+        statusColor: 'orange' as const,
+      },
+      {
+        name: 'Desenvolvimento',
+        value: 'development',
+        statusColor: 'orange' as const,
+      },
+    ],
+    [],
+  );
+
+  const jobStatusOptions = React.useMemo(
+    () => [
+      {
+        name: 'Em aberto',
+        value: 'opened',
+        statusColor: 'blue' as const,
+      },
+      {
+        name: 'Em andamento',
+        value: 'developing',
+        statusColor: 'yellow' as const,
+      },
+      {
+        name: 'Em pausa',
+        value: 'paused',
+        statusColor: 'gray' as const,
+      },
+      {
+        name: 'Concluído',
+        value: 'done',
+        statusColor: 'green' as const,
+      },
+    ],
+    [],
+  );
+
   const hourEstimate = Number(watch('hourEstimate'))
     .toString()
     .padStart(2, '0');
@@ -81,23 +123,17 @@ export const Form = ({ jobId }: Props) => {
     .toString()
     .padStart(2, '0');
 
-  const handleChangeJobStatus = React.useCallback((nextValue: JobStatus) => {
-    setStatus(nextValue);
-  }, []);
-
-  const handleChangeJobType = React.useCallback((nextValue: JobType) => {
-    setType(nextValue);
-  }, []);
-
   const handleChangeJobHighlight = React.useCallback(() => {
     setIsHighlight((prevState) => !prevState);
   }, []);
+
+  const type = watch('type') as JobType;
+  const status = watch('status') as JobStatus;
 
   const handleUpdateJob = React.useCallback(
     async (data: EditJobFormData) => {
       const jobHourEstimate = data?.hourEstimate ?? 0;
       const jobMinutesEstimate = data?.minutesEstimate ?? 0;
-      const jobType = data?.type as JobType;
       const totalSecondsAmount = getTotalTimeInSeconds(
         jobHourEstimate,
         jobMinutesEstimate,
@@ -108,7 +144,7 @@ export const Form = ({ jobId }: Props) => {
         await updateJob({
           ...jobApiData,
           ...data,
-          type: jobType,
+          type,
           hourEstimate: jobHourEstimate,
           minutesEstimate: jobMinutesEstimate,
           totalSecondsAmount,
@@ -120,7 +156,7 @@ export const Form = ({ jobId }: Props) => {
       }
     },
 
-    [status, isHighlight, jobApiData, updateJob, navigate],
+    [status, isHighlight, jobApiData, updateJob, navigate, type],
   );
 
   const handleResetForm = React.useCallback(() => {
@@ -128,10 +164,6 @@ export const Form = ({ jobId }: Props) => {
       reset({ ...jobApiData });
 
       setIsHighlight(jobApiData?.isHighlight);
-
-      setStatus(jobApiData?.status);
-
-      setType(jobApiData?.type);
     }
   }, [jobApiData, reset]);
 
@@ -180,8 +212,6 @@ export const Form = ({ jobId }: Props) => {
 
   React.useEffect(() => {
     if (jobApiData) {
-      setStatus(jobApiData.status);
-      setType(jobApiData.type);
       setIsHighlight(jobApiData.isHighlight);
     }
   }, [jobApiData]);
@@ -189,14 +219,16 @@ export const Form = ({ jobId }: Props) => {
   return (
     <FormProvider {...editJobForm}>
       <Box w="100%" as="form" onSubmit={handleSubmit(handleUpdateJob)}>
-        <Title title="Dados do Job" />
+        <Title title="Informações do Job" />
 
         <Flex mt="8" alignItems="start" justifyContent="space-between" gap="8">
-          <VStack spacing="6" align="flex-start" flex="1" pr="12">
-            <Box w="100%">
-              <Text fontWeight="bold">Tipo</Text>
-              <Type value={type} onChange={handleChangeJobType} />
-            </Box>
+          <VStack spacing="6" align="flex-start" flex="1" pr="8">
+            <RadioGroup
+              name="type"
+              label="Tipo do Job"
+              options={jobTypeOptions}
+              error={errors?.type}
+            />
 
             <Flex gap="6" w="100%">
               {!isDisableJobberIdField && (
@@ -243,11 +275,12 @@ export const Form = ({ jobId }: Props) => {
               h="180px"
             />
 
-            <Box w="100%">
-              <Text fontWeight="bold">Status</Text>
-
-              <Status value={status} onChange={handleChangeJobStatus} />
-            </Box>
+            <RadioGroup
+              name="status"
+              label="Status do Job"
+              options={jobStatusOptions}
+              error={errors?.status}
+            />
 
             <FormControl display="flex" alignItems="center">
               <FormLabel htmlFor="highlight" mb="0" fontWeight="bold">
@@ -262,9 +295,9 @@ export const Form = ({ jobId }: Props) => {
             </FormControl>
           </VStack>
 
-          <Box maxW="460px" w="100%">
-            <Text fontWeight="bold" textAlign="center" mb={2}>
-              Tempo Estimado
+          <Box maxW="420px" w="100%">
+            <Text fontWeight="bold" textAlign="center" mb={4}>
+              Estimativa de horas
             </Text>
 
             <Estimate

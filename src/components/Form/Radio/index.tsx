@@ -29,8 +29,10 @@ export const Radio = ({ children, statusColor, boxProps, ...rest }: Props) => {
           color: 'white',
           borderColor: STATUS_COLORS[statusColor],
         }}
-        px={5}
-        py={1}
+        _hover={{
+          borderColor: 'orange.300',
+        }}
+        py="2"
       >
         {children}
       </Box>

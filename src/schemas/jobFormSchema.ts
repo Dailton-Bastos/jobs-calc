@@ -34,7 +34,7 @@ export const jobFormValidationSchema = yup
       .max(59, 'Valor máximo 59')
       .integer('Digite apenas número'),
     description: yup.string(),
-    status: yup.string().notRequired(),
+    status: yup.string().required('Campo obrigatório'),
     isHighlight: yup.boolean(),
   })
   .required();

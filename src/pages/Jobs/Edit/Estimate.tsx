@@ -21,7 +21,7 @@ export const Estimate = ({
       alignItems="center"
       justifyContent="center"
       bg="gray.100"
-      boxShadow="xs"
+      boxShadow="md"
       borderRadius="8px"
       p="8"
       h="260px"
@@ -38,6 +38,7 @@ export const Estimate = ({
           isLoading={isLoading}
           w="100%"
           fontSize="lg"
+          boxShadow="md"
         >
           Salvar
         </Button>
@@ -49,6 +50,7 @@ export const Estimate = ({
           disabled={isLoading}
           w="100%"
           fontSize="lg"
+          boxShadow="md"
         >
           Resetar
         </Button>
