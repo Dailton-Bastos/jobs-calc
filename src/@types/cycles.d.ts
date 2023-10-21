@@ -1,12 +1,17 @@
+import { CycleActions } from '~/reducers/cycles/actions';
+
 import { JobFormatted } from './job';
 
 interface CycleCommon {
   jobId: string;
+
   isActive: boolean;
+  description?: string;
 }
 
 export interface CycleApiData extends CycleCommon {
   id: string;
+  userId: string;
   startDate: number;
   fineshedDate?: number;
 }
@@ -91,6 +96,8 @@ interface FilteredCycles {
 export interface CyclesContextData {
   cyclesData: CycleApiData[];
   jobs: JobFormatted[];
+  cycleDispatch: (value: CycleActions) => void;
+  activeCycle: CycleApiData | null;
   // activeCycle: Cycle | undefined;
   // createNewCycleJob: (data: CreateNewCycleJobData) => void;
   // activeCycleCurrentSeconds: number;

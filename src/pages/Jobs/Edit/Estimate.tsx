@@ -24,8 +24,6 @@ export const Estimate = ({
       boxShadow="xs"
       borderRadius="8px"
       p="8"
-      // maxW="460px"
-      // w="100%"
       h="260px"
     >
       <Text as="time" fontSize="6xl" color="purple.700">

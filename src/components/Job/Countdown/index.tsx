@@ -1,15 +1,23 @@
-// import React from 'react';
+import React from 'react';
 // import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 
 import { Flex } from '@chakra-ui/react';
 
 import 'react-circular-progressbar/dist/styles.css';
-// import { useCyclesContext } from '~/hooks/useCyclesContext';
-// import { useJobsContext } from '~/hooks/useJobsContext';
+import { useJobsContext } from '~/hooks/useJobsContext';
 
-// import { Control } from './components/Control';
+import { Control } from './components/Control';
 
-export const Countdown = () => {
+type Props = {
+  jobId: string;
+};
+
+export const Countdown = ({ jobId }: Props) => {
+  const { jobsData } = useJobsContext();
+
+  const jobApiData = React.useMemo(() => {
+    return jobsData.find((job) => job.id === jobId);
+  }, [jobsData, jobId]);
   // const {
   //   activeCycleCurrentSeconds,
   //   countdownText,
@@ -67,6 +75,8 @@ export const Countdown = () => {
       /> */}
 
       {/* {!hideCountdownControl && <Control />} */}
+
+      {jobApiData && <Control jobApiData={jobApiData} />}
     </Flex>
   );
 };

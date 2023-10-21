@@ -2,43 +2,42 @@ import { produce } from 'immer';
 
 import type { Cycle, CycleApiData } from '~/@types/cycles';
 
-import { Action, ActionTypes } from './actions';
+import { CycleActions, ActionTypes } from './actions';
 
 interface CyclesState {
   cyclesData: CycleApiData[];
   cyclesByUser: Cycle[];
-  activeCycleId: string | null;
+  activeCycle: CycleApiData | null;
 }
 
 export const initialCyclesState: CyclesState = {
   cyclesData: [],
   cyclesByUser: [],
-  activeCycleId: null,
+  activeCycle: null,
 };
 
-export const CyclesReducer = (state: CyclesState, action: Action) => {
+export const CyclesReducer = (state: CyclesState, action: CycleActions) => {
   const { type, payload } = action;
 
   switch (type) {
-    case ActionTypes.ADD_NEW_CYCLE_JOB: {
+    case ActionTypes.START_NEW_CYCLE: {
       return produce(state, (draft) => {
-        draft.cyclesByUser.push(payload.newCycle);
-        draft.activeCycleId = payload.newCycle.id;
+        draft.cyclesData.push(payload.cycle);
+        draft.activeCycle = payload.cycle;
       });
     }
 
     case ActionTypes.FINISH_CURRENT_CYCLE: {
-      const currentCycleIndex = state.cyclesByUser.findIndex((cycle) => {
-        return cycle.isActive && cycle.id === state.activeCycleId;
+      const currentCycleIndex = state.cyclesData.findIndex((cycle) => {
+        return cycle.isActive && cycle.id === state.activeCycle?.id;
       });
 
       if (currentCycleIndex < 0) return state;
 
       return produce(state, (draft) => {
-        draft.cyclesByUser[currentCycleIndex].fineshedDate =
-          new Date().getTime();
-        draft.cyclesByUser[currentCycleIndex].isActive = false;
-        draft.activeCycleId = null;
+        draft.cyclesData[currentCycleIndex].fineshedDate = new Date().getTime();
+        draft.cyclesData[currentCycleIndex].isActive = false;
+        draft.activeCycle = null;
       });
     }
 

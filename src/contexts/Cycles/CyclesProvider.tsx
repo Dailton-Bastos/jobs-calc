@@ -47,9 +47,9 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
 
   // const [jobCycles, setJobCycles] = React.useState<JobCycles[]>([]);
 
-  const { state, createInitialState } = useInitialCyclesState();
+  const { state, dispatch, createInitialState } = useInitialCyclesState();
 
-  const { cyclesData } = state;
+  const { cyclesData, activeCycle } = state;
 
   const { user } = useAuth();
   const { formatJob } = useJobs();
@@ -356,6 +356,8 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     () => ({
       cyclesData,
       jobs,
+      cycleDispatch: dispatch,
+      activeCycle,
       // createNewCycleJob,
       // finishCurrentCycle,
       // activeCycle,
@@ -373,6 +375,8 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     [
       cyclesData,
       jobs,
+      dispatch,
+      activeCycle,
       // createNewCycleJob,
       // finishCurrentCycle,
       // activeCycle,
