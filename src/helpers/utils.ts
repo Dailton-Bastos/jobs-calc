@@ -238,7 +238,7 @@ const formatCycle = (cycle: FormattedReportCommon): CycleFormatted => {
   const { hours, minutes } = secondsToTime(totalCycleInSeconds);
 
   return {
-    id: cycle?.id,
+    id: cycle?.id ?? uuid(),
     jobId: cycle?.jobId,
     isActive: cycle?.isActive,
     startHour: formatHour(cycle?.startDate),

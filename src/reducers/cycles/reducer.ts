@@ -54,6 +54,7 @@ export const CyclesReducer = (state: CyclesState, action: CycleActions) => {
     case ActionTypes.CREATE_INITIAL_STATE:
       return produce(state, (draft) => {
         draft.cyclesData = payload.cycles;
+        draft.activeCycle = payload.activeCycle;
         // draft.cyclesByUser = payload.cyclesByUser;
         // draft.activeCycleId = payload.activeCycle?.id ?? null;
       });

@@ -41,11 +41,9 @@ export const useInitialJobsState = () => {
 
       if (jobsVal) {
         for (const property in jobsVal) {
-          const id = property;
-
           jobData.push({
-            id,
             ...jobsVal[property],
+            id: property,
           });
         }
       }

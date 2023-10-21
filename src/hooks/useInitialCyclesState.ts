@@ -41,11 +41,13 @@ export const useInitialCyclesState = () => {
 
       if (val) {
         for (const property in val) {
-          cyclesData.push({ ...val[property] });
+          cyclesData.push({ ...val[property], id: property });
         }
       }
 
-      dispatch(createInitialStateActions(cyclesData));
+      const activeCycle = cyclesData.find((cycle) => cycle.isActive) ?? null;
+
+      dispatch(createInitialStateActions(cyclesData, activeCycle));
     },
     [snapshotReports],
   );

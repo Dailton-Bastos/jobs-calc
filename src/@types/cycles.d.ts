@@ -4,7 +4,6 @@ import { JobFormatted } from './job';
 
 interface CycleCommon {
   jobId: string;
-
   isActive: boolean;
   description?: string;
 }

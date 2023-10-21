@@ -32,7 +32,7 @@ export type CycleActions =
     }
   | {
       type: ActionTypes.CREATE_INITIAL_STATE;
-      payload: { cycles: CycleApiData[] };
+      payload: { cycles: CycleApiData[]; activeCycle: CycleApiData | null };
     };
 
 export const startNewCycleAction = (cycle: CycleApiData) => {
@@ -56,9 +56,12 @@ export const deleteCycleActions = (id: string) => {
   };
 };
 
-export const createInitialStateActions = (cycles: CycleApiData[]) => {
+export const createInitialStateActions = (
+  cycles: CycleApiData[],
+  activeCycle: CycleApiData | null,
+) => {
   return {
     type: ActionTypes.CREATE_INITIAL_STATE as const,
-    payload: { cycles },
+    payload: { cycles, activeCycle },
   };
 };
