@@ -79,6 +79,7 @@ export const useJobs = () => {
           hours,
           minutes,
           total: `${hours}h:${minutes}m`,
+          totalUsed: totalHoursUsed,
           statusColor,
         },
         type: getJobType(type),

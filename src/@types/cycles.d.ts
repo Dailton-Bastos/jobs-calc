@@ -97,6 +97,7 @@ export interface CyclesContextData {
   jobs: JobFormatted[];
   cycleDispatch: (value: CycleActions) => void;
   activeCycle: CycleApiData | null;
+  activeJob: JobFormatted | null;
   // activeCycle: Cycle | undefined;
   // createNewCycleJob: (data: CreateNewCycleJobData) => void;
   // activeCycleCurrentSeconds: number;

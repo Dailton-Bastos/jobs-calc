@@ -151,7 +151,7 @@ export const DetailsJobPage = () => {
                     </VStack>
                   </Box>
 
-                  <Countdown jobId={job.id} />
+                  <Countdown job={job} />
                 </Flex>
 
                 <Box mt="12">

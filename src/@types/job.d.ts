@@ -58,6 +58,7 @@ export interface JobFormatted extends JobCommon {
     hours: string;
     minutes: string;
     total: string;
+    totalUsed: number;
     statusColor: keyof typeof STATUS_COLORS;
   };
   type: string;
@@ -66,7 +67,6 @@ export interface JobFormatted extends JobCommon {
     title: string;
     statusColor: keyof typeof STATUS_COLORS;
   };
-  // reports: Report[];
   createdAt: Date;
   updatedAt: Date;
 }
