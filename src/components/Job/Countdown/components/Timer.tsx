@@ -17,6 +17,8 @@ type Props = {
 export const Timer = ({ percentage, countdownText }: Props) => {
   const [isVisible, setIsVisible] = React.useState(true);
 
+  const color = percentage <= 0 ? 'red.500' : 'blackAlpha.800';
+
   React.useEffect(() => {
     if (percentage > 0) {
       setIsVisible(false);
@@ -35,7 +37,7 @@ export const Timer = ({ percentage, countdownText }: Props) => {
 
       <Flex align="baseline" justify="center" pb="2">
         <Box>
-          <Text fontSize="5xl" color="blackAlpha.800">
+          <Text fontSize="5xl" color={color}>
             {countdownText.hours}
             <Text as="span" fontSize="3xl" color="orange.400">
               h
@@ -44,7 +46,7 @@ export const Timer = ({ percentage, countdownText }: Props) => {
         </Box>
 
         <Box>
-          <Text fontSize="5xl" color="blackAlpha.800">
+          <Text fontSize="5xl" color={color}>
             {countdownText.minutes}
             <Text as="span" fontSize="3xl" color="orange.400">
               m
@@ -53,7 +55,7 @@ export const Timer = ({ percentage, countdownText }: Props) => {
         </Box>
 
         <Box>
-          <Text fontSize="5xl" color="blackAlpha.800">
+          <Text fontSize="5xl" color={color}>
             {countdownText.seconds}
             <Text as="span" fontSize="3xl" color="orange.400">
               s

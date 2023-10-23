@@ -24,7 +24,7 @@ export const Countdown = ({ job }: Props) => {
   });
 
   const { jobsData } = useJobsContext();
-  const { activeCycle } = useCyclesContext();
+  const { activeCycle, activeJob } = useCyclesContext();
 
   const [amountSecondsPassed, setAmountSecondsPassed] = React.useState(() => {
     if (activeCycle?.startDate) {
@@ -43,12 +43,18 @@ export const Countdown = ({ job }: Props) => {
     usedTime: { totalUsed },
   } = job;
 
+  const isActiveJob = Boolean(activeJob && activeJob.id === job.id);
+
   const totalSecondsRemaining = totalSecondsAmount - totalUsed;
 
-  const currentTime = totalSecondsRemaining - amountSecondsPassed;
+  const currentTime = isActiveJob
+    ? totalSecondsRemaining - amountSecondsPassed
+    : totalSecondsRemaining;
 
   const countdownValue = React.useCallback(() => {
-    const amountSeconds = totalUsed + amountSecondsPassed;
+    const amountSeconds = isActiveJob
+      ? totalUsed + amountSecondsPassed
+      : totalUsed;
 
     const totalCount = currentTime >= 1 ? currentTime : amountSeconds;
 
@@ -59,7 +65,7 @@ export const Countdown = ({ job }: Props) => {
       minutes,
       seconds,
     });
-  }, [amountSecondsPassed, currentTime, totalUsed]);
+  }, [amountSecondsPassed, currentTime, totalUsed, isActiveJob]);
 
   const percentage = Math.ceil((currentTime / totalSecondsAmount) * 100);
 
@@ -97,7 +103,9 @@ export const Countdown = ({ job }: Props) => {
     >
       <Timer percentage={percentage} countdownText={countdownText} />
 
-      {jobApiData && <Control jobApiData={jobApiData} />}
+      {jobApiData && (
+        <Control jobApiData={jobApiData} isActiveJob={isActiveJob} />
+      )}
     </Flex>
   );
 };

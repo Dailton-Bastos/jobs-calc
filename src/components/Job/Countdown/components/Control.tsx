@@ -21,20 +21,25 @@ import { Modal } from './Modal';
 
 type Props = {
   jobApiData: JobApiData;
+  isActiveJob: boolean;
 };
 
-export const Control = ({ jobApiData }: Props) => {
+export const Control = ({ jobApiData, isActiveJob }: Props) => {
   const [isLoading, seIsLoading] = React.useState(false);
   const [markJobAsDone, setMarkJobAsDone] = React.useState(false);
   const [cycleDescription, setCycleDescription] = React.useState('');
 
-  const { cycleDispatch, activeCycle } = useCyclesContext();
+  const { cycleDispatch, activeCycle, activeJob } = useCyclesContext();
   const { jobDispatch } = useJobsContext();
   const { updateJob } = useJobs();
   const { customToast } = useCustomToast();
   const { user } = useAuth();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const disableControlButtons =
+    jobApiData.status === 'done' ||
+    (!!activeJob && activeJob.id !== jobApiData.id);
 
   const handleStartNewCycle = React.useCallback(() => {
     if (!user) return;
@@ -128,7 +133,7 @@ export const Control = ({ jobApiData }: Props) => {
   return (
     <Flex align="center" justify="center">
       <Box mt="6">
-        {activeCycle ? (
+        {activeCycle && isActiveJob ? (
           <IconButton
             aria-label="Parar"
             title="Finalizar"
@@ -137,6 +142,7 @@ export const Control = ({ jobApiData }: Props) => {
             size="lg"
             icon={<RiPauseMiniFill size={28} />}
             onClick={onOpen}
+            disabled={disableControlButtons}
           />
         ) : (
           <IconButton
@@ -146,6 +152,7 @@ export const Control = ({ jobApiData }: Props) => {
             size="lg"
             icon={<RiPlayMiniLine size={28} />}
             onClick={handleStartNewCycle}
+            disabled={disableControlButtons}
           />
         )}
       </Box>
