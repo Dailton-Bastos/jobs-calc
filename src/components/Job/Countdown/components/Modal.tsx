@@ -10,7 +10,8 @@ import {
   FormControl,
   FormLabel,
   Textarea,
-  Checkbox,
+  Switch,
+  Flex,
 } from '@chakra-ui/react';
 
 type Props = {
@@ -57,14 +58,18 @@ export const Modal = ({
               size="lg"
             />
 
-            <Checkbox
-              isChecked={isChecked}
-              colorScheme="orange"
-              mt={4}
-              onChange={onChangeChecked}
-            >
-              Finalizar Job
-            </Checkbox>
+            <Flex align="center" mt={4}>
+              <Switch
+                id="highlight"
+                colorScheme="orange"
+                isChecked={isChecked}
+                onChange={onChangeChecked}
+              />
+
+              <FormLabel htmlFor="highlight" m="0" ml="2">
+                Concluir Job
+              </FormLabel>
+            </Flex>
           </FormControl>
         </ModalBody>
 
