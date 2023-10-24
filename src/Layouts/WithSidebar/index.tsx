@@ -4,6 +4,8 @@ import { Box, Container, Grid, GridItem } from '@chakra-ui/react';
 
 import { Sidebar } from '~/components/Sidebar';
 
+import { Header } from './components/Header';
+
 export const WithSidebar = () => {
   return (
     <Box as="section" w="100%">
@@ -19,6 +21,8 @@ export const WithSidebar = () => {
         </GridItem>
 
         <GridItem area={'main'}>
+          <Header />
+
           <Container as="main" maxW="1440px" centerContent px="16">
             <Outlet />
           </Container>
