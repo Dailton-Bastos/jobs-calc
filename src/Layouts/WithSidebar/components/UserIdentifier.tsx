@@ -46,12 +46,21 @@ export const UserIdentifier = () => {
   return (
     <Popover isLazy placement="top-end" autoFocus={false}>
       <PopoverTrigger>
-        <Avatar
-          name={user?.displayName ?? ''}
-          src="https://avatars0.githubusercontent.com/u/36246937?v=4"
-          size="md"
+        <Box
           cursor="pointer"
-        />
+          p="2px"
+          bg="orange.500"
+          borderRadius="full"
+          boxShadow="md"
+        >
+          <Avatar
+            name={user?.displayName ?? ''}
+            src="https://avatars0.githubusercontent.com/u/36246937?v=4"
+            size="md"
+            p="1px"
+            bg="gray.50"
+          />
+        </Box>
       </PopoverTrigger>
 
       <PopoverContent>
