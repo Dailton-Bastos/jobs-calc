@@ -44,7 +44,7 @@ export const UserIdentifier = () => {
   const animation = `${animationKeyframes} 2.5s ease-in-out`;
 
   return (
-    <Popover isLazy placement="top-end" autoFocus={false}>
+    <Popover isLazy placement="top-end">
       <PopoverTrigger>
         <Box
           cursor="pointer"
@@ -58,7 +58,7 @@ export const UserIdentifier = () => {
             src="https://avatars0.githubusercontent.com/u/36246937?v=4"
             size="md"
             p="1px"
-            bg="gray.50"
+            bg="white"
           />
         </Box>
       </PopoverTrigger>

@@ -31,7 +31,7 @@ export const Notifications = () => {
           <Box
             as={motion.div}
             border="2px"
-            borderColor="gray.50"
+            borderColor="white"
             position="absolute"
             top="8px"
             right="15px"
