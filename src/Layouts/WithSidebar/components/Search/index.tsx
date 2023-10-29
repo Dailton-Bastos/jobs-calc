@@ -10,16 +10,25 @@ import {
   PopoverBody,
 } from '@chakra-ui/react';
 
+import { useSearchContext } from '~/hooks/useSearchContext';
+
 import { Input } from './Input';
-// import { Results } from './Results';
-// import { NotFound } from './NotFound';
 import { LastSearch } from './LastSearch';
+import { NotFound } from './NotFound';
+import { Results } from './Results';
 
 export const Search = () => {
   const inputFocus = React.useRef<HTMLInputElement | null>(null);
 
+  const { results, cleanResults } = useSearchContext();
+
   return (
-    <Popover initialFocusRef={inputFocus} gutter={2} isLazy>
+    <Popover
+      initialFocusRef={inputFocus}
+      gutter={2}
+      isLazy
+      onClose={cleanResults}
+    >
       <PopoverTrigger>
         <Button
           variant="outline"
@@ -43,9 +52,7 @@ export const Search = () => {
         </PopoverHeader>
 
         <PopoverBody p="0">
-          {/* <Results /> */}
-
-          {/* <NotFound /> */}
+          {results.length > 0 ? <Results /> : <NotFound />}
 
           <LastSearch />
         </PopoverBody>

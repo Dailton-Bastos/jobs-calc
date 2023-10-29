@@ -1,79 +1,57 @@
-import { Link as ReactRouterLink } from 'react-router-dom';
+import { Box, List, ListItem, Text, Button } from '@chakra-ui/react';
 
-import { Box, List, ListItem, Link, Text } from '@chakra-ui/react';
+import { useSearchContext } from '~/hooks/useSearchContext';
 
 export const Results = () => {
+  const { results, selectedSave } = useSearchContext();
+
   return (
-    <Box pt="4" pb="2" pl="4" pr="4" borderTop="1px" borderColor="gray.50">
+    <Box
+      pt="4"
+      pb="2"
+      pl="4"
+      pr="4"
+      borderTop="1px"
+      borderColor="gray.50"
+      maxH="420px"
+      overflowY="scroll"
+      sx={{
+        '&::-webkit-scrollbar': {
+          width: '4px',
+        },
+        '&::-webkit-scrollbar-track': {
+          width: '6px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: 'orange.500',
+          borderRadius: '24px',
+        },
+      }}
+    >
       <List>
-        <ListItem
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
-          py="2"
-        >
-          <Link
-            as={ReactRouterLink}
-            to="/"
-            fontSize="sm"
-            fontWeight="bold"
-            _hover={{
-              textDecoration: 'none',
-            }}
+        {results?.map((job) => (
+          <ListItem
+            key={job.id}
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            py="2"
           >
-            [Fibra Cirúrgica] Vitrines customizadas ...
-          </Link>
+            <Button
+              variant="link"
+              fontSize="sm"
+              fontWeight="bold"
+              title={job.title.fullTitle}
+              onClick={() => selectedSave(job)}
+            >
+              {job.title.shortTitle}
+            </Button>
 
-          <Text fontSize="smaller" fontWeight="normal">
-            Desenvolvimento
-          </Text>
-        </ListItem>
-
-        <ListItem
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
-          py="2"
-        >
-          <Link
-            as={ReactRouterLink}
-            to="/"
-            fontSize="sm"
-            fontWeight="bold"
-            _hover={{
-              textDecoration: 'none',
-            }}
-          >
-            Café AVANTI ☕︎ Aniversário 18 anos 🎉🎂
-          </Link>
-
-          <Text fontSize="smaller" fontWeight="normal">
-            Interno
-          </Text>
-        </ListItem>
-
-        <ListItem
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
-          py="2"
-        >
-          <Link
-            as={ReactRouterLink}
-            to="/"
-            fontSize="sm"
-            fontWeight="bold"
-            _hover={{
-              textDecoration: 'none',
-            }}
-          >
-            [Covabra] Banners não exibem
-          </Link>
-
-          <Text fontSize="smaller" fontWeight="normal">
-            Orçamento
-          </Text>
-        </ListItem>
+            <Text fontSize="smaller" fontWeight="normal">
+              {job.type}
+            </Text>
+          </ListItem>
+        ))}
       </List>
     </Box>
   );

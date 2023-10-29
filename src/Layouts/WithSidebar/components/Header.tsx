@@ -2,6 +2,8 @@ import { FiMenu } from 'react-icons/fi';
 
 import { Box, Flex, Container, Text, Button } from '@chakra-ui/react';
 
+import { SearchProvider } from '~/contexts/Search/SearchProvider';
+
 import { Notifications } from './Notifications';
 import { Search } from './Search';
 import { UserIdentifier } from './UserIdentifier';
@@ -26,7 +28,9 @@ export const Header = () => {
             <Text>LOGO</Text>
           </Flex>
 
-          <Search />
+          <SearchProvider>
+            <Search />
+          </SearchProvider>
 
           <Flex align="center" gap={4}>
             <Notifications />
