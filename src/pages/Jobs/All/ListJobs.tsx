@@ -23,7 +23,7 @@ import { useCyclesContext } from '~/hooks/useCyclesContext';
 
 import { Actions } from './Actions';
 
-const PageSize = 7;
+const PageSize = 10;
 
 const ListJobs = () => {
   const [currentPage, setCurrentPage] = React.useState(1);
@@ -49,8 +49,14 @@ const ListJobs = () => {
 
   return (
     <>
-      <TableContainer mt="10">
-        <Table variant="simple">
+      <TableContainer mt="6">
+        <Table
+          colorScheme="blackAlpha"
+          bg="white"
+          borderRadius="lg"
+          overflow="hidden"
+          boxShadow="base"
+        >
           <TableCaption>
             <Flex gap="2" align="center" justify="flex-end">
               <Text fontWeight="bold">Total de jobs:</Text>
@@ -59,19 +65,31 @@ const ListJobs = () => {
           </TableCaption>
 
           <Thead>
-            <Tr>
-              <Th>Título</Th>
-              <Th>Tipo</Th>
-              <Th>Tempo Estimado</Th>
-              <Th>Tempo Utilizado</Th>
-              <Th>Status</Th>
-              <Th>Ações</Th>
+            <Tr bg="purple.700">
+              <Th textTransform="capitalize" fontSize="md" color="white">
+                Título
+              </Th>
+              <Th textTransform="capitalize" fontSize="md" color="white">
+                Tipo
+              </Th>
+              <Th textTransform="capitalize" fontSize="md" color="white">
+                Tempo Estimado
+              </Th>
+              <Th textTransform="capitalize" fontSize="md" color="white">
+                Tempo Utilizado
+              </Th>
+              <Th textTransform="capitalize" fontSize="md" color="white">
+                Status
+              </Th>
+              <Th textTransform="capitalize" fontSize="md" color="white">
+                Ações
+              </Th>
             </Tr>
           </Thead>
           <Tbody>
             {jobs?.map((job) => (
               <Tr key={job.id}>
-                <Td>
+                <Td fontWeight="bold" pt="2" pb="2" color="black">
                   <Tooltip label={job?.title?.fullTitle} placement="top-start">
                     <LinkChakra as={Link} to={`/jobs/${job?.id}`}>
                       {job?.title?.shortTitle}
@@ -79,13 +97,15 @@ const ListJobs = () => {
                   </Tooltip>
                 </Td>
 
-                <Td>{job.type}</Td>
+                <Td pt="2" pb="2" color="black">
+                  {job.type}
+                </Td>
 
-                <Td>
+                <Td pt="2" pb="2" color="black">
                   <Text>{job.estimatedTime?.total}</Text>
                 </Td>
 
-                <Td>
+                <Td pt="2" pb="2" color="black">
                   <Text
                     fontSize="md"
                     color={STATUS_COLORS[job?.usedTime?.statusColor]}
@@ -94,7 +114,7 @@ const ListJobs = () => {
                   </Text>
                 </Td>
 
-                <Td>
+                <Td pt="2" pb="2" color="black">
                   <Flex gap="2" align="center" justify="flex-start">
                     <Box
                       w="8px"
@@ -112,7 +132,7 @@ const ListJobs = () => {
                   </Flex>
                 </Td>
 
-                <Td>
+                <Td pt="2" pb="2" color="black">
                   <Actions job={job} />
                 </Td>
               </Tr>

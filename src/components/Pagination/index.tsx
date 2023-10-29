@@ -61,7 +61,10 @@ export const Pagination = ({
         <ListItem listStyleType="none" key={uuid()}>
           <Button
             size="sm"
-            background={pageNumber === currentPage ? 'gray.200' : 'transparent'}
+            background={
+              pageNumber === currentPage ? 'orange.300' : 'transparent'
+            }
+            color={pageNumber === currentPage ? 'white' : 'purple.700'}
             fontWeight={pageNumber === currentPage ? 'bold' : 'semibold'}
             onClick={() => onPageChange(+pageNumber)}
           >

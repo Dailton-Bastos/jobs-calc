@@ -1,74 +1,59 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { FiPlus } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
-import {
-  Box,
-  Heading,
-  Flex,
-  Link as LinkChakra,
-  Text,
-  CircularProgress,
-} from '@chakra-ui/react';
+import { Box, Heading, Flex, CircularProgress, Button } from '@chakra-ui/react';
 
 import { Head } from '~/components/Head';
-import { Search } from '~/components/Job/Search';
 
 const Jobs = React.lazy(() => import('./ListJobs'));
 
 export const AllJobsPage = () => {
-  const [value, setValue] = React.useState('');
-
-  const handleChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setValue(event.target.value);
-    },
-    [],
-  );
-
-  const handleCleanInput = React.useCallback(() => {
-    setValue('');
-  }, []);
+  const navite = useNavigate();
 
   return (
     <>
       <Head title="Meus Jobs" />
 
-      <Box w="100%" my="10">
-        <Heading size="md" textAlign="center">
-          Meus Jobs
-        </Heading>
+      <Box w="100%" py="8">
+        <Flex justify="space-between" align="center">
+          <Heading size="lg" textAlign="center" fontWeight="bold" color="black">
+            Meus Jobs
+          </Heading>
 
-        <Flex justify="space-between" align="center" mt="2" px="4">
-          <Search
-            value={value}
-            handleChange={handleChange}
-            cleanInput={handleCleanInput}
-          />
-
-          <LinkChakra
-            as={Link}
-            to="/jobs/new"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            position="relative"
-            borderWidth="1px"
-            backgroundColor="orange.300"
-            borderColor="orange.300"
-            borderStyle="solid"
-            borderRadius="md"
+          <Button
+            variant="solid"
+            bg="orange.300"
             color="white"
+            fontSize="sm"
+            fontWeight="bold"
+            fontFamily="heading"
+            position="relative"
             p="3"
-            h="40px"
-            w="220px"
+            pl="8"
+            minW="260px"
+            h="12"
             _hover={{
-              textDecoration: 'none',
               bg: 'orange.400',
               color: 'white',
+              boxShadow: 'md',
             }}
+            onClick={() => navite('/jobs/new')}
           >
-            <Text fontWeight="bold">Novo Job</Text>
-          </LinkChakra>
+            <Flex
+              align="center"
+              justify="center"
+              w="28px"
+              height="28px"
+              bg="whiteAlpha.300"
+              borderRadius="5px"
+              position="absolute"
+              left="8px"
+            >
+              <FiPlus color="#fff" size={22} />
+            </Flex>
+            ADICIONAR NOVO JOB
+          </Button>
         </Flex>
 
         <React.Suspense

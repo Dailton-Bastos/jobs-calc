@@ -35,6 +35,16 @@ const theme = extendTheme({
       body: {
         bg: 'gray.50',
         color: 'gray.500',
+        '::-webkit-scrollbar': {
+          width: '4px',
+        },
+        '::-webkit-scrollbar-track': {
+          width: '6px',
+        },
+        '::-webkit-scrollbar-thumb': {
+          background: 'orange.500',
+          borderRadius: '24px',
+        },
       },
     },
   },

@@ -20,7 +20,7 @@ export const Header = () => {
       top="0"
       zIndex="popover"
     >
-      <Container maxW="1340px" centerContent py="2" px="4">
+      <Container maxW="1312px" centerContent py="2" px="0">
         <Flex justifyContent="space-between" align="center" w="100%" gap={4}>
           <Flex align="center" gap={4}>
             <Menu />

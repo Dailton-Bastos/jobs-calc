@@ -70,7 +70,7 @@ export const Actions = ({ job }: Props) => {
               }}
               onClick={() => handleIsHighlight(false)}
             >
-              <RiUnpinLine size={22} />
+              <RiUnpinLine size={22} color="#4A5568" />
             </Button>
           </Tooltip>
         ) : (
@@ -92,7 +92,7 @@ export const Actions = ({ job }: Props) => {
               }}
               onClick={() => handleIsHighlight(true)}
             >
-              <RiPushpinLine size={22} />
+              <RiPushpinLine size={22} color="#4A5568" />
             </Button>
           </Tooltip>
         )}
@@ -110,7 +110,7 @@ export const Actions = ({ job }: Props) => {
               bg: 'gray.200',
             }}
           >
-            <RiEdit2Line size={22} />
+            <RiEdit2Line size={22} color="#4A5568" />
           </LinkChakra>
         </Tooltip>
 
@@ -122,7 +122,7 @@ export const Actions = ({ job }: Props) => {
         >
           <IconButton
             aria-label="Deletar Job"
-            icon={<RiDeleteBin2Line size={22} />}
+            icon={<RiDeleteBin2Line size={22} color="#4A5568" />}
             bg="transparent"
             onClick={onOpen}
           />
