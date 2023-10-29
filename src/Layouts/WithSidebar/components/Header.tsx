@@ -1,9 +1,9 @@
-import { FiMenu } from 'react-icons/fi';
+import { Box, Flex, Container } from '@chakra-ui/react';
 
-import { Box, Flex, Container, Text, Button } from '@chakra-ui/react';
-
+import { Logo } from '~/components/Logo';
 import { SearchProvider } from '~/contexts/Search/SearchProvider';
 
+import { Menu } from './Menu';
 import { Notifications } from './Notifications';
 import { Search } from './Search';
 import { UserIdentifier } from './UserIdentifier';
@@ -18,14 +18,14 @@ export const Header = () => {
       position="fixed"
       left="0"
       top="0"
+      zIndex="popover"
     >
       <Container maxW="1340px" centerContent py="2" px="4">
         <Flex justifyContent="space-between" align="center" w="100%" gap={4}>
           <Flex align="center" gap={4}>
-            <Button>
-              <FiMenu size={30} />
-            </Button>
-            <Text>LOGO</Text>
+            <Menu />
+
+            <Logo />
           </Flex>
 
           <SearchProvider>
