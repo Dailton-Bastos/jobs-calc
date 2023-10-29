@@ -8,9 +8,9 @@ export const Home = () => {
     <>
       <Head title="Dashboard" />
 
-      <Container maxW="1120px" centerContent>
+      <Container maxW="1320px" centerContent px="0">
         <Box w="100%" my="10">
-          <Heading size="md" textAlign="center">
+          <Heading size="lg" textAlign="center" fontWeight="bold" color="black">
             Destaques <Text as="span">📌</Text>
           </Heading>
 

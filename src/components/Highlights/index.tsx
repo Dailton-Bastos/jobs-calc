@@ -51,20 +51,34 @@ export const Highlights = () => {
 
   return (
     <>
-      <TableContainer>
-        <Table colorScheme="blackAlpha">
+      <TableContainer mt="6">
+        <Table
+          colorScheme="blackAlpha"
+          bg="white"
+          borderRadius="lg"
+          overflow="hidden"
+          boxShadow="base"
+        >
           <Thead>
-            <Tr>
-              <Th>Título</Th>
-              <Th>Tempo Estimado</Th>
-              <Th>Tempo Utilizado</Th>
-              <Th>Status</Th>
+            <Tr bg="purple.700">
+              <Th textTransform="capitalize" fontSize="md" color="white">
+                Título
+              </Th>
+              <Th textTransform="capitalize" fontSize="md" color="white">
+                Tempo Estimado
+              </Th>
+              <Th textTransform="capitalize" fontSize="md" color="white">
+                Tempo Utilizado
+              </Th>
+              <Th textTransform="capitalize" fontSize="md" color="white">
+                Status
+              </Th>
             </Tr>
           </Thead>
           <Tbody>
             {jobsHighlights?.map((job) => (
               <Tr key={job?.id}>
-                <Td>
+                <Td fontWeight="bold" color="black">
                   <Tooltip label={job?.title?.fullTitle} placement="top-start">
                     <LinkChakra as={Link} to={`/jobs/${job?.id}`}>
                       {job?.title?.shortTitle}
@@ -72,9 +86,9 @@ export const Highlights = () => {
                   </Tooltip>
                 </Td>
 
-                <Td>{job?.estimatedTime?.total}</Td>
+                <Td color="black">{job?.estimatedTime?.total}</Td>
 
-                <Td>
+                <Td color="black">
                   <Text
                     fontSize="md"
                     color={STATUS_COLORS[job?.usedTime?.statusColor]}
@@ -83,7 +97,7 @@ export const Highlights = () => {
                   </Text>
                 </Td>
 
-                <Td>
+                <Td color="black">
                   <Flex gap="2" align="center" justify="flex-start">
                     <Box
                       w="8px"
