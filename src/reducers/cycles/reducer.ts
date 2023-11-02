@@ -35,8 +35,7 @@ export const CyclesReducer = (state: CyclesState, action: CycleActions) => {
       if (currentCycleIndex < 0) return state;
 
       return produce(state, (draft) => {
-        draft.cyclesData[currentCycleIndex].fineshedDate = new Date().getTime();
-        draft.cyclesData[currentCycleIndex].isActive = false;
+        draft.cyclesData[currentCycleIndex] = payload.cycle;
         draft.activeCycle = null;
       });
     }
@@ -55,8 +54,6 @@ export const CyclesReducer = (state: CyclesState, action: CycleActions) => {
       return produce(state, (draft) => {
         draft.cyclesData = payload.cycles;
         draft.activeCycle = payload.activeCycle;
-        // draft.cyclesByUser = payload.cyclesByUser;
-        // draft.activeCycleId = payload.activeCycle?.id ?? null;
       });
 
     default:

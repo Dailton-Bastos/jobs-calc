@@ -67,17 +67,21 @@ export const Control = ({ jobApiData, isActiveJob }: Props) => {
   }, [jobApiData, cycleDispatch, user]);
 
   const handleFinishCurrentCycle = React.useCallback(async () => {
+    if (!activeCycle) return;
+
     const dateInTimestamp = new Date().getTime();
 
     try {
       seIsLoading(true);
 
-      await update(ref(db, `cycles/${activeCycle?.id}`), {
+      const cycle = {
         ...activeCycle,
         description: cycleDescription,
         isActive: false,
         fineshedDate: dateInTimestamp,
-      });
+      };
+
+      await update(ref(db, `cycles/${activeCycle?.id}`), { ...cycle });
 
       if (markJobAsDone) {
         await updateJob({
@@ -94,7 +98,7 @@ export const Control = ({ jobApiData, isActiveJob }: Props) => {
         );
       }
 
-      cycleDispatch(finishCurrentCycleAction());
+      cycleDispatch(finishCurrentCycleAction({ ...cycle }));
 
       seIsLoading(false);
 
@@ -125,6 +129,12 @@ export const Control = ({ jobApiData, isActiveJob }: Props) => {
   const changeCycleDescription = React.useCallback((value: string) => {
     setCycleDescription(value);
   }, []);
+
+  const handleCloseModal = React.useCallback(() => {
+    setCycleDescription('');
+
+    onClose();
+  }, [onClose]);
 
   React.useEffect(() => {
     setMarkJobAsDone(jobApiData.type === 'other' && !jobApiData.isHighlight);
@@ -159,7 +169,7 @@ export const Control = ({ jobApiData, isActiveJob }: Props) => {
 
       <Modal
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={handleCloseModal}
         handleFinishCurrentCycle={handleFinishCurrentCycle}
         isChecked={markJobAsDone}
         onChangeChecked={() => setMarkJobAsDone((prev) => !prev)}

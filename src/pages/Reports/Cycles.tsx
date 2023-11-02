@@ -1,5 +1,4 @@
 import React from 'react';
-import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 import {
   Flex,
@@ -13,12 +12,6 @@ import {
   Th,
   Td,
   Tooltip,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverBody,
-  PopoverArrow,
-  IconButton,
 } from '@chakra-ui/react';
 import { differenceInSeconds } from 'date-fns';
 
@@ -31,6 +24,8 @@ import {
   secondsToTime,
 } from '~/helpers/utils';
 import { useCyclesContext } from '~/hooks/useCyclesContext';
+
+import { Description } from './Description';
 
 const PageSize = 8;
 
@@ -186,29 +181,7 @@ export const Cycles = ({ cyclesData }: Props) => {
 
                   <Td color="black">
                     {cycle?.description && (
-                      <Popover
-                        isLazy
-                        trigger="hover"
-                        gutter={4}
-                        placement="bottom"
-                      >
-                        <PopoverTrigger>
-                          <IconButton
-                            variant="unstyled"
-                            aria-label="Observação"
-                            display="flex"
-                            alignItems="center"
-                            justifyContent="center"
-                            icon={<AiOutlineQuestionCircle size={24} />}
-                            size="xs"
-                          />
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <PopoverArrow />
-
-                          <PopoverBody>{cycle?.description}</PopoverBody>
-                        </PopoverContent>
-                      </Popover>
+                      <Description description={cycle?.description} />
                     )}
                   </Td>
                 </Tr>

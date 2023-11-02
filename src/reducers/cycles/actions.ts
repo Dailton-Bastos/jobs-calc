@@ -7,12 +7,6 @@ export enum ActionTypes {
   DELETE_CYCLE = 'DELETE_CYCLE',
 }
 
-// interface InitialStateData {
-//   cyclesData: CycleApiData[];
-//   cyclesByUser: Cycle[];
-//   activeCycle: Cycle | undefined;
-// }
-
 export type CycleActions =
   | {
       type: ActionTypes.START_NEW_CYCLE;
@@ -22,7 +16,7 @@ export type CycleActions =
     }
   | {
       type: ActionTypes.FINISH_CURRENT_CYCLE;
-      payload: null;
+      payload: { cycle: CycleApiData };
     }
   | {
       type: ActionTypes.DELETE_CYCLE;
@@ -42,10 +36,10 @@ export const startNewCycleAction = (cycle: CycleApiData) => {
   };
 };
 
-export const finishCurrentCycleAction = () => {
+export const finishCurrentCycleAction = (cycle: CycleApiData) => {
   return {
     type: ActionTypes.FINISH_CURRENT_CYCLE as const,
-    payload: null,
+    payload: { cycle },
   };
 };
 
