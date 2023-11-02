@@ -1,6 +1,8 @@
+/* eslint-disable import/no-duplicates */
 import React from 'react';
-import { RangeKeyDict, Range } from 'react-date-range';
-import { RiFilterFill } from 'react-icons/ri';
+import type { RangeKeyDict, Range } from 'react-date-range';
+import { FiMenu } from 'react-icons/fi';
+import { MdClose } from 'react-icons/md';
 
 import {
   Box,
@@ -10,18 +12,20 @@ import {
   AccordionItem,
   AccordionButton,
   AccordionPanel,
+  Text,
 } from '@chakra-ui/react';
-import { startOfToday, endOfToday } from 'date-fns';
+import { startOfToday, endOfToday, getTime, format } from 'date-fns';
+import pt from 'date-fns/locale/pt-BR';
 
-// import { FilteredCycles } from '~/@types/cycles';
+import type { CycleApiData } from '~/@types/cycles';
 import { Calendar } from '~/components/Calendar';
 import { Head } from '~/components/Head';
-// import { useCyclesContext } from '~/hooks/useCyclesContext';
+import { useCyclesContext } from '~/hooks/useCyclesContext';
 
-// import { Cycles } from './Cycles';
+import { Cycles } from './Cycles';
 
 export const ReportsPage = () => {
-  // const [cyclesData, setCyclesData] = React.useState<FilteredCycles[]>([]);
+  const [interval, setInterval] = React.useState('');
 
   const [date, setDate] = React.useState<Range[]>([
     {
@@ -31,7 +35,7 @@ export const ReportsPage = () => {
     },
   ]);
 
-  // const { cycles } = useCyclesContext();
+  const { cyclesData } = useCyclesContext();
 
   const handleOnChange = React.useCallback((rangesByKey: RangeKeyDict) => {
     const { selection } = rangesByKey;
@@ -39,62 +43,92 @@ export const ReportsPage = () => {
     setDate([selection]);
   }, []);
 
-  // React.useEffect(() => {
-  //   const cyclesFiltered = cycles?.filter((cycle) => {
-  //     const startDate = date[0]?.startDate
-  //       ? getTime(new Date(date[0]?.startDate))
-  //       : getTime(startOfToday());
-  //     const endDate = date[0]?.endDate
-  //       ? getTime(new Date(date[0]?.endDate))
-  //       : getTime(endOfToday());
+  const filterCycleByDate = React.useCallback(
+    (cycle: CycleApiData) => {
+      const startDate = date[0]?.startDate
+        ? getTime(new Date(date[0]?.startDate))
+        : getTime(startOfToday());
 
-  //     return cycle.createdAt >= startDate && cycle.createdAt <= endDate;
-  //   });
+      const endDate = date[0]?.endDate
+        ? getTime(new Date(date[0]?.endDate))
+        : getTime(endOfToday());
 
-  //   setCyclesData(cyclesFiltered);
-  // }, [cycles, date]);
+      return cycle.startDate >= startDate && cycle.startDate <= endDate;
+    },
+    [date],
+  );
+
+  const cyclesByDate = React.useMemo(() => {
+    return cyclesData?.filter((cycle) => filterCycleByDate(cycle));
+  }, [filterCycleByDate, cyclesData]);
+
+  React.useEffect(() => {
+    if (date[0]?.startDate && date[0]?.endDate) {
+      const start = format(date[0]?.startDate, 'dd MMMM yyyy', {
+        locale: pt,
+      });
+
+      const end = format(date[0]?.endDate, 'dd MMMM yyyy', {
+        locale: pt,
+      });
+
+      setInterval(`${start} - ${end}`);
+    }
+  }, [date]);
 
   return (
     <>
       <Head title="Meus Apontamentos" />
 
-      <Container maxW="1120px" centerContent>
+      <Container maxW="1312px" centerContent>
         <Box w="100%" my="10">
-          <Heading size="md" textAlign="center">
+          <Heading size="lg" textAlign="center" fontWeight="bold" color="black">
             Meus Apontamentos
           </Heading>
 
           <Accordion defaultIndex={[0]} allowToggle mt="5">
             <AccordionItem border="none">
-              <AccordionButton
-                _hover={{
-                  bg: 'transparent',
-                }}
-                cursor="default"
-              >
-                <Box
-                  as="span"
-                  flex="1"
-                  textAlign="left"
-                  fontSize="lg"
-                  fontWeight="bold"
-                >
-                  Filtrar
-                </Box>
-                <RiFilterFill size={22} color="#F1972C" cursor="pointer" />
-              </AccordionButton>
+              {({ isExpanded }) => (
+                <>
+                  <AccordionButton
+                    _hover={{
+                      bg: 'transparent',
+                    }}
+                    cursor="default"
+                    justifyContent="flex-end"
+                    px="0"
+                  >
+                    {isExpanded ? (
+                      <MdClose size={24} cursor="pointer" />
+                    ) : (
+                      <FiMenu size={24} cursor="pointer" />
+                    )}
+                  </AccordionButton>
 
-              <AccordionPanel
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-              >
-                <Calendar ranges={date} onChange={handleOnChange} />
-              </AccordionPanel>
+                  <AccordionPanel
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    px="0"
+                  >
+                    <Calendar ranges={date} onChange={handleOnChange} />
+                  </AccordionPanel>
+                </>
+              )}
             </AccordionItem>
           </Accordion>
 
-          {/* <Cycles cyclesData={cyclesData} /> */}
+          <Text
+            align="center"
+            fontWeight="semibold"
+            fontSize="large"
+            color="black"
+            mt="6"
+          >
+            {interval}
+          </Text>
+
+          <Cycles cyclesData={cyclesByDate} />
         </Box>
       </Container>
     </>
