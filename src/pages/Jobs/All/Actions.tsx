@@ -5,18 +5,12 @@ import {
   RiPushpinLine,
   RiUnpinLine,
 } from 'react-icons/ri';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-import {
-  Link as LinkChakra,
-  HStack,
-  Tooltip,
-  useDisclosure,
-  IconButton,
-  Button,
-} from '@chakra-ui/react';
+import { HStack, Tooltip, useDisclosure, IconButton } from '@chakra-ui/react';
 
 import type { JobFormatted } from '~/@types/job';
+import { useCyclesContext } from '~/hooks/useCyclesContext';
 import { useJobs } from '~/hooks/useJobs';
 import { useJobsContext } from '~/hooks/useJobsContext';
 
@@ -31,10 +25,15 @@ export const Actions = ({ job }: Props) => {
 
   const id = job?.id;
 
+  const navigate = useNavigate();
+
   const { updateJob } = useJobs();
   const { jobsData } = useJobsContext();
+  const { activeJob } = useCyclesContext();
 
   const jobApiData = jobsData.find((item) => item.id === id);
+
+  const disableButton = !!activeJob && activeJob.id === id;
 
   const handleIsHighlight = React.useCallback(
     async (isHighlight: boolean) => {
@@ -52,79 +51,44 @@ export const Actions = ({ job }: Props) => {
     <>
       <HStack spacing="5px">
         {job?.isHighlight ? (
-          <Tooltip
-            label="Remover Destaque"
-            hasArrow
-            arrowSize={15}
-            aria-label="Remover Destaque"
-          >
-            <Button
-              variant="link"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              p="2"
-              borderRadius="md"
-              _hover={{
-                bg: 'gray.200',
-              }}
+          <Tooltip label="Remover Destaque" hasArrow arrowSize={15}>
+            <IconButton
+              aria-label="Remover Destaque"
+              icon={<RiUnpinLine size={22} color="#4A5568" />}
+              bg="transparent"
               onClick={() => handleIsHighlight(false)}
-            >
-              <RiUnpinLine size={22} color="#4A5568" />
-            </Button>
+              disabled={disableButton}
+            />
           </Tooltip>
         ) : (
-          <Tooltip
-            label="Marcar como Destaque"
-            hasArrow
-            arrowSize={15}
-            aria-label="Destacar Job"
-          >
-            <Button
-              variant="link"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              p="2"
-              borderRadius="md"
-              _hover={{
-                bg: 'gray.200',
-              }}
+          <Tooltip label="Marcar como Destaque" hasArrow arrowSize={15}>
+            <IconButton
+              aria-label="Destacar Job"
+              icon={<RiPushpinLine size={22} color="#4A5568" />}
+              bg="transparent"
               onClick={() => handleIsHighlight(true)}
-            >
-              <RiPushpinLine size={22} color="#4A5568" />
-            </Button>
+              disabled={disableButton}
+            />
           </Tooltip>
         )}
 
-        <Tooltip label="Editar" hasArrow arrowSize={15} aria-label="Editar Job">
-          <LinkChakra
-            as={Link}
-            to={`/jobs/${id}/edit`}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            p="2"
-            borderRadius="md"
-            _hover={{
-              bg: 'gray.200',
-            }}
-          >
-            <RiEdit2Line size={22} color="#4A5568" />
-          </LinkChakra>
+        <Tooltip label="Editar" hasArrow arrowSize={15}>
+          <IconButton
+            aria-label="Editar Job"
+            icon={<RiEdit2Line size={22} color="#4A5568" />}
+            bg="transparent"
+            onClick={() => navigate(`/jobs/${id}/edit`)}
+            disabled={disableButton}
+          />
         </Tooltip>
 
-        <Tooltip
-          label="Deletar"
-          hasArrow
-          arrowSize={15}
-          aria-label="Deletar Job"
-        >
+        <Tooltip label="Deletar" hasArrow arrowSize={15}>
           <IconButton
             aria-label="Deletar Job"
             icon={<RiDeleteBin2Line size={22} color="#4A5568" />}
             bg="transparent"
             onClick={onOpen}
+            disabled={disableButton}
           />
         </Tooltip>
       </HStack>

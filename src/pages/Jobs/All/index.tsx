@@ -5,11 +5,14 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Heading, Flex, CircularProgress, Button } from '@chakra-ui/react';
 
 import { Head } from '~/components/Head';
+import { useCyclesContext } from '~/hooks/useCyclesContext';
 
 const Jobs = React.lazy(() => import('./ListJobs'));
 
 export const AllJobsPage = () => {
   const navite = useNavigate();
+
+  const { activeCycle } = useCyclesContext();
 
   return (
     <>
@@ -33,6 +36,7 @@ export const AllJobsPage = () => {
             pl="8"
             minW="260px"
             h="12"
+            disabled={!!activeCycle}
             _hover={{
               bg: 'orange.400',
               color: 'white',
