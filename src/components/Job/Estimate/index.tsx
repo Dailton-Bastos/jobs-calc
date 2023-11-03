@@ -1,16 +1,20 @@
-// import React from 'react';
 import { useFormContext } from 'react-hook-form';
+import { RiSave3Line, RiCloseCircleLine } from 'react-icons/ri';
+import { useNavigate } from 'react-router-dom';
 
-import { Flex, Text } from '@chakra-ui/react';
+import { Flex, Text, HStack, Button } from '@chakra-ui/react';
 
-import { SubmitButton } from '~/components/Form/SubmitButton';
-// import { useCyclesContext } from '~/hooks/useCyclesContext';
+import { useCyclesContext } from '~/hooks/useCyclesContext';
 
 export const JobEstimate = () => {
   const { formState, watch } = useFormContext();
-  // const { activeCycleInfo } = useCyclesContext();
+  const { activeJob } = useCyclesContext();
 
   const { isSubmitting } = formState;
+
+  const navigate = useNavigate();
+
+  const disableSubmitButton = !!activeJob;
 
   const hourEstimate = Number(watch('hourEstimate'))
     .toString()
@@ -26,13 +30,12 @@ export const JobEstimate = () => {
       alignItems="center"
       justifyContent="center"
       bg="gray.100"
-      boxShadow="xs"
-      borderRadius="5px"
-      py="10"
-      px="14"
-      maxW="352px"
+      boxShadow="md"
+      borderRadius="8px"
+      p="8"
+      h="260px"
     >
-      <Text as="time" fontSize="5xl" color="purple.700">
+      <Text as="time" fontSize="6xl" color="purple.700">
         {`${hourEstimate}h:${minutesEstimate}m`}
       </Text>
 
@@ -46,21 +49,32 @@ export const JobEstimate = () => {
         Preencha os dados ao lado corretamente
       </Text>
 
-      <Flex
-        gap="4"
-        mt="12"
-        alignItems="center"
-        justifyContent="space-between"
-        width="100%"
-      >
-        <SubmitButton
+      <HStack mt={4} w="100%">
+        <Button
+          type="submit"
+          colorScheme="green"
+          leftIcon={<RiSave3Line size={28} />}
           isLoading={isSubmitting}
-          maxW="100%"
-          // disabled={!!activeCycleInfo}
+          disabled={disableSubmitButton}
+          w="100%"
+          fontSize="lg"
+          boxShadow="md"
         >
           Salvar
-        </SubmitButton>
-      </Flex>
+        </Button>
+
+        <Button
+          colorScheme="red"
+          leftIcon={<RiCloseCircleLine size={28} />}
+          onClick={() => navigate('/jobs')}
+          disabled={isSubmitting}
+          w="100%"
+          fontSize="lg"
+          boxShadow="md"
+        >
+          Cancelar
+        </Button>
+      </HStack>
     </Flex>
   );
 };

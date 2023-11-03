@@ -2,34 +2,23 @@ import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
-import {
-  Box,
-  Flex,
-  FormControl,
-  FormLabel,
-  Grid,
-  GridItem,
-  Switch,
-  VStack,
-} from '@chakra-ui/react';
+import { Box, Flex, Text } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ref, push, ThenableReference } from 'firebase/database';
 import * as yup from 'yup';
 
 import { JobData, JobType } from '~/@types/job';
-import { ActiveCycleInfo } from '~/components/ActiveCycleInfo';
 import { Container } from '~/components/Container';
-import { Input } from '~/components/Form/Input';
-import { Select } from '~/components/Form/Select';
-import { Textarea } from '~/components/Form/Textarea';
 import { Head } from '~/components/Head';
 import { JobEstimate } from '~/components/Job/Estimate';
 import { Title } from '~/components/Title';
 import { db } from '~/config/firebase';
-import { getTotalTimeInSeconds, jobSelectTypes } from '~/helpers/utils';
+import { getTotalTimeInSeconds } from '~/helpers/utils';
 import { useAuth } from '~/hooks/useAuth';
 import { useCustomToast } from '~/hooks/useCustomToast';
+import { useCyclesContext } from '~/hooks/useCyclesContext';
 import { useJobsContext } from '~/hooks/useJobsContext';
+import { startNewCycleAction } from '~/reducers/cycles/actions';
 import { addNewJobActions } from '~/reducers/jobs/actions';
 import {
   jobTypeBudgetAction,
@@ -42,9 +31,11 @@ import {
 } from '~/reducers/JobType/reducer';
 import { jobFormValidationSchema } from '~/schemas/jobFormSchema';
 
+import { Form } from './Form';
+
 type NewJobFormData = yup.InferType<typeof jobFormValidationSchema>;
 
-type NewJobFormDataProps = NewJobFormData & {
+export type NewJobFormDataProps = NewJobFormData & {
   isHighlight: boolean;
 };
 
@@ -67,20 +58,53 @@ export const NewJobPage = () => {
     mode: 'all',
     defaultValues: {
       jobberId: '',
+      title: '',
       hourEstimate: 1,
       minutesEstimate: 0,
       isHighlight: false,
+      type: 'other',
+      description: '',
     },
     resolver: yupResolver(jobFormValidationSchema),
   });
 
-  const { handleSubmit, formState, watch, resetField, reset } = newJobForm;
+  const { handleSubmit, formState, watch, resetField, reset, register } =
+    newJobForm;
 
   const { errors } = formState;
 
   const navigate = useNavigate();
 
   const { jobDispatch } = useJobsContext();
+  const { cycleDispatch } = useCyclesContext();
+
+  const handleStartNewCycle = React.useCallback(
+    (jobId: string) => {
+      if (!user) return;
+
+      const dateInTimestamp = new Date().getTime();
+
+      const cycle = {
+        userId: user.uid,
+        jobId,
+        startDate: dateInTimestamp,
+        isActive: true,
+        description: '',
+      };
+
+      const { key }: ThenableReference = push(ref(db, 'cycles'), cycle);
+
+      if (!key) return;
+
+      cycleDispatch(
+        startNewCycleAction({
+          id: key,
+          ...cycle,
+        }),
+      );
+    },
+    [cycleDispatch, user],
+  );
 
   const createNewJob = React.useCallback(
     (data: JobData) => {
@@ -94,35 +118,17 @@ export const NewJobPage = () => {
 
       jobDispatch(addNewJobActions(jobAction));
 
+      handleStartNewCycle(id);
+
       customToast({
         title: 'Novo Job',
         description: 'Um novo job foi iniciado',
         status: 'success',
       });
 
-      // const dateInTimestamp = new Date().getTime();
-
-      // const cycle: Cycle = {
-      //   id: null,
-      //   jobId: id,
-      //   userId,
-      //   isActive: true,
-      //   startDate: dateInTimestamp,
-      // };
-
-      // const { key: cycleKey } = push(ref(db, 'cycles'), cycle);
-
-      // if (cycleKey) {
-      //   setNewCycle({
-      //     ...cycle,
-      //     id: cycleKey,
-      //     startDate: dateInTimestamp,
-      //   });
-      // }
-
       navigate(`/jobs/${id}`);
     },
-    [navigate, jobDispatch, userId, customToast],
+    [navigate, jobDispatch, userId, customToast, handleStartNewCycle],
   );
 
   const type = watch('type') as JobType;
@@ -194,92 +200,40 @@ export const NewJobPage = () => {
       <Head title="Novo Job" />
 
       <Container title="Adicionar Novo Job">
-        <>
-          <ActiveCycleInfo />
+        <FormProvider {...newJobForm}>
+          <Box w="100%" as="form" onSubmit={handleSubmit(handleCreateNewJob)}>
+            <Title title="Informações do Job" />
 
-          <Box as="section">
             <Flex
-              as="form"
-              alignItems="center"
+              mt="8"
+              alignItems="start"
               justifyContent="space-between"
               gap="8"
-              onSubmit={handleSubmit(handleCreateNewJob)}
             >
-              <FormProvider {...newJobForm}>
-                <Box w="100%" maxW="640px">
-                  <Title title="Dados do Job" />
+              <input
+                type="hidden"
+                value="development"
+                {...register('status')}
+              />
 
-                  <Box mt="8">
-                    <VStack spacing="6" align="flex-start">
-                      <Select
-                        registerName="type"
-                        label="Tipo"
-                        options={jobSelectTypes}
-                        error={errors?.type}
-                      />
+              <Form
+                errors={errors}
+                isDisableEstimateField={isDisableEstimateField}
+                isDisableJobberIdField={isDisableJobberIdField}
+                isHighlight={isHighlight}
+                handleChangeHighlight={handleChangeHighlight}
+              />
 
-                      <Grid gap="6" templateColumns="140px 1fr" w="100%">
-                        <GridItem w="100%">
-                          <Input
-                            registerName="jobberId"
-                            label="Jobber ID"
-                            isDisabled={isDisableJobberIdField}
-                            error={errors?.jobberId}
-                          />
-                        </GridItem>
-
-                        <GridItem w="100%">
-                          <Input
-                            registerName="title"
-                            label="Título"
-                            error={errors?.title}
-                          />
-                        </GridItem>
-                      </Grid>
-
-                      <Grid gap="6" templateColumns="repeat(2, 1fr)" w="100%">
-                        <Input
-                          registerName="hourEstimate"
-                          label="Tempo Estimado (h)"
-                          type="number"
-                          isDisabled={isDisableEstimateField}
-                          error={errors?.hourEstimate}
-                        />
-
-                        <Input
-                          registerName="minutesEstimate"
-                          label="Tempo Estimado (min)"
-                          type="number"
-                          isDisabled={isDisableEstimateField}
-                          error={errors?.minutesEstimate}
-                        />
-                      </Grid>
-
-                      <Textarea
-                        registerName="description"
-                        label="Briefing (Opcional)"
-                      />
-
-                      <FormControl display="flex" alignItems="center">
-                        <FormLabel htmlFor="highlight" mb="0">
-                          Destaque?
-                        </FormLabel>
-                        <Switch
-                          id="highlight"
-                          colorScheme="green"
-                          isChecked={isHighlight}
-                          onChange={handleChangeHighlight}
-                        />
-                      </FormControl>
-                    </VStack>
-                  </Box>
-                </Box>
+              <Box maxW="420px" w="100%">
+                <Text fontWeight="bold" textAlign="center" mb={4}>
+                  Estimativa de horas
+                </Text>
 
                 <JobEstimate />
-              </FormProvider>
+              </Box>
             </Flex>
           </Box>
-        </>
+        </FormProvider>
       </Container>
     </>
   );
