@@ -11,6 +11,7 @@ import { DetailsJobPage } from '~/pages/Jobs/Details';
 import { EditJobPage } from '~/pages/Jobs/Edit';
 import { EditJobReports } from '~/pages/Jobs/Edit/Reports';
 import { NewJobPage } from '~/pages/Jobs/New';
+import { Profile } from '~/pages/Profile';
 import { ReportsPage } from '~/pages/Reports';
 import { SignIn } from '~/pages/SignIn';
 import { SignUp } from '~/pages/Signup';
@@ -40,6 +41,7 @@ export const GlobalRoutes = () => {
         <Route path="/jobs/new" element={<NewJobPage />} />
         <Route path="/jobs/:id/edit" element={<EditJobPage />} />
         <Route path="/jobs/:id/cycles" element={<EditJobReports />} />
+        <Route path="/profile" element={<Profile />} />
       </Route>
     </Routes>
   );
