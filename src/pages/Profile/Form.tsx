@@ -1,3 +1,4 @@
+import { FieldErrorsImpl } from 'react-hook-form';
 import { LuAlertCircle } from 'react-icons/lu';
 
 import {
@@ -12,22 +13,26 @@ import {
 import { Input } from '~/components/Form/Input';
 import { Label } from '~/components/Form/Label';
 
+import type { ProfileFormData } from '.';
+
 type Props = {
   emailVerified: boolean;
   email: string;
+  errors: FieldErrorsImpl<ProfileFormData>;
 };
 
-export const Form = ({ emailVerified, email }: Props) => {
+export const Form = ({ emailVerified, email, errors }: Props) => {
   return (
     <VStack spacing="6" align="flex-start" flex="1">
       <Grid gap="6" templateColumns="1fr 1fr" w="100%" pt="8">
         <Input
-          registerName="name"
+          registerName="displayName"
           bg="gray.50"
           borderColor="gray.200"
           borderWidth="thin"
           label="Nome"
           isDisabled={!emailVerified}
+          error={errors?.displayName}
         />
 
         <Box>
@@ -61,33 +66,36 @@ export const Form = ({ emailVerified, email }: Props) => {
       </Grid>
 
       <Input
-        registerName="avatar_url"
+        registerName="photoUrl"
         bg="gray.50"
         borderColor="gray.200"
         borderWidth="thin"
         label="Link da foto"
         isDisabled={!emailVerified}
+        error={errors?.photoUrl}
       />
 
       <Grid gap="6" templateColumns="1fr 1fr" w="100%">
         <Input
-          registerName="avatar_url"
+          registerName="password"
           bg="gray.50"
           borderColor="gray.200"
           borderWidth="thin"
           label="Nova Senha"
           type="password"
           isDisabled={!emailVerified}
+          error={errors?.password}
         />
 
         <Input
-          registerName="avatar_url"
+          registerName="passwordConfirmation"
           bg="gray.50"
           borderColor="gray.200"
           borderWidth="thin"
           label="Confirmar Senha"
           type="password"
           isDisabled={!emailVerified}
+          error={errors?.passwordConfirmation}
         />
       </Grid>
     </VStack>

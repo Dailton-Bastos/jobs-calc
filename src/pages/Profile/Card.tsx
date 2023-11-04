@@ -1,4 +1,5 @@
 import React from 'react';
+import { useFormContext, useFormState } from 'react-hook-form';
 import { LuAlertCircle } from 'react-icons/lu';
 import { RiCloseCircleLine } from 'react-icons/ri';
 
@@ -14,15 +15,32 @@ type Props = {
   emailVerified: boolean;
 };
 
+import type { ProfileFormData } from '.';
+
 export const Card = ({ user, emailVerified }: Props) => {
   const [isSendEmailVerification, setIsSendEmailVerefication] =
     React.useState(false);
 
-  const displayName = user?.displayName ?? undefined;
-  const photoURL = user?.photoURL ?? undefined;
   const email = user?.email;
 
   const { customToast } = useCustomToast();
+  const { isDirty, isSubmitting } = useFormState();
+  const { watch } = useFormContext<ProfileFormData>();
+
+  const displayName = watch('displayName') || user?.displayName || '';
+  const photoUrl = watch('photoUrl') || user?.photoURL || '';
+
+  let userAvatar = <Avatar size="2xl" bg="orange.500" />;
+
+  if (displayName) {
+    userAvatar = (
+      <Avatar name={displayName} size="2xl" bg="orange.500" color="white" />
+    );
+  }
+
+  if (photoUrl) {
+    userAvatar = <Avatar src={photoUrl} showBorder size="2xl" />;
+  }
 
   const handleSendEmailVerfication = React.useCallback(async () => {
     try {
@@ -60,11 +78,7 @@ export const Card = ({ user, emailVerified }: Props) => {
       maxW="350px"
       w="100%"
     >
-      {displayName || photoURL ? (
-        <Avatar name={displayName} src={photoURL} size="2xl" />
-      ) : (
-        <Avatar size="2xl" />
-      )}
+      {userAvatar}
 
       <Text
         color="purple.700"
@@ -83,10 +97,11 @@ export const Card = ({ user, emailVerified }: Props) => {
           <Button
             type="submit"
             colorScheme="green"
-            // isLoading={isSubmitting}
+            isLoading={isSubmitting}
             w="100%"
             fontSize="lg"
             boxShadow="md"
+            disabled={!isDirty}
           >
             Salvar Dados
           </Button>
@@ -110,8 +125,7 @@ export const Card = ({ user, emailVerified }: Props) => {
         <Button
           colorScheme="red"
           leftIcon={<RiCloseCircleLine size={28} />}
-          // onClick={() => navigate('/jobs')}
-          disabled={isSendEmailVerification}
+          disabled={isSendEmailVerification || isSubmitting}
           w="100%"
           fontSize="lg"
           boxShadow="md"

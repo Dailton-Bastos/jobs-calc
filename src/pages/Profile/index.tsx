@@ -2,6 +2,8 @@ import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import { Box, Flex } from '@chakra-ui/react';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
 import { Container } from '~/components/Container';
 import { Head } from '~/components/Head';
@@ -10,6 +12,8 @@ import { auth } from '~/config/firebase';
 import { useAuth } from '~/hooks/useAuth';
 import { useCustomToast } from '~/hooks/useCustomToast';
 import { useTabActive } from '~/hooks/useTabActive';
+import { useUpdateProfile } from '~/hooks/useUser';
+import { profileFormSchema } from '~/schemas/profileFormSchema';
 
 import { Card } from './Card';
 import { Form } from './Form';
@@ -20,6 +24,8 @@ type EmailVerifiedNotification = {
   title?: string;
   description?: string;
 };
+
+export type ProfileFormData = yup.InferType<typeof profileFormSchema>;
 
 export const Profile = () => {
   const [userEmailVerified, setUserEmailVerified] = React.useState(false);
@@ -32,7 +38,41 @@ export const Profile = () => {
   const { user } = useAuth();
   const { isTabActive } = useTabActive();
   const { customToast } = useCustomToast();
-  const profileForm = useForm({});
+  const [updateProfile, errorUpdateProfile] = useUpdateProfile(user);
+
+  const profileForm = useForm<ProfileFormData>({
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
+    defaultValues: {
+      displayName: user?.displayName ?? '',
+      photoUrl: user?.photoURL ?? '',
+      password: '',
+      passwordConfirmation: '',
+    },
+    resolver: yupResolver(profileFormSchema),
+  });
+
+  const { formState, handleSubmit } = profileForm;
+
+  const { errors } = formState;
+
+  const handleSubmitForm = React.useCallback(
+    async (data: ProfileFormData) => {
+      const profileResponse = await updateProfile({
+        displayName: data?.displayName,
+        photoURL: data?.photoUrl,
+      });
+
+      if (profileResponse) {
+        customToast({
+          status: 'success',
+          title: 'Perfil atualizado',
+          description: 'Informações salvas com sucesso',
+        });
+      }
+    },
+    [updateProfile, customToast],
+  );
 
   React.useEffect(() => {
     const interval = setInterval(() => {
@@ -91,6 +131,16 @@ export const Profile = () => {
     setUserEmailVerified(user?.emailVerified ?? false);
   }, [user]);
 
+  React.useEffect(() => {
+    if (errorUpdateProfile) {
+      customToast({
+        status: 'error',
+        title: 'Ocorreu um erro',
+        description: 'Error ao salvar perfil',
+      });
+    }
+  }, [errorUpdateProfile, customToast]);
+
   return (
     <Box>
       <Head title={user?.displayName ?? 'Meu Perfil'} />
@@ -103,9 +153,8 @@ export const Profile = () => {
             justifyContent="space-between"
             gap="8"
             pt="20"
+            onSubmit={handleSubmit(handleSubmitForm)}
           >
-            {user && <Card user={user} emailVerified={userEmailVerified} />}
-
             <Box
               w="100%"
               bg="white"
@@ -117,9 +166,15 @@ export const Profile = () => {
               <Title title="Dados do perfil" />
 
               {user?.email && (
-                <Form email={user.email} emailVerified={userEmailVerified} />
+                <Form
+                  errors={errors}
+                  email={user.email}
+                  emailVerified={userEmailVerified}
+                />
               )}
             </Box>
+
+            {user && <Card user={user} emailVerified={userEmailVerified} />}
           </Flex>
         </FormProvider>
       </Container>

@@ -6,7 +6,6 @@ import {
 import { Link } from 'react-router-dom';
 
 import {
-  Avatar,
   Popover,
   PopoverTrigger,
   PopoverContent,
@@ -25,10 +24,14 @@ import {
 import { motion } from 'framer-motion';
 
 import { ReactComponent as HelloEmoji } from '~/assets/hello-emoji.svg';
+import { Avatar } from '~/components/Avatar';
 import { useAuth } from '~/hooks/useAuth';
 
 export const UserIdentifier = () => {
   const { user, logout } = useAuth();
+
+  const displayName = user?.displayName;
+  const photoUrl = user?.photoURL;
 
   const animationKeyframes = keyframes`
   0% { transform: rotate(0deg) }
@@ -43,24 +46,22 @@ export const UserIdentifier = () => {
 
   const animation = `${animationKeyframes} 2.5s ease-in-out`;
 
+  let userAvatar = <Avatar bg="orange.500" />;
+
+  if (displayName) {
+    userAvatar = <Avatar name={displayName} bg="orange.500" color="white" />;
+  }
+
+  if (photoUrl) {
+    userAvatar = <Avatar src={photoUrl} showBorder />;
+  }
+
   return (
     <Popover isLazy placement="top-end">
       <PopoverTrigger>
-        <Box
-          cursor="pointer"
-          p="2px"
-          bg="orange.500"
-          borderRadius="full"
-          boxShadow="md"
-        >
-          <Avatar
-            name={user?.displayName ?? ''}
-            src="https://avatars0.githubusercontent.com/u/36246937?v=4"
-            size="md"
-            p="1px"
-            bg="white"
-          />
-        </Box>
+        <Button variant="unstyled" w="52px" h="52px">
+          {userAvatar}
+        </Button>
       </PopoverTrigger>
 
       <PopoverContent>
