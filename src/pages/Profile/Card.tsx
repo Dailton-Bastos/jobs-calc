@@ -1,21 +1,53 @@
+import React from 'react';
 import { LuAlertCircle } from 'react-icons/lu';
 import { RiCloseCircleLine } from 'react-icons/ri';
 
-import { Box, Flex, VStack, Button, Text, Avatar } from '@chakra-ui/react';
+import { Flex, VStack, Button, Text } from '@chakra-ui/react';
+import { sendEmailVerification } from 'firebase/auth';
+import type { User } from 'firebase/auth';
+
+import { Avatar } from '~/components/Avatar';
+import { useCustomToast } from '~/hooks/useCustomToast';
 
 type Props = {
-  displayName?: string;
-  email: string;
+  user: User;
   emailVerified: boolean;
-  photoURL?: string;
 };
 
-export const Card = ({
-  displayName,
-  email,
-  emailVerified,
-  photoURL,
-}: Props) => {
+export const Card = ({ user, emailVerified }: Props) => {
+  const [isSendEmailVerification, setIsSendEmailVerefication] =
+    React.useState(false);
+
+  const displayName = user?.displayName ?? undefined;
+  const photoURL = user?.photoURL ?? undefined;
+  const email = user?.email;
+
+  const { customToast } = useCustomToast();
+
+  const handleSendEmailVerfication = React.useCallback(async () => {
+    try {
+      setIsSendEmailVerefication(true);
+
+      await sendEmailVerification(user);
+
+      customToast({
+        title: 'Verifique seu e-mail',
+        description: `E-mail enviado para ${email}`,
+        status: 'success',
+      });
+
+      setIsSendEmailVerefication(false);
+    } catch (error) {
+      setIsSendEmailVerefication(false);
+
+      customToast({
+        title: 'Ocorreu um erro!',
+        description: 'Tente novamente.',
+        status: 'error',
+      });
+    }
+  }, [user, customToast, email]);
+
   return (
     <Flex
       direction="column"
@@ -25,20 +57,14 @@ export const Card = ({
       boxShadow="md"
       borderRadius="8px"
       py="8"
-      px="12"
       maxW="350px"
       w="100%"
     >
-      <Box p="2px" bg="orange.500" borderRadius="full" boxShadow="md">
-        <Avatar
-          name={displayName}
-          src={photoURL}
-          size="2xl"
-          p="1px"
-          bg="white"
-          color="black"
-        />
-      </Box>
+      {displayName || photoURL ? (
+        <Avatar name={displayName} src={photoURL} size="2xl" />
+      ) : (
+        <Avatar size="2xl" />
+      )}
 
       <Text
         color="purple.700"
@@ -47,17 +73,17 @@ export const Card = ({
         mt="6"
         fontWeight="bold"
         fontSize="2xl"
+        wordBreak="break-word"
       >
         {displayName || email}
       </Text>
 
-      <VStack w="100%" pt="10">
+      <VStack w="100%" pt="10" px="6">
         {emailVerified && (
           <Button
             type="submit"
             colorScheme="green"
             // isLoading={isSubmitting}
-            disabled={!emailVerified}
             w="100%"
             fontSize="lg"
             boxShadow="md"
@@ -70,12 +96,12 @@ export const Card = ({
           <Button
             colorScheme="yellow"
             color="#fff"
-            leftIcon={<LuAlertCircle size={28} />}
-            // onClick={() => navigate('/jobs')}
-            // disabled={isSubmitting}
             w="100%"
             fontSize="lg"
             boxShadow="md"
+            leftIcon={<LuAlertCircle size={28} />}
+            onClick={handleSendEmailVerfication}
+            isLoading={isSendEmailVerification}
           >
             Confirmar E-mail
           </Button>
@@ -85,7 +111,7 @@ export const Card = ({
           colorScheme="red"
           leftIcon={<RiCloseCircleLine size={28} />}
           // onClick={() => navigate('/jobs')}
-          // disabled={isSubmitting}
+          disabled={isSendEmailVerification}
           w="100%"
           fontSize="lg"
           boxShadow="md"

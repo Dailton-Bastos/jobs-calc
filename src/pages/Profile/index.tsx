@@ -1,3 +1,4 @@
+import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import { Box, Flex } from '@chakra-ui/react';
@@ -5,21 +6,94 @@ import { Box, Flex } from '@chakra-ui/react';
 import { Container } from '~/components/Container';
 import { Head } from '~/components/Head';
 import { Title } from '~/components/Title';
+import { auth } from '~/config/firebase';
 import { useAuth } from '~/hooks/useAuth';
+import { useCustomToast } from '~/hooks/useCustomToast';
+import { useTabActive } from '~/hooks/useTabActive';
 
 import { Card } from './Card';
 import { Form } from './Form';
 
+type EmailVerifiedNotification = {
+  showNotification: boolean;
+  status?: 'success' | 'error';
+  title?: string;
+  description?: string;
+};
+
 export const Profile = () => {
+  const [userEmailVerified, setUserEmailVerified] = React.useState(false);
+
+  const [emailVerifiedNotification, setEmailVerifiedNofitication] =
+    React.useState<EmailVerifiedNotification>({
+      showNotification: false,
+    });
+
   const { user } = useAuth();
-
-  const emailVerified = user?.emailVerified ?? false;
-
+  const { isTabActive } = useTabActive();
+  const { customToast } = useCustomToast();
   const profileForm = useForm({});
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      if (!auth?.currentUser?.emailVerified) {
+        return auth?.currentUser
+          ?.reload()
+          .then(() => {
+            if (auth?.currentUser?.emailVerified) {
+              clearInterval(interval);
+
+              setEmailVerifiedNofitication({
+                showNotification: true,
+                status: 'success',
+                title: 'E-mail vereficado!',
+                description: 'E-mail vereficado com sucesso',
+              });
+
+              setUserEmailVerified(true);
+            }
+          })
+          .catch(() => {
+            setEmailVerifiedNofitication({
+              showNotification: true,
+              status: 'error',
+              title: 'Ocorreu um erro!',
+              description: 'Erro ao verificar e-mail',
+            });
+
+            setUserEmailVerified(false);
+          });
+      }
+
+      return;
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  React.useEffect(() => {
+    if (isTabActive && emailVerifiedNotification.showNotification) {
+      customToast({
+        status: emailVerifiedNotification.status,
+        title: emailVerifiedNotification.title,
+        description: emailVerifiedNotification.description,
+      });
+
+      setEmailVerifiedNofitication({
+        showNotification: false,
+        title: '',
+        description: '',
+      });
+    }
+  }, [isTabActive, emailVerifiedNotification, customToast]);
+
+  React.useEffect(() => {
+    setUserEmailVerified(user?.emailVerified ?? false);
+  }, [user]);
 
   return (
     <Box>
-      <Head title={user?.displayName ?? ''} />
+      <Head title={user?.displayName ?? 'Meu Perfil'} />
 
       <Container title="Meu Perfil">
         <FormProvider {...profileForm}>
@@ -30,14 +104,7 @@ export const Profile = () => {
             gap="8"
             pt="20"
           >
-            {user?.email && (
-              <Card
-                emailVerified={emailVerified}
-                email={user?.email}
-                displayName={user?.displayName ?? undefined}
-                photoURL={user?.photoURL ?? undefined}
-              />
-            )}
+            {user && <Card user={user} emailVerified={userEmailVerified} />}
 
             <Box
               w="100%"
@@ -50,7 +117,7 @@ export const Profile = () => {
               <Title title="Dados do perfil" />
 
               {user?.email && (
-                <Form emailVerified={emailVerified} email={user.email} />
+                <Form email={user.email} emailVerified={userEmailVerified} />
               )}
             </Box>
           </Flex>
