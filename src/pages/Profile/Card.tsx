@@ -32,6 +32,7 @@ export const Card = ({ user, emailVerified }: Props) => {
   const { logout } = useAuth();
 
   const { isOpen, onClose, onOpen } = useDisclosure();
+
   const {
     isOpen: isOpenModalConfirmPassword,
     onClose: onCloseReauthenticateModal,
@@ -102,6 +103,12 @@ export const Card = ({ user, emailVerified }: Props) => {
       description: 'Conta excluída com sucesso',
     });
   }, [deleteUser, logout, customToast]);
+
+  const handleCloseReauthenticateModal = React.useCallback(() => {
+    onClose();
+
+    onCloseReauthenticateModal();
+  }, [onClose, onCloseReauthenticateModal]);
 
   React.useEffect(() => {
     if (userReauthenticateSuccess) {
@@ -198,7 +205,7 @@ export const Card = ({ user, emailVerified }: Props) => {
 
       <ReauthenticateUser
         isOpen={isOpenModalConfirmPassword}
-        onClose={onCloseReauthenticateModal}
+        onClose={handleCloseReauthenticateModal}
         setUserReauthenticate={setUserReauthenticate}
       />
     </>
