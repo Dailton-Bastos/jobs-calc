@@ -10,8 +10,7 @@ import {
   InputLeftElement,
   InputRightElement,
   FormErrorMessage,
-  Button,
-  Icon,
+  IconButton,
 } from '@chakra-ui/react';
 
 import { Label } from '~/components/Form/Label';
@@ -19,11 +18,18 @@ import { Label } from '~/components/Form/Label';
 type Props = InputProps & {
   label?: string;
   error?: FieldError;
-  isValidPassword: boolean;
+  isValidPassword?: boolean;
+  showLeftIcon?: boolean;
 };
 
 const InputPasswordBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
-  { label, error = null, isValidPassword = false, ...rest },
+  {
+    label,
+    error = null,
+    isValidPassword = false,
+    showLeftIcon = true,
+    ...rest
+  },
   ref,
 ) => {
   const [showPassword, setShowPassword] = React.useState(false);
@@ -33,9 +39,11 @@ const InputPasswordBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
       {!!label && <Label>{label}</Label>}
 
       <InputGroup>
-        <InputLeftElement pointerEvents="none" height="12">
-          <RiLock2Line color={`${isValidPassword ? '#F1972C' : '#787880'}`} />
-        </InputLeftElement>
+        {showLeftIcon && (
+          <InputLeftElement pointerEvents="none" height="12">
+            <RiLock2Line color={`${isValidPassword ? '#F1972C' : '#787880'}`} />
+          </InputLeftElement>
+        )}
 
         <Input
           type={showPassword ? 'text' : 'password'}
@@ -55,14 +63,14 @@ const InputPasswordBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
         />
 
         <InputRightElement height="12" mr="2">
-          <Button
-            _hover={{
-              bg: 'gray.50',
-            }}
+          <IconButton
+            aria-label="Password"
+            variant="link"
+            colorScheme="gray"
+            size="sm"
+            icon={showPassword ? <RiEyeLine /> : <RiEyeOffLine />}
             onClick={() => setShowPassword((prev) => !prev)}
-          >
-            <Icon as={showPassword ? RiEyeLine : RiEyeOffLine} />
-          </Button>
+          />
         </InputRightElement>
       </InputGroup>
 

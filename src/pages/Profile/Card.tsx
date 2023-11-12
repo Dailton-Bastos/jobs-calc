@@ -28,7 +28,7 @@ export const Card = ({ user, emailVerified }: Props) => {
   const { watch } = useFormContext<ProfileFormData>();
 
   const displayName = watch('displayName') || user?.displayName || '';
-  const photoUrl = watch('photoUrl') || user?.photoURL || '';
+  const photoUrl = watch('photoURL') || user?.photoURL || '';
 
   let userAvatar = <Avatar size="2xl" bg="orange.500" />;
 

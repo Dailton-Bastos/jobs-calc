@@ -17,6 +17,7 @@ import { profileFormSchema } from '~/schemas/profileFormSchema';
 
 import { Card } from './Card';
 import { Form } from './Form';
+import { ReauthenticateUser } from './ReauthenticateUser';
 
 type EmailVerifiedNotification = {
   showNotification: boolean;
@@ -28,7 +29,17 @@ type EmailVerifiedNotification = {
 export type ProfileFormData = yup.InferType<typeof profileFormSchema>;
 
 export const Profile = () => {
+  const [profileData, setProfileData] = React.useState<ProfileFormData>({
+    displayName: '',
+    photoURL: '',
+    updatePassword: false,
+    password: '',
+    passwordConfirmation: '',
+  });
+
   const [userEmailVerified, setUserEmailVerified] = React.useState(false);
+  const [openModalConfirmPassword, setOpenModalConfirmPassword] =
+    React.useState(false);
 
   const [emailVerifiedNotification, setEmailVerifiedNofitication] =
     React.useState<EmailVerifiedNotification>({
@@ -45,31 +56,57 @@ export const Profile = () => {
     reValidateMode: 'onChange',
     defaultValues: {
       displayName: user?.displayName ?? '',
-      photoUrl: user?.photoURL ?? '',
+      photoURL: user?.photoURL ?? '',
+      updatePassword: false,
       password: '',
       passwordConfirmation: '',
     },
     resolver: yupResolver(profileFormSchema),
   });
 
-  const { formState, handleSubmit } = profileForm;
+  const { formState, handleSubmit, reset } = profileForm;
 
   const { errors } = formState;
 
+  const onCloseReauthenticateModal = React.useCallback(() => {
+    setProfileData({
+      displayName: '',
+      photoURL: '',
+      updatePassword: false,
+      password: '',
+      passwordConfirmation: '',
+    });
+
+    reset({
+      updatePassword: false,
+      password: '',
+      passwordConfirmation: '',
+    });
+
+    setOpenModalConfirmPassword(false);
+  }, [reset]);
+
   const handleSubmitForm = React.useCallback(
     async (data: ProfileFormData) => {
-      const profileResponse = await updateProfile({
-        displayName: data?.displayName,
-        photoURL: data?.photoUrl,
-      });
+      const { displayName, photoURL, updatePassword } = data;
 
-      if (profileResponse) {
-        customToast({
-          status: 'success',
-          title: 'Perfil atualizado',
-          description: 'Informações salvas com sucesso',
-        });
+      if (updatePassword) {
+        setProfileData({ ...data });
+
+        setOpenModalConfirmPassword(true);
+
+        return;
       }
+
+      const response = await updateProfile({ displayName, photoURL });
+
+      if (!response) return;
+
+      customToast({
+        status: 'success',
+        title: 'Perfil atualizado',
+        description: 'Informações salvas com sucesso',
+      });
     },
     [updateProfile, customToast],
   );
@@ -136,7 +173,7 @@ export const Profile = () => {
       customToast({
         status: 'error',
         title: 'Ocorreu um erro',
-        description: 'Error ao salvar perfil',
+        description: 'Error ao atualizar perfil',
       });
     }
   }, [errorUpdateProfile, customToast]);
@@ -178,6 +215,12 @@ export const Profile = () => {
           </Flex>
         </FormProvider>
       </Container>
+
+      <ReauthenticateUser
+        profileData={profileData}
+        isOpen={openModalConfirmPassword}
+        onClose={onCloseReauthenticateModal}
+      />
     </Box>
   );
 };
