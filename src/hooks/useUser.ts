@@ -4,6 +4,7 @@ import {
   updateProfile as fbUpdateProfile,
   updatePassword as fbPpdatePassword,
   reauthenticateWithCredential as fbReauthenticateWithCredential,
+  deleteUser as fbDeleteUser,
   EmailAuthProvider,
   AuthError,
   User,
@@ -24,6 +25,7 @@ export type UpdatePasswordHook = UpdateUserHook<
 export type ReuthenticateWithCredentialHook = UpdateUserHook<
   (password: string) => Promise<boolean>
 >;
+export type DeleteUserHook = UpdateUserHook<() => Promise<boolean>>;
 
 export const useUpdateProfile = (user: User | null): UpdateProfileHook => {
   const [error, setError] = React.useState<AuthError | undefined>(undefined);
@@ -114,4 +116,30 @@ export const useReuthenticateWithCredential = (
   );
 
   return [reauthenticateWithCredential, error, loading];
+};
+
+export const useDeteleUser = (user: User | null): DeleteUserHook => {
+  const [error, setError] = React.useState<AuthError | undefined>(undefined);
+  const [loading, setLoading] = React.useState(false);
+
+  const deleteUser = React.useCallback(async () => {
+    if (!user) return false;
+
+    setLoading(true);
+    setError(undefined);
+
+    try {
+      await fbDeleteUser(user);
+
+      return true;
+    } catch (err) {
+      setError(err as AuthError);
+
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  return [deleteUser, error, loading];
 };

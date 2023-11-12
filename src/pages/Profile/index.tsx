@@ -12,7 +12,7 @@ import { auth } from '~/config/firebase';
 import { useAuth } from '~/hooks/useAuth';
 import { useCustomToast } from '~/hooks/useCustomToast';
 import { useTabActive } from '~/hooks/useTabActive';
-import { useUpdateProfile } from '~/hooks/useUser';
+import { useUpdateProfile, useUpdatePassword } from '~/hooks/useUser';
 import { profileFormSchema } from '~/schemas/profileFormSchema';
 
 import { Card } from './Card';
@@ -29,15 +29,8 @@ type EmailVerifiedNotification = {
 export type ProfileFormData = yup.InferType<typeof profileFormSchema>;
 
 export const Profile = () => {
-  const [profileData, setProfileData] = React.useState<ProfileFormData>({
-    displayName: '',
-    photoURL: '',
-    updatePassword: false,
-    password: '',
-    passwordConfirmation: '',
-  });
-
   const [userEmailVerified, setUserEmailVerified] = React.useState(false);
+
   const [openModalConfirmPassword, setOpenModalConfirmPassword] =
     React.useState(false);
 
@@ -46,10 +39,14 @@ export const Profile = () => {
       showNotification: false,
     });
 
+  const [userReauthenticateSuccess, setUserReauthenticateSuccess] =
+    React.useState<boolean | null>(null);
+
   const { user } = useAuth();
   const { isTabActive } = useTabActive();
   const { customToast } = useCustomToast();
   const [updateProfile, errorUpdateProfile] = useUpdateProfile(user);
+  const [updateUserPassword, errorUpdateUserPassword] = useUpdatePassword(user);
 
   const profileForm = useForm<ProfileFormData>({
     mode: 'onSubmit',
@@ -64,19 +61,37 @@ export const Profile = () => {
     resolver: yupResolver(profileFormSchema),
   });
 
-  const { formState, handleSubmit, reset } = profileForm;
+  const { formState, handleSubmit, reset, watch } = profileForm;
 
   const { errors } = formState;
 
-  const onCloseReauthenticateModal = React.useCallback(() => {
-    setProfileData({
-      displayName: '',
-      photoURL: '',
-      updatePassword: false,
-      password: '',
-      passwordConfirmation: '',
-    });
+  const updateUserInfo = React.useCallback(async () => {
+    const displayName = watch('displayName');
+    const photoURL = watch('photoURL');
+    const password = watch('password');
 
+    const updateUserProfile = updateProfile({ displayName, photoURL });
+
+    const updatePassword = updateUserPassword(password ?? '');
+
+    const promises = [updateUserProfile, updatePassword];
+
+    try {
+      await Promise.all(promises);
+
+      customToast({
+        status: 'success',
+        title: 'Perfil atualizado',
+        description: 'Informações salvas com sucesso',
+      });
+
+      setUserReauthenticateSuccess(null);
+    } catch (error) {
+      throw new Error('Error to update user profile');
+    }
+  }, [watch, updateProfile, updateUserPassword, customToast]);
+
+  const onCloseReauthenticateModal = React.useCallback(() => {
     reset({
       updatePassword: false,
       password: '',
@@ -86,13 +101,15 @@ export const Profile = () => {
     setOpenModalConfirmPassword(false);
   }, [reset]);
 
+  const setUserReauthenticate = React.useCallback((status: boolean) => {
+    setUserReauthenticateSuccess(status);
+  }, []);
+
   const handleSubmitForm = React.useCallback(
     async (data: ProfileFormData) => {
       const { displayName, photoURL, updatePassword } = data;
 
       if (updatePassword) {
-        setProfileData({ ...data });
-
         setOpenModalConfirmPassword(true);
 
         return;
@@ -169,14 +186,20 @@ export const Profile = () => {
   }, [user]);
 
   React.useEffect(() => {
-    if (errorUpdateProfile) {
+    if (userReauthenticateSuccess) {
+      updateUserInfo();
+    }
+  }, [userReauthenticateSuccess, updateUserInfo]);
+
+  React.useEffect(() => {
+    if (errorUpdateProfile || errorUpdateUserPassword) {
       customToast({
         status: 'error',
         title: 'Ocorreu um erro',
         description: 'Error ao atualizar perfil',
       });
     }
-  }, [errorUpdateProfile, customToast]);
+  }, [errorUpdateProfile, errorUpdateUserPassword, customToast]);
 
   return (
     <Box>
@@ -217,9 +240,9 @@ export const Profile = () => {
       </Container>
 
       <ReauthenticateUser
-        profileData={profileData}
         isOpen={openModalConfirmPassword}
         onClose={onCloseReauthenticateModal}
+        setUserReauthenticate={setUserReauthenticate}
       />
     </Box>
   );

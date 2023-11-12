@@ -13,29 +13,26 @@ import {
   Button,
   Box,
 } from '@chakra-ui/react';
+import type { UseModalProps } from '@chakra-ui/react';
 
 import { InputPassword } from '~/components/Form/InputPassword';
 import { useAuth } from '~/hooks/useAuth';
 import { useCustomToast } from '~/hooks/useCustomToast';
-import {
-  useReuthenticateWithCredential,
-  useUpdatePassword,
-  useUpdateProfile,
-} from '~/hooks/useUser';
+import { useReuthenticateWithCredential } from '~/hooks/useUser';
 
-import type { ProfileFormData } from '.';
-
-type Props = {
-  profileData: ProfileFormData;
-  isOpen: boolean;
-  onClose: () => void;
+type Props = UseModalProps & {
+  setUserReauthenticate: (status: boolean) => void;
 };
 
 type ReauthenticateUserData = {
   password: string;
 };
 
-export const ReauthenticateUser = ({ isOpen, onClose, profileData }: Props) => {
+export const ReauthenticateUser = ({
+  onClose,
+  setUserReauthenticate,
+  ...props
+}: Props) => {
   const { formState, handleSubmit, register, resetField } =
     useForm<ReauthenticateUserData>({
       mode: 'onSubmit',
@@ -50,9 +47,6 @@ export const ReauthenticateUser = ({ isOpen, onClose, profileData }: Props) => {
   const { user } = useAuth();
   const { customToast } = useCustomToast();
 
-  const [updateProfile, errorUpdateProfile] = useUpdateProfile(user);
-  const [updatePassword, errorUpdatePassword] = useUpdatePassword(user);
-
   const [reauthenticateWithCredential, errorReuthenticate] =
     useReuthenticateWithCredential(user);
 
@@ -62,19 +56,6 @@ export const ReauthenticateUser = ({ isOpen, onClose, profileData }: Props) => {
     onClose();
   }, [resetField, onClose]);
 
-  const updateUserProfile = React.useCallback(async () => {
-    await updateProfile({
-      displayName: profileData?.displayName,
-      photoURL: profileData?.photoURL,
-    });
-  }, [updateProfile, profileData]);
-
-  const updateUserPassword = React.useCallback(async () => {
-    if (profileData?.password) {
-      await updatePassword(profileData?.password);
-    }
-  }, [updatePassword, profileData]);
-
   const handleSubmitForm = React.useCallback(
     async (data: ReauthenticateUserData) => {
       const { password } = data;
@@ -83,56 +64,35 @@ export const ReauthenticateUser = ({ isOpen, onClose, profileData }: Props) => {
 
       if (!response) return;
 
-      const promises = [updateUserProfile(), updateUserPassword()];
+      setUserReauthenticate(true);
 
-      try {
-        await Promise.all(promises);
-
-        handleCloseModal();
-
-        customToast({
-          status: 'success',
-          title: 'Perfil atualizado',
-          description: 'Informações salvas com sucesso',
-        });
-      } catch (error) {
-        throw new Error('Error to update user profile');
-      }
+      handleCloseModal();
     },
-    [
-      reauthenticateWithCredential,
-      updateUserProfile,
-      updateUserPassword,
-      handleCloseModal,
-      customToast,
-    ],
+    [reauthenticateWithCredential, setUserReauthenticate, handleCloseModal],
   );
 
   React.useEffect(() => {
-    if (errorReuthenticate || errorUpdateProfile || errorUpdatePassword) {
+    if (errorReuthenticate) {
+      setUserReauthenticate(false);
+
       customToast({
         status: 'error',
         title: 'Ocorreu um erro',
-        description: 'Error ao salvar perfil',
+        description: 'Error ao confirmar senha',
       });
     }
-  }, [
-    customToast,
-    errorReuthenticate,
-    errorUpdateProfile,
-    errorUpdatePassword,
-  ]);
+  }, [customToast, errorReuthenticate, setUserReauthenticate]);
 
   return (
     <Modal
-      isOpen={isOpen}
       onClose={handleCloseModal}
+      blockScrollOnMount={false}
       isCentered
-      closeOnOverlayClick={false}
+      {...props}
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Digite sua senha atual</ModalHeader>
+        <ModalHeader>Digite sua senha para continuar</ModalHeader>
         <ModalCloseButton />
         <Box as="form" onSubmit={handleSubmit(handleSubmitForm)}>
           <ModalBody pb={6}>
@@ -158,7 +118,7 @@ export const ReauthenticateUser = ({ isOpen, onClose, profileData }: Props) => {
               mr={3}
               isLoading={isSubmitting}
             >
-              Salvar
+              Continuar
             </Button>
 
             <Button
