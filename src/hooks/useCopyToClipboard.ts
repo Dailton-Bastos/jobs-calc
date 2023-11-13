@@ -7,7 +7,10 @@ export const useCopyToClipboard = () => {
 
   const copy = React.useCallback(async (text: string) => {
     try {
-      await navigator.clipboard.writeText(text);
+      const blobInput = new Blob([text], { type: 'text/html' });
+      const clipboardItemInput = new ClipboardItem({ 'text/html': blobInput });
+
+      await navigator.clipboard.write([clipboardItemInput]);
 
       setResult({ state: 'sucess' });
     } catch (error) {

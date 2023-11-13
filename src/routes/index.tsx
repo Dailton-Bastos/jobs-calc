@@ -4,6 +4,7 @@ import { Loading } from '~/components/Loading';
 import { useSpinner } from '~/hooks/useSpinner';
 import { Auth } from '~/Layouts/Auth';
 import { WithSidebar } from '~/Layouts/WithSidebar';
+import { Editor } from '~/pages/Editor';
 import { ForgotPassword } from '~/pages/Forgot';
 import { Home } from '~/pages/Home';
 import { AllJobsPage } from '~/pages/Jobs/All';
@@ -35,6 +36,7 @@ export const GlobalRoutes = () => {
           <Route path="/dashboard" element={<Home />} />
           <Route path="/jobs" element={<AllJobsPage />} />
           <Route path="/jobs/reports" element={<ReportsPage />} />
+          <Route path="/editor" element={<Editor />} />
         </Route>
 
         <Route path="/jobs/:id" element={<DetailsJobPage />} />
