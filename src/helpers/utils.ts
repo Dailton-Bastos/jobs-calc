@@ -357,3 +357,23 @@ export const STATUS_COLORS = {
 } as const;
 
 export const DOTS = '...';
+
+export const editorMockup = `
+**TOTAL (H):**
+
+**NÍVEL DE IMPACTO:**
+
+**TECNOLOGIAS:**
+
+**PASSO A PASSO PARA O DESENVOLVIMENTO:**
+
+-
+
+**RECURSOS DE APOIO:**
+
+-
+
+**IMPEDITIVOS/ANOTAÇÕES**
+
+-
+`;
