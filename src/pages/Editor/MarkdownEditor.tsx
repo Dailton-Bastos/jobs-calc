@@ -4,6 +4,7 @@ import { Box } from '@chakra-ui/react';
 import MarkdownIt from 'markdown-it';
 
 import 'react-markdown-editor-lite/lib/index.css';
+import './styles.css';
 import { useEditorContext } from '~/hooks/useEditorContext';
 
 const mdParser = new MarkdownIt();

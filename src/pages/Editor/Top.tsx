@@ -1,3 +1,4 @@
+import React from 'react';
 import { LiaUndoAltSolid } from 'react-icons/lia';
 
 import { IconButton, Tooltip, HStack, Spinner } from '@chakra-ui/react';
@@ -9,12 +10,14 @@ export const Top = () => {
   const { data, isSaving, isLoading, handleResetEditorValue } =
     useEditorContext();
 
+  const showLoading = isSaving || isLoading;
+
   return (
     <HStack justifyContent="flex-end" pb="4" spacing="2" h="10">
-      {isSaving || isLoading ? (
-        <Spinner size="sm" color="#333" />
+      {showLoading ? (
+        <Spinner size="sm" color="#DD6B20" />
       ) : (
-        <>
+        <React.Fragment>
           <Tooltip label="Resetar" aria-label="Resetar">
             <IconButton
               variant="unstyled"
@@ -28,7 +31,7 @@ export const Top = () => {
           </Tooltip>
 
           <CopyToClipboard text={data?.html} />
-        </>
+        </React.Fragment>
       )}
     </HStack>
   );
