@@ -1,8 +1,11 @@
 import React from 'react';
 
+import { ref, set } from 'firebase/database';
 import MarkdownIt from 'markdown-it';
 
+import { db } from '~/config/firebase';
 import { editorMockup } from '~/helpers/utils';
+import { useAuth } from '~/hooks/useAuth';
 import {
   // initialStateAction,
   startChangeAction,
@@ -30,8 +33,29 @@ export const EditorProvider = ({ children }: Props) => {
 
   const debounceRef = React.useRef<NodeJS.Timeout>();
 
+  const { user } = useAuth();
+
+  const saveEditorValueOnDb = React.useCallback(
+    async (value: string) => {
+      if (!user) return;
+
+      const userId = user.uid;
+
+      try {
+        await set(ref(db, `notes/${userId}`), { userId, value });
+      } catch (error) {
+        dispatch(finishChangeAction());
+
+        throw new Error('Error to save note');
+      }
+    },
+    [user],
+  );
+
   const handleEditorChange = React.useCallback(
     (data: { html: string; text: string }) => {
+      const { text } = data;
+
       dispatch(startChangeAction(data));
 
       if (debounceRef.current) {
@@ -39,16 +63,16 @@ export const EditorProvider = ({ children }: Props) => {
       }
 
       debounceRef.current = setTimeout(async () => {
-        // TO DO await ...
+        await saveEditorValueOnDb(text);
 
         dispatch(finishChangeAction());
       }, 1000);
     },
-    [],
+    [saveEditorValueOnDb],
   );
 
   const handleResetEditorValue = React.useCallback(
-    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       e.stopPropagation();
 
       if (window.confirm('Tem certeza que deseja resetar o conteúdo?')) {
@@ -59,12 +83,12 @@ export const EditorProvider = ({ children }: Props) => {
           }),
         );
 
-        // TO DO await ...
+        await saveEditorValueOnDb(editorMockup);
 
         dispatch(finishChangeAction());
       }
     },
-    [],
+    [saveEditorValueOnDb],
   );
 
   const value = React.useMemo(

@@ -16,6 +16,15 @@
       "$uid": {
         ".write": "auth != null && (!data.exists())"
       }
+    },
+    "notes": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      ".indexOn": ["userId", "id"],
+      "$uid": {
+        ".read": "auth !== null && data.child('userId').val() === auth.uid",
+        ".write": "auth != null && (!data.exists() || data.child('userId').val() === auth.uid)"
+      }
     }
   }
 }
