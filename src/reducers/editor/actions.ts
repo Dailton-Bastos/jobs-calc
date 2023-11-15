@@ -1,8 +1,15 @@
 import { ActionTypes } from './reducer';
 
-export const initialStateAction = () => {
+export const initialStateAction = (data: {
+  isLoading: boolean;
+  data: {
+    html: string;
+    text: string;
+  };
+}) => {
   return {
     type: ActionTypes.INITIAL_STATE as const,
+    payload: data,
   };
 };
 

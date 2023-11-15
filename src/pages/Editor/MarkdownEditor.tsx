@@ -1,6 +1,6 @@
 import MdEditor, { Plugins } from 'react-markdown-editor-lite';
 
-import { Box } from '@chakra-ui/react';
+import { Box, Spinner, Flex } from '@chakra-ui/react';
 import MarkdownIt from 'markdown-it';
 
 import 'react-markdown-editor-lite/lib/index.css';
@@ -11,8 +11,16 @@ const mdParser = new MarkdownIt();
 
 MdEditor.use(Plugins.TabInsert, { tabMapValue: 2 });
 
-const MarkdownEditor = () => {
+export const MarkdownEditor = () => {
   const { data, handleEditorChange, isLoading } = useEditorContext();
+
+  if (isLoading) {
+    return (
+      <Flex align="center" justify="center" h="lg">
+        <Spinner size="lg" color="orange.500" />
+      </Flex>
+    );
+  }
 
   return (
     <Box boxShadow="md">
@@ -31,12 +39,8 @@ const MarkdownEditor = () => {
         }}
         style={{
           height: '42rem',
-          opacity: isLoading ? 0.5 : 1,
-          pointerEvents: isLoading ? 'none' : 'all',
         }}
       />
     </Box>
   );
 };
-
-export default MarkdownEditor;

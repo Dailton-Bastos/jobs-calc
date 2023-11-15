@@ -1,13 +1,21 @@
 import React from 'react';
 
-import { ref, set } from 'firebase/database';
+import {
+  ref,
+  set,
+  get,
+  query,
+  child,
+  orderByChild,
+  equalTo,
+} from 'firebase/database';
 import MarkdownIt from 'markdown-it';
 
 import { db } from '~/config/firebase';
 import { editorMockup } from '~/helpers/utils';
 import { useAuth } from '~/hooks/useAuth';
 import {
-  // initialStateAction,
+  initialStateAction,
   startChangeAction,
   finishChangeAction,
 } from '~/reducers/editor/actions';
@@ -26,8 +34,8 @@ export const EditorProvider = ({ children }: Props) => {
     isLoading: false,
     isSaving: false,
     data: {
-      html: mdParser.render(editorMockup),
-      text: editorMockup,
+      html: '',
+      text: '',
     },
   });
 
@@ -35,11 +43,11 @@ export const EditorProvider = ({ children }: Props) => {
 
   const { user } = useAuth();
 
+  const userId = user?.uid;
+
   const saveEditorValueOnDb = React.useCallback(
     async (value: string) => {
-      if (!user) return;
-
-      const userId = user.uid;
+      if (!userId) return;
 
       try {
         await set(ref(db, `notes/${userId}`), { userId, value });
@@ -49,7 +57,7 @@ export const EditorProvider = ({ children }: Props) => {
         throw new Error('Error to save note');
       }
     },
-    [user],
+    [userId],
   );
 
   const handleEditorChange = React.useCallback(
@@ -90,6 +98,53 @@ export const EditorProvider = ({ children }: Props) => {
     },
     [saveEditorValueOnDb],
   );
+
+  const getUserNote = React.useCallback(async () => {
+    if (!userId) return;
+
+    dispatch(
+      initialStateAction({
+        isLoading: true,
+        data: {
+          html: mdParser.render(editorMockup),
+          text: editorMockup,
+        },
+      }),
+    );
+
+    try {
+      const snapshot = await get(
+        query(child(ref(db), 'notes'), orderByChild('userId'), equalTo(userId)),
+      );
+
+      if (snapshot && snapshot.exists()) {
+        const { value } = Object.values<{ value: string }>(snapshot.val())[0];
+
+        const data = {
+          isLoading: false,
+          data: { html: mdParser.render(value), text: value },
+        };
+
+        dispatch(initialStateAction(data));
+      }
+    } catch (error) {
+      dispatch(
+        initialStateAction({
+          isLoading: false,
+          data: {
+            html: mdParser.render(editorMockup),
+            text: editorMockup,
+          },
+        }),
+      );
+
+      throw new Error('Error to get user note');
+    }
+  }, [userId]);
+
+  React.useEffect(() => {
+    getUserNote();
+  }, [getUserNote]);
 
   const value = React.useMemo(
     () => ({

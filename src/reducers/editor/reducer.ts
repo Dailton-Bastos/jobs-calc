@@ -18,6 +18,7 @@ type EditorState = {
 type EditorAction =
   | {
       type: ActionTypes.INITIAL_STATE;
+      payload: { isLoading: boolean; data: Data };
     }
   | {
       type: ActionTypes.START_CHANGE;
@@ -35,7 +36,12 @@ export const editorReducer = (
     case ActionTypes.INITIAL_STATE:
       return {
         ...state,
-        isLoading: true,
+        isLoading: action.payload.isLoading,
+        isSaving: false,
+        data: {
+          html: action.payload.data.html,
+          text: action.payload.data.text,
+        },
       };
 
     case ActionTypes.START_CHANGE:

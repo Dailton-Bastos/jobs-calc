@@ -1,13 +1,10 @@
-import React from 'react';
-
-import { Box, Container, Spinner } from '@chakra-ui/react';
+import { Box, Container } from '@chakra-ui/react';
 
 import { Head } from '~/components/Head';
 import { EditorProvider } from '~/contexts/Editor/EditorProvider';
 
+import { MarkdownEditor } from './MarkdownEditor';
 import { Top } from './Top';
-
-const MarkdownEditor = React.lazy(() => import('./MarkdownEditor'));
 
 export const Editor = () => {
   return (
@@ -19,11 +16,7 @@ export const Editor = () => {
           <Box w="100%" pt="6">
             <Top />
 
-            <React.Suspense
-              fallback={<Spinner size="md" colorScheme="orange" />}
-            >
-              <MarkdownEditor />
-            </React.Suspense>
+            <MarkdownEditor />
           </Box>
         </EditorProvider>
       </Container>

@@ -10,11 +10,11 @@ export const Top = () => {
   const { data, isSaving, isLoading, handleResetEditorValue } =
     useEditorContext();
 
-  const showLoading = isSaving || isLoading;
+  if (isLoading) return <></>;
 
   return (
     <HStack justifyContent="flex-end" pb="4" spacing="2" h="10">
-      {showLoading ? (
+      {isSaving ? (
         <Spinner size="sm" color="#DD6B20" />
       ) : (
         <React.Fragment>
