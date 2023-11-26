@@ -1,6 +1,6 @@
 import React from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import {
   Box,
@@ -11,30 +11,54 @@ import {
   Link as LinkChakra,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
-import { SignInFormData } from '~/@types/signIn';
 import { InputEmail } from '~/components/Form/InputEmail';
 import { SubmitButton } from '~/components/Form/SubmitButton';
-import { useAuth } from '~/hooks/useAuth';
-import { signInFormSchema } from '~/schemas/signInFormSchema';
+import { useCustomToast } from '~/hooks/useCustomToast';
+import { useResetPassword } from '~/hooks/useUser';
+import { forgotFormSchema } from '~/schemas/forgotFormSchema';
+
+type ForgotFormData = yup.InferType<typeof forgotFormSchema>;
 
 export const ForgotPassword = () => {
-  const { register, handleSubmit, formState } = useForm<SignInFormData>({
+  const { register, handleSubmit, formState } = useForm<ForgotFormData>({
     mode: 'onSubmit',
     reValidateMode: 'onChange',
-    resolver: yupResolver(signInFormSchema),
+    resolver: yupResolver(forgotFormSchema),
   });
 
   const { errors, isSubmitting, dirtyFields } = formState;
 
-  const { signIn } = useAuth();
+  const [resetPassword, errorSendResetPasswordEmail] = useResetPassword();
 
-  const onSubmit: SubmitHandler<SignInFormData> = React.useCallback(
-    async (data: SignInFormData) => {
-      await signIn({ ...data });
+  const { customToast } = useCustomToast();
+  const navigate = useNavigate();
+
+  const onSubmit: SubmitHandler<ForgotFormData> = React.useCallback(
+    async ({ email }: ForgotFormData) => {
+      await resetPassword(email);
+
+      customToast({
+        status: 'success',
+        title: 'Verifique seu e-mail',
+        description: `E-mail enviado para ${email}`,
+      });
+
+      navigate('/');
     },
-    [signIn],
+    [resetPassword, customToast, navigate],
   );
+
+  React.useEffect(() => {
+    if (errorSendResetPasswordEmail) {
+      customToast({
+        status: 'error',
+        title: 'Ocorreu um erro',
+        description: 'Error ao verificar e-mail',
+      });
+    }
+  }, [errorSendResetPasswordEmail, customToast]);
 
   return (
     <Flex direction="column" align="center">

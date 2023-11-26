@@ -5,10 +5,13 @@ import {
   updatePassword as fbPpdatePassword,
   reauthenticateWithCredential as fbReauthenticateWithCredential,
   deleteUser as fbDeleteUser,
+  sendPasswordResetEmail as fbSendPasswordResetEmail,
   EmailAuthProvider,
   AuthError,
   User,
 } from 'firebase/auth';
+
+import { auth } from '~/config/firebase';
 
 type Profile = {
   displayName?: string | null;
@@ -26,6 +29,9 @@ export type ReuthenticateWithCredentialHook = UpdateUserHook<
   (password: string) => Promise<boolean>
 >;
 export type DeleteUserHook = UpdateUserHook<() => Promise<boolean>>;
+export type SendPasswordResetEmailHook = UpdateUserHook<
+  (email: string) => Promise<boolean>
+>;
 
 export const useUpdateProfile = (user: User | null): UpdateProfileHook => {
   const [error, setError] = React.useState<AuthError | undefined>(undefined);
@@ -142,4 +148,26 @@ export const useDeteleUser = (user: User | null): DeleteUserHook => {
   }, [user]);
 
   return [deleteUser, error, loading];
+};
+
+export const useResetPassword = (): SendPasswordResetEmailHook => {
+  const [error, setError] = React.useState<AuthError | undefined>(undefined);
+  const [loading, setLoading] = React.useState(false);
+
+  const resetPassword = React.useCallback(async (email: string) => {
+    if (!email) return false;
+
+    try {
+      await fbSendPasswordResetEmail(auth, email);
+      return true;
+    } catch (err) {
+      setError(err as AuthError);
+
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return [resetPassword, error, loading];
 };
