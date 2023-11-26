@@ -11,6 +11,8 @@ import {
   Switch,
   FormLabel,
   Collapse,
+  Input as ChackraInput,
+  useColorModeValue,
 } from '@chakra-ui/react';
 
 import { Input } from '~/components/Form/Input';
@@ -29,6 +31,8 @@ export const Form = ({ emailVerified, email, errors }: Props) => {
   const { register, watch } = useFormContext<ProfileFormData>();
 
   const updatePassword = watch('updatePassword');
+
+  const inputBg = useColorModeValue('gray.50', 'gray.200');
 
   return (
     <VStack spacing="6" align="flex-start" flex="1">
@@ -50,12 +54,13 @@ export const Form = ({ emailVerified, email, errors }: Props) => {
               </InputLeftElement>
             )}
 
-            <Input
-              registerName="email"
-              label=""
-              isDisabled
-              error={undefined}
+            <ChackraInput
               value={email}
+              disabled
+              bg={inputBg}
+              height="12"
+              color="black"
+              focusBorderColor="orange.500"
             />
           </InputGroup>
         </Box>
