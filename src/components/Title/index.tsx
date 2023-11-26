@@ -1,7 +1,7 @@
 import { RiEdit2Line } from 'react-icons/ri';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-import { Heading, Flex, Tooltip, Link as LinkChakra } from '@chakra-ui/react';
+import { Heading, Flex, Tooltip, IconButton } from '@chakra-ui/react';
 
 type Props = {
   title: string;
@@ -16,6 +16,8 @@ export const Title = ({
   label,
   withTooltip = false,
 }: Props) => {
+  const navigate = useNavigate();
+
   return (
     <Flex
       align="center"
@@ -23,26 +25,18 @@ export const Title = ({
       borderBottom="1.5px solid #E1E3E5"
       pb="4"
     >
-      <Heading as="h1" size="lg" color="purple.700">
+      <Heading as="h1" size="lg" variant="primary">
         {title}
       </Heading>
 
       {withTooltip && (
         <Tooltip label={label} hasArrow arrowSize={15} aria-label={label}>
-          <LinkChakra
-            as={Link}
-            to={url}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            p="2"
-            borderRadius="md"
-            _hover={{
-              bg: 'gray.200',
-            }}
-          >
-            <RiEdit2Line size={22} />
-          </LinkChakra>
+          <IconButton
+            aria-label="Editar"
+            variant="ghost"
+            icon={<RiEdit2Line size={22} />}
+            onClick={() => navigate(url)}
+          />
         </Tooltip>
       )}
     </Flex>

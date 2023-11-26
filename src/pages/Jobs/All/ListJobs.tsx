@@ -15,6 +15,7 @@ import {
   Td,
   Tooltip,
   Link as LinkChakra,
+  useColorModeValue,
 } from '@chakra-ui/react';
 
 import { Pagination } from '~/components/Pagination';
@@ -31,6 +32,9 @@ const ListJobs = () => {
   const { jobs: data } = useCyclesContext();
 
   const totalCount = React.useMemo(() => data?.length, [data]);
+
+  const tableBg = useColorModeValue('secondary.light', 'whiteAlpha.400');
+  const trBg = useColorModeValue('blackAlpha.900', 'secondary.dark');
 
   const jobs = React.useMemo(() => {
     const firstPageIndex = (currentPage - 1) * PageSize;
@@ -52,7 +56,7 @@ const ListJobs = () => {
       <TableContainer mt="6">
         <Table
           colorScheme="blackAlpha"
-          bg="white"
+          bg={tableBg}
           borderRadius="lg"
           overflow="hidden"
           boxShadow="base"
@@ -65,7 +69,7 @@ const ListJobs = () => {
           </TableCaption>
 
           <Thead>
-            <Tr bg="purple.700">
+            <Tr bg={trBg}>
               <Th textTransform="capitalize" fontSize="md" color="white">
                 Título
               </Th>
@@ -89,7 +93,7 @@ const ListJobs = () => {
           <Tbody>
             {jobs?.map((job) => (
               <Tr key={job.id}>
-                <Td fontWeight="bold" pt="2" pb="2" color="black">
+                <Td fontWeight="bold" pt="2" pb="2" color="variant">
                   <Tooltip label={job?.title?.fullTitle} placement="top-start">
                     <LinkChakra as={Link} to={`/jobs/${job?.id}`}>
                       {job?.title?.shortTitle}
@@ -97,15 +101,15 @@ const ListJobs = () => {
                   </Tooltip>
                 </Td>
 
-                <Td pt="2" pb="2" color="black">
+                <Td pt="2" pb="2" color="variant">
                   {job.type}
                 </Td>
 
-                <Td pt="2" pb="2" color="black">
+                <Td pt="2" pb="2" color="variant">
                   <Text>{job.estimatedTime?.total}</Text>
                 </Td>
 
-                <Td pt="2" pb="2" color="black">
+                <Td pt="2" pb="2" color="variant">
                   <Text
                     fontSize="md"
                     color={STATUS_COLORS[job?.usedTime?.statusColor]}
@@ -114,7 +118,7 @@ const ListJobs = () => {
                   </Text>
                 </Td>
 
-                <Td pt="2" pb="2" color="black">
+                <Td pt="2" pb="2" color="variant">
                   <Flex gap="2" align="center" justify="flex-start">
                     <Box
                       w="8px"
@@ -132,7 +136,7 @@ const ListJobs = () => {
                   </Flex>
                 </Td>
 
-                <Td pt="2" pb="2" color="black">
+                <Td pt="2" pb="2" color="variant">
                   <Actions job={job} />
                 </Td>
               </Tr>

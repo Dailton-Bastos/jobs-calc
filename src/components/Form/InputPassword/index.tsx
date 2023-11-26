@@ -11,6 +11,7 @@ import {
   InputRightElement,
   FormErrorMessage,
   IconButton,
+  useColorModeValue,
 } from '@chakra-ui/react';
 
 import { Label } from '~/components/Form/Label';
@@ -34,6 +35,8 @@ const InputPasswordBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
 ) => {
   const [showPassword, setShowPassword] = React.useState(false);
 
+  const inputBg = useColorModeValue('gray.50', 'white');
+
   return (
     <FormControl isInvalid={!!error}>
       {!!label && <Label>{label}</Label>}
@@ -47,16 +50,13 @@ const InputPasswordBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
 
         <Input
           type={showPassword ? 'text' : 'password'}
-          variant="filled"
-          focusBorderColor="orange.300"
+          variant="outline"
+          bg={inputBg}
           height="12"
-          _hover={{
-            bg: 'gray.100',
-            borderColor: 'orange.300',
-          }}
-          _focusVisible={{
-            bg: 'white',
-            borderColor: 'orange.300',
+          color="black"
+          focusBorderColor="orange.500"
+          _placeholder={{
+            color: '#787880',
           }}
           ref={ref}
           {...rest}
@@ -66,9 +66,14 @@ const InputPasswordBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
           <IconButton
             aria-label="Password"
             variant="link"
-            colorScheme="gray"
             size="sm"
-            icon={showPassword ? <RiEyeLine /> : <RiEyeOffLine />}
+            icon={
+              showPassword ? (
+                <RiEyeLine color="#787880" />
+              ) : (
+                <RiEyeOffLine color="#787880" />
+              )
+            }
             onClick={() => setShowPassword((prev) => !prev)}
           />
         </InputRightElement>

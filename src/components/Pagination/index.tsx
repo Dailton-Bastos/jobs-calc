@@ -8,6 +8,7 @@ import {
   ListItem,
   UnorderedList,
   Icon,
+  useColorModeValue,
 } from '@chakra-ui/react';
 
 import { DOTS, uuid } from '~/helpers/utils';
@@ -34,6 +35,8 @@ export const Pagination = ({
     siblingCount,
     pageSize,
   });
+
+  const pageNumberColor = useColorModeValue('blackAlpha.900', 'white');
 
   const onNextPage = React.useCallback(() => {
     onPageChange(currentPage + 1);
@@ -62,9 +65,9 @@ export const Pagination = ({
           <Button
             size="sm"
             background={
-              pageNumber === currentPage ? 'orange.300' : 'transparent'
+              pageNumber === currentPage ? 'orange.500' : 'transparent'
             }
-            color={pageNumber === currentPage ? 'white' : 'purple.700'}
+            color={pageNumber === currentPage ? 'white' : pageNumberColor}
             fontWeight={pageNumber === currentPage ? 'bold' : 'semibold'}
             onClick={() => onPageChange(+pageNumber)}
           >
@@ -73,7 +76,7 @@ export const Pagination = ({
         </ListItem>
       );
     });
-  }, [paginationRange, onPageChange, currentPage]);
+  }, [paginationRange, onPageChange, currentPage, pageNumberColor]);
 
   if (currentPage === 0 || paginationRange?.length < 2) return <></>;
 

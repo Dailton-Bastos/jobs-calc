@@ -1,4 +1,4 @@
-import { Box, Flex, Container } from '@chakra-ui/react';
+import { Box, Flex, Container, useColorModeValue } from '@chakra-ui/react';
 
 import { Logo } from '~/components/Logo';
 import { SearchProvider } from '~/contexts/Search/SearchProvider';
@@ -6,15 +6,19 @@ import { SearchProvider } from '~/contexts/Search/SearchProvider';
 import { Menu } from './Menu';
 import { Notifications } from './Notifications';
 import { Search } from './Search';
+import { Theme } from './Theme';
 import { UserIdentifier } from './UserIdentifier';
 
 export const Header = () => {
+  const bg = useColorModeValue('secondary.light', 'secondary.dark');
+  const logoColor = useColorModeValue('#DD6B20', '#ED8936');
+
   return (
     <Box
       as="header"
       w="100%"
       boxShadow="base"
-      bg="white"
+      bg={bg}
       position="fixed"
       left="0"
       top="0"
@@ -25,7 +29,7 @@ export const Header = () => {
           <Flex align="center" gap={4}>
             <Menu />
 
-            <Logo />
+            <Logo color={logoColor} />
           </Flex>
 
           <SearchProvider>
@@ -33,6 +37,8 @@ export const Header = () => {
           </SearchProvider>
 
           <Flex align="center" gap={4}>
+            <Theme />
+
             <Notifications />
 
             <UserIdentifier />

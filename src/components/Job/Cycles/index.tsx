@@ -56,7 +56,7 @@ export const Cycles = ({ job }: Props) => {
 
   return (
     <TableContainer mt="10">
-      <Table colorScheme="blackAlpha">
+      <Table>
         <TableCaption>
           <Flex align="center" justify="space-between">
             <Box>
@@ -80,10 +80,10 @@ export const Cycles = ({ job }: Props) => {
         </TableCaption>
         <Thead>
           <Tr>
-            <Th>Data</Th>
-            <Th>Intervalo</Th>
-            <Th>Horas</Th>
-            <Th>Total Hora</Th>
+            <Th color="variant">Data</Th>
+            <Th color="variant">Intervalo</Th>
+            <Th color="variant">Horas</Th>
+            <Th color="variant">Total Hora</Th>
           </Tr>
         </Thead>
         <Tbody>

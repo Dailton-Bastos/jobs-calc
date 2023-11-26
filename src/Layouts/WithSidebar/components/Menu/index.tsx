@@ -12,13 +12,16 @@ import {
   MenuButton,
   MenuList,
   IconButton,
+  useColorModeValue,
 } from '@chakra-ui/react';
 
 import { MenuItem } from './MenuItem';
 
 export const Menu = () => {
+  const bg = useColorModeValue('secondary.light', 'primary.dark');
+
   return (
-    <ChakraMenu isLazy gutter={16}>
+    <ChakraMenu gutter={16}>
       {({ isOpen }) => (
         <>
           <MenuButton
@@ -27,7 +30,7 @@ export const Menu = () => {
             icon={isOpen ? <MdClose size={22} /> : <FiMenu size={22} />}
             variant="outline"
           />
-          <MenuList boxShadow="lg">
+          <MenuList boxShadow="lg" bg={bg}>
             <MenuItem icon={RiDashboardLine} url="/dashboard">
               Dashboard
             </MenuItem>

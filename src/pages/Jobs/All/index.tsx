@@ -20,13 +20,18 @@ export const AllJobsPage = () => {
 
       <Box w="100%" py="8">
         <Flex justify="space-between" align="center">
-          <Heading size="lg" textAlign="center" fontWeight="bold" color="black">
+          <Heading
+            size="lg"
+            textAlign="center"
+            fontWeight="bold"
+            variant="primary"
+          >
             Meus Jobs
           </Heading>
 
           <Button
             variant="solid"
-            bg="orange.300"
+            bg="orange.400"
             color="white"
             fontSize="sm"
             fontWeight="bold"
@@ -38,7 +43,7 @@ export const AllJobsPage = () => {
             h="12"
             disabled={!!activeCycle}
             _hover={{
-              bg: 'orange.400',
+              bg: 'orange.300',
               color: 'white',
               boxShadow: 'md',
             }}

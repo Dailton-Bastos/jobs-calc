@@ -20,6 +20,7 @@ import {
   Box,
   Flex,
   keyframes,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 
@@ -29,6 +30,8 @@ import { useAuth } from '~/hooks/useAuth';
 
 export const UserIdentifier = () => {
   const { user, logout } = useAuth();
+
+  const bg = useColorModeValue('secondary.light', 'primary.dark');
 
   const displayName = user?.displayName;
   const photoUrl = user?.photoURL;
@@ -64,8 +67,8 @@ export const UserIdentifier = () => {
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent>
-        <PopoverArrow />
+      <PopoverContent bg={bg}>
+        <PopoverArrow bg={bg} />
         <PopoverHeader p={4} fontWeight="bold">
           <Flex align="center" gap={2}>
             Olá, {user?.displayName}
@@ -99,6 +102,7 @@ export const UserIdentifier = () => {
                 leftIcon={<RiLogoutBoxRLine size={22} />}
                 variant="link"
                 onClick={logout}
+                color="primary"
               >
                 Sair da plataforma
               </Button>

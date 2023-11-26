@@ -18,6 +18,7 @@ import {
   List,
   ListItem,
   ListIcon,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 
@@ -27,6 +28,8 @@ import { useCyclesContext } from '~/hooks/useCyclesContext';
 export const Notifications = () => {
   const [hasJobNotification, setHasJobNotification] = React.useState(false);
   const [hasUserNotification, setHasUserNotification] = React.useState(false);
+
+  const bg = useColorModeValue('secondary.light', 'primary.dark');
 
   const { activeJob } = useCyclesContext();
   const { user } = useAuth();
@@ -45,7 +48,7 @@ export const Notifications = () => {
     () => (
       <List spacing={3}>
         {hasJobNotification && (
-          <ListItem fontWeight="semibold" color="black">
+          <ListItem fontWeight="semibold" color="variant">
             <ListIcon as={MdCircle} color="orange.500" w="15px" h="15px" />
 
             <ChakraLink as={Link} to={`/jobs/${activeJob?.id}`}>
@@ -56,7 +59,7 @@ export const Notifications = () => {
 
         {hasUserNotification && (
           <>
-            <ListItem fontWeight="semibold" color="black">
+            <ListItem fontWeight="semibold" color="variant">
               <ListIcon as={MdCircle} color="orange.500" w="15px" h="15px" />
 
               <ChakraLink as={Link} to="/profile">
@@ -81,7 +84,12 @@ export const Notifications = () => {
   return (
     <Popover isLazy trigger="hover">
       <PopoverTrigger>
-        <Button bg="transparent" position="relative">
+        <Button
+          position="relative"
+          p="0"
+          variant="ghost"
+          aria-label="Notifications"
+        >
           {hasNotifications && (
             <Box
               as={motion.div}
@@ -89,7 +97,7 @@ export const Notifications = () => {
               borderColor="white"
               position="absolute"
               top="8px"
-              right="15px"
+              right="8px"
               borderRadius="full"
               boxShadow="0 0 0 0 rgba(255, 121, 63, 0.7)"
               scale={1}
@@ -108,20 +116,18 @@ export const Notifications = () => {
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent>
-        <PopoverArrow />
+      <PopoverContent bg={bg}>
+        <PopoverArrow bg={bg} />
 
         <PopoverHeader>
-          <Text fontWeight="bold" color="black">
-            Notificações
-          </Text>
+          <Text fontWeight="bold">Notificações</Text>
         </PopoverHeader>
 
         <PopoverBody>
           {hasNotifications ? (
             <>{notifications}</>
           ) : (
-            <Text fontWeight="semibold" color="black" fontSize="sm">
+            <Text fontWeight="semibold" fontSize="sm">
               Ainda não tem nada por aqui!
             </Text>
           )}

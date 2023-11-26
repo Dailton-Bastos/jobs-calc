@@ -10,7 +10,12 @@ export const Home = () => {
 
       <Container maxW="1320px" centerContent px="0">
         <Box w="100%" my="10">
-          <Heading size="lg" textAlign="center" fontWeight="bold" color="black">
+          <Heading
+            size="lg"
+            textAlign="center"
+            fontWeight="bold"
+            variant="primary"
+          >
             Destaques <Text as="span">📌</Text>
           </Heading>
 

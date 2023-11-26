@@ -126,7 +126,19 @@ export const EditorProvider = ({ children }: Props) => {
         };
 
         dispatch(initialStateAction(data));
+
+        return;
       }
+
+      dispatch(
+        initialStateAction({
+          isLoading: false,
+          data: {
+            html: mdParser.render(editorMockup),
+            text: editorMockup,
+          },
+        }),
+      );
     } catch (error) {
       dispatch(
         initialStateAction({

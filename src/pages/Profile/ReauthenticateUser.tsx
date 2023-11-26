@@ -91,17 +91,15 @@ export const ReauthenticateUser = ({
       {...props}
     >
       <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Digite sua senha para continuar</ModalHeader>
+      <ModalContent bg="white">
+        <ModalHeader color="black">Digite sua senha para continuar</ModalHeader>
         <ModalCloseButton />
         <Box as="form" onSubmit={handleSubmit(handleSubmitForm)}>
           <ModalBody pb={6}>
             <FormControl>
               <InputPassword
-                bg="gray.50"
-                borderColor="gray.200"
-                borderWidth="thin"
                 autoFocus
+                color="black"
                 {...register('password', { required: 'Campo obrigatório*' })}
                 error={errors?.password}
               />
@@ -111,7 +109,11 @@ export const ReauthenticateUser = ({
           <ModalFooter>
             <Button
               type="submit"
-              colorScheme="blue"
+              color="white"
+              bg="#36B236"
+              _hover={{
+                bg: '#3CC73C',
+              }}
               w="100%"
               fontSize="lg"
               boxShadow="md"
@@ -123,11 +125,14 @@ export const ReauthenticateUser = ({
 
             <Button
               type="button"
-              colorScheme="red"
-              color="#fff"
+              color="white"
+              bg="#EB3B35"
               w="100%"
               fontSize="lg"
               boxShadow="md"
+              _hover={{
+                bg: '#FA3F38',
+              }}
               disabled={isSubmitting}
               onClick={handleCloseModal}
             >

@@ -5,7 +5,6 @@ import {
   Box,
   Grid,
   VStack,
-  Input as ChackraInput,
   InputGroup,
   InputLeftElement,
   Flex,
@@ -36,9 +35,6 @@ export const Form = ({ emailVerified, email, errors }: Props) => {
       <Grid gap="6" templateColumns="1fr 1fr" w="100%" pt="8">
         <Input
           registerName="displayName"
-          bg="gray.50"
-          borderColor="gray.200"
-          borderWidth="thin"
           label="Nome"
           isDisabled={!emailVerified}
           error={errors?.displayName}
@@ -54,21 +50,12 @@ export const Form = ({ emailVerified, email, errors }: Props) => {
               </InputLeftElement>
             )}
 
-            <ChackraInput
-              bg="gray.50"
-              borderColor="gray.200"
-              borderWidth="thin"
-              height="12"
-              variant="filled"
-              disabled
+            <Input
+              registerName="email"
+              label=""
+              isDisabled
+              error={undefined}
               value={email}
-              focusBorderColor="orange.300"
-              _hover={{
-                borderColor: 'orange.300',
-              }}
-              _focusVisible={{
-                borderColor: 'orange.300',
-              }}
             />
           </InputGroup>
         </Box>
@@ -76,9 +63,6 @@ export const Form = ({ emailVerified, email, errors }: Props) => {
 
       <Input
         registerName="photoURL"
-        bg="gray.50"
-        borderColor="gray.200"
-        borderWidth="thin"
         label="Link da foto"
         isDisabled={!emailVerified}
         error={errors?.photoURL}
@@ -100,9 +84,6 @@ export const Form = ({ emailVerified, email, errors }: Props) => {
       <Collapse in={updatePassword} animateOpacity style={{ width: '100%' }}>
         <Grid gap="6" templateColumns="1fr 1fr" w="100%">
           <InputPassword
-            bg="gray.50"
-            borderColor="gray.200"
-            borderWidth="thin"
             label="Nova senha"
             isDisabled={!emailVerified}
             showLeftIcon={false}
@@ -111,9 +92,6 @@ export const Form = ({ emailVerified, email, errors }: Props) => {
           />
 
           <InputPassword
-            bg="gray.50"
-            borderColor="gray.200"
-            borderWidth="thin"
             label="Repetir senha"
             isDisabled={!emailVerified}
             showLeftIcon={false}

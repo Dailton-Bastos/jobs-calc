@@ -26,3 +26,12 @@
   background: #F1972C;
   color: #fff;
 }
+
+.dateRangePickerContainer.dark .rdrStaticRange,
+.dateRangePickerContainer.dark .rdrInputRanges {
+  color: #222;
+}
+
+.dateRangePickerContainer.dark .rdrInputRanges .rdrInputRangeInput {
+  background: #fff;
+}

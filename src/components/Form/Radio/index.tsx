@@ -24,13 +24,14 @@ export const Radio = ({ children, statusColor, boxProps, ...rest }: Props) => {
         borderRadius="md"
         boxShadow="md"
         bg="white"
+        color="black"
         _checked={{
           bg: STATUS_COLORS[statusColor],
           color: 'white',
           borderColor: STATUS_COLORS[statusColor],
         }}
         _hover={{
-          borderColor: 'orange.300',
+          borderColor: 'orange.500',
         }}
         py="2"
       >

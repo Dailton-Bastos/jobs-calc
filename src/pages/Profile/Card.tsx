@@ -2,7 +2,14 @@ import React from 'react';
 import { useFormContext, useFormState } from 'react-hook-form';
 import { LuAlertCircle } from 'react-icons/lu';
 
-import { Flex, VStack, Button, Text, useDisclosure } from '@chakra-ui/react';
+import {
+  Flex,
+  VStack,
+  Button,
+  Text,
+  useDisclosure,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import { sendEmailVerification } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 
@@ -132,7 +139,7 @@ export const Card = ({ user, emailVerified }: Props) => {
         direction="column"
         alignItems="center"
         justifyContent="center"
-        bg="white"
+        bg={useColorModeValue('white', 'gray.200')}
         boxShadow="md"
         borderRadius="8px"
         py="8"
@@ -142,7 +149,7 @@ export const Card = ({ user, emailVerified }: Props) => {
         {userAvatar}
 
         <Text
-          color="purple.700"
+          color="black"
           lineHeight="7"
           textAlign="center"
           mt="6"
@@ -157,7 +164,11 @@ export const Card = ({ user, emailVerified }: Props) => {
           {emailVerified && (
             <Button
               type="submit"
-              colorScheme="green"
+              color="white"
+              bg="#36B236"
+              _hover={{
+                bg: '#3CC73C',
+              }}
               isLoading={isSubmitting}
               w="100%"
               fontSize="lg"
@@ -184,10 +195,14 @@ export const Card = ({ user, emailVerified }: Props) => {
           )}
 
           <Button
-            colorScheme="red"
+            color="white"
+            bg="#EB3B35"
             w="100%"
             fontSize="lg"
             boxShadow="md"
+            _hover={{
+              bg: '#FA3F38',
+            }}
             onClick={onOpen}
             disabled={isSendEmailVerification || isSubmitting}
           >

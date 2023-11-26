@@ -25,7 +25,7 @@ export const Top = () => {
               display="flex"
               alignItems="center"
               justifyContent="center"
-              icon={<LiaUndoAltSolid size={24} color="#333" />}
+              icon={<LiaUndoAltSolid size={24} />}
               onClick={handleResetEditorValue}
             />
           </Tooltip>

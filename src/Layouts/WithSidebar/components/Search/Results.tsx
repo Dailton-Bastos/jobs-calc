@@ -1,9 +1,18 @@
-import { Box, List, ListItem, Text, Button } from '@chakra-ui/react';
+import {
+  Box,
+  List,
+  ListItem,
+  Text,
+  Button,
+  useColorModeValue,
+} from '@chakra-ui/react';
 
 import { useSearchContext } from '~/hooks/useSearchContext';
 
 export const Results = () => {
   const { results, selectedSave } = useSearchContext();
+
+  const color = useColorModeValue('primary.dark', 'secondary.light');
 
   return (
     <Box
@@ -11,8 +20,6 @@ export const Results = () => {
       pb="2"
       pl="4"
       pr="4"
-      borderTop="1px"
-      borderColor="gray.50"
       maxH="420px"
       overflowY="scroll"
       sx={{
@@ -38,6 +45,7 @@ export const Results = () => {
             py="2"
           >
             <Button
+              color={color}
               variant="link"
               fontSize="sm"
               fontWeight="bold"
@@ -47,7 +55,7 @@ export const Results = () => {
               {job.title.shortTitle}
             </Button>
 
-            <Text fontSize="smaller" fontWeight="normal">
+            <Text fontSize="smaller" fontWeight="normal" variant="secondary">
               {job.type}
             </Text>
           </ListItem>

@@ -24,9 +24,6 @@ export const MenuItem = ({ icon: Icon, url, children }: Props) => {
       fontWeight="bold"
       position="relative"
       py="2"
-      _hover={{
-        bg: 'gray.50',
-      }}
     >
       {isActive && (
         <Box

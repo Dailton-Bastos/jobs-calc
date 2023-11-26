@@ -12,6 +12,7 @@ import {
   Th,
   Td,
   Tooltip,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { differenceInSeconds } from 'date-fns';
 
@@ -37,6 +38,9 @@ export const Cycles = ({ cyclesData }: Props) => {
   const [currentPage, setCurrentPage] = React.useState(1);
 
   const { jobs } = useCyclesContext();
+
+  const tableBg = useColorModeValue('secondary.light', 'whiteAlpha.400');
+  const trBg = useColorModeValue('blackAlpha.900', 'secondary.dark');
 
   const firstPageIndex = (currentPage - 1) * PageSize;
   const lastPageIndex = firstPageIndex + PageSize;
@@ -108,22 +112,21 @@ export const Cycles = ({ cyclesData }: Props) => {
   return (
     <>
       {!cyclesData.length ? (
-        <Text textAlign="center" fontSize="large" mt="10" color="black">
+        <Text textAlign="center" fontSize="large" mt="10" color="variant">
           Nenhum resultado encontrado
         </Text>
       ) : (
         <TableContainer mt="5">
           <Table
-            variant="simple"
             colorScheme="blackAlpha"
-            bg="white"
+            bg={tableBg}
             borderRadius="lg"
             overflow="hidden"
             boxShadow="base"
           >
             <TableCaption>
               <Flex gap="2" align="center" justify="flex-end">
-                <Text fontWeight="bold" color="black">
+                <Text fontWeight="bold" color="variant">
                   Total:
                 </Text>
                 <Text>{totalHours}</Text>
@@ -131,7 +134,7 @@ export const Cycles = ({ cyclesData }: Props) => {
             </TableCaption>
 
             <Thead>
-              <Tr bg="purple.700">
+              <Tr bg={trBg}>
                 <Th textTransform="capitalize" fontSize="md" color="white">
                   Job
                 </Th>
@@ -152,7 +155,7 @@ export const Cycles = ({ cyclesData }: Props) => {
             <Tbody>
               {cycles?.map((cycle) => (
                 <Tr key={cycle?.id}>
-                  <Td fontWeight="bold" color="black">
+                  <Td fontWeight="bold" color="variant">
                     <Tooltip
                       label={cycle?.job?.title?.fullTitle}
                       placement="top-start"
@@ -167,7 +170,7 @@ export const Cycles = ({ cyclesData }: Props) => {
                     </Tooltip>
                   </Td>
 
-                  <Td color="black">
+                  <Td color="variant">
                     <Tooltip label={cycle?.date?.label} placement="top-start">
                       <Text as="time" dateTime={cycle?.date?.datetime}>
                         {cycle?.date?.title}
@@ -175,11 +178,11 @@ export const Cycles = ({ cyclesData }: Props) => {
                     </Tooltip>
                   </Td>
 
-                  <Td color="black">{cycle?.interval}</Td>
+                  <Td color="variant">{cycle?.interval}</Td>
 
-                  <Td color="black">{cycle?.total}</Td>
+                  <Td color="variant">{cycle?.total}</Td>
 
-                  <Td color="black">
+                  <Td color="variant">
                     {cycle?.description && (
                       <Description description={cycle?.description} />
                     )}

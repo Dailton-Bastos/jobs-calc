@@ -167,7 +167,7 @@ export function getJobStatus(status: JobStatus) {
       return {
         type: 'developing' as const,
         title: 'Em andamento',
-        statusColor: 'yellow' as const,
+        statusColor: 'orange' as const,
       };
   }
 }
@@ -308,41 +308,44 @@ export function range(start: number, end: number) {
   return Array.from({ length }, (_, index) => index + start);
 }
 
-export const jobSelectTypes = [
+export const jobTypeOptions = [
+  {
+    name: 'Interno',
+    value: 'other',
+    statusColor: 'orange' as const,
+  },
   {
     name: 'Orçamento',
     value: 'budget',
+    statusColor: 'orange' as const,
   },
   {
     name: 'Desenvolvimento',
     value: 'development',
-  },
-  {
-    name: 'Interno',
-    value: 'other',
+    statusColor: 'orange' as const,
   },
 ];
 
-export const jobSelectStatus = [
+export const jobStatusOptions = [
   {
     name: 'Em aberto',
     value: 'opened',
-    color: 'blue' as const,
+    statusColor: 'blue' as const,
   },
   {
     name: 'Em andamento',
     value: 'developing',
-    color: 'yellow' as const,
+    statusColor: 'yellow' as const,
   },
   {
     name: 'Em pausa',
     value: 'paused',
-    color: 'gray' as const,
+    statusColor: 'gray' as const,
   },
   {
     name: 'Concluído',
     value: 'done',
-    color: 'green' as const,
+    statusColor: 'green' as const,
   },
 ];
 

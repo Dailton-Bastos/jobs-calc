@@ -30,7 +30,7 @@ export const ModalDelete = ({
   return (
     <Modal onClose={onClose} {...props} isCentered>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent bg="white">
         <ModalHeader>
           <Flex justifyContent="center" alignItems="center">
             <RiAlertLine size={50} color="#EB3B35" />
@@ -46,9 +46,13 @@ export const ModalDelete = ({
           <Button
             type="button"
             mr={3}
-            colorScheme="red"
+            color="white"
+            bg="#EB3B35"
             w="100%"
             fontWeight="bold"
+            _hover={{
+              bg: '#FA3F38',
+            }}
             onClick={onConfirm}
             isLoading={isLoading}
           >
@@ -58,6 +62,8 @@ export const ModalDelete = ({
           <Button
             type="button"
             variant="outline"
+            color="black"
+            bg="gray.100"
             w="100%"
             fontWeight="bold"
             onClick={onClose}

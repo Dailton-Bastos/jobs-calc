@@ -6,7 +6,7 @@ type Props = {
 
 export const Logo = ({ color = '#DD6B20' }: Props) => {
   return (
-    <Link to="/dashboard">
+    <Link to="/dashboard" aria-label="Jobs Calc">
       <svg
         width="140"
         height="26"

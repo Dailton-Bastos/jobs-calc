@@ -7,7 +7,13 @@ import {
 } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 
-import { HStack, Tooltip, useDisclosure, IconButton } from '@chakra-ui/react';
+import {
+  HStack,
+  Tooltip,
+  useDisclosure,
+  IconButton,
+  useColorModeValue,
+} from '@chakra-ui/react';
 
 import type { JobFormatted } from '~/@types/job';
 import { useCyclesContext } from '~/hooks/useCyclesContext';
@@ -30,6 +36,8 @@ export const Actions = ({ job }: Props) => {
   const { updateJob } = useJobs();
   const { jobsData } = useJobsContext();
   const { activeJob } = useCyclesContext();
+
+  const iconColor = useColorModeValue('#4A5568', '#fff');
 
   const jobApiData = jobsData.find((item) => item.id === id);
 
@@ -54,7 +62,7 @@ export const Actions = ({ job }: Props) => {
           <Tooltip label="Remover Destaque" hasArrow arrowSize={15}>
             <IconButton
               aria-label="Remover Destaque"
-              icon={<RiUnpinLine size={22} color="#4A5568" />}
+              icon={<RiUnpinLine size={22} color={iconColor} />}
               bg="transparent"
               onClick={() => handleIsHighlight(false)}
               disabled={disableButton}
@@ -64,7 +72,7 @@ export const Actions = ({ job }: Props) => {
           <Tooltip label="Marcar como Destaque" hasArrow arrowSize={15}>
             <IconButton
               aria-label="Destacar Job"
-              icon={<RiPushpinLine size={22} color="#4A5568" />}
+              icon={<RiPushpinLine size={22} color={iconColor} />}
               bg="transparent"
               onClick={() => handleIsHighlight(true)}
               disabled={disableButton}
@@ -75,7 +83,7 @@ export const Actions = ({ job }: Props) => {
         <Tooltip label="Editar" hasArrow arrowSize={15}>
           <IconButton
             aria-label="Editar Job"
-            icon={<RiEdit2Line size={22} color="#4A5568" />}
+            icon={<RiEdit2Line size={22} color={iconColor} />}
             bg="transparent"
             onClick={() => navigate(`/jobs/${id}/edit`)}
             disabled={disableButton}
@@ -85,7 +93,7 @@ export const Actions = ({ job }: Props) => {
         <Tooltip label="Deletar" hasArrow arrowSize={15}>
           <IconButton
             aria-label="Deletar Job"
-            icon={<RiDeleteBin2Line size={22} color="#4A5568" />}
+            icon={<RiDeleteBin2Line size={22} color={iconColor} />}
             bg="transparent"
             onClick={onOpen}
             disabled={disableButton}

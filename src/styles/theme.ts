@@ -1,27 +1,42 @@
 import { extendTheme } from '@chakra-ui/react';
+import { mode, GlobalStyleProps } from '@chakra-ui/theme-tools';
+
+import { HeadingStyle as Heading } from './components/heading';
+import { TextStyle as Text } from './components/text';
 
 const theme = extendTheme({
+  config: {
+    initialColorMode: 'system',
+    useSystemColorMode: true,
+  },
   colors: {
-    black: '#222222',
-    gray: {
-      '50': '#F0F2F5',
-      '100': '#FCFDFF',
-      '200': '#E1E3E5',
-      '400': '#BFBFCC',
-      '500': '#787880',
+    primary: {
+      dark: '#121212',
+      light: '#F0F2F5',
     },
-    green: {
-      '500': '#36B336',
+    secondary: {
+      dark: '#181818',
+      light: '#fff',
     },
-    purple: {
-      '700': '#5A5A66',
-      '800': '#41414C',
+    text: {
+      dark: {
+        primary: '#ffffff',
+        secondary: '#787880',
+      },
+      light: {
+        primary: '#000000',
+        secondary: '#787880',
+      },
     },
-    orange: {
-      '300': '#F1972C',
-    },
-    red: {
-      '500': '#EB3B35',
+    heading: {
+      primary: {
+        dark: '#222',
+        light: '#fff',
+      },
+      secondary: {
+        dark: '#787880',
+        light: '#f2f2f2',
+      },
     },
   },
 
@@ -31,10 +46,9 @@ const theme = extendTheme({
   },
 
   styles: {
-    global: {
+    global: (props: GlobalStyleProps) => ({
       body: {
-        bg: 'gray.50',
-        color: 'gray.500',
+        bg: mode('gray.50', '#121212')(props),
         '::-webkit-scrollbar': {
           width: '4px',
         },
@@ -42,11 +56,15 @@ const theme = extendTheme({
           width: '6px',
         },
         '::-webkit-scrollbar-thumb': {
-          background: 'orange.500',
+          background: mode('orange.500', '#fff')(props),
           borderRadius: '24px',
         },
       },
-    },
+    }),
+  },
+  components: {
+    Text,
+    Heading,
   },
 });
 

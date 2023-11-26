@@ -5,14 +5,13 @@ import { Box, Flex } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
-import { Container } from '~/components/Container';
-import { Head } from '~/components/Head';
 import { Title } from '~/components/Title';
 import { auth } from '~/config/firebase';
 import { useAuth } from '~/hooks/useAuth';
 import { useCustomToast } from '~/hooks/useCustomToast';
 import { useTabActive } from '~/hooks/useTabActive';
 import { useUpdateProfile, useUpdatePassword } from '~/hooks/useUser';
+import { userTitle } from '~/Layouts/Main/hooks/useTitle';
 import { profileFormSchema } from '~/schemas/profileFormSchema';
 
 import { Card } from './Card';
@@ -41,6 +40,9 @@ export const Profile = () => {
 
   const [userReauthenticateSuccess, setUserReauthenticateSuccess] =
     React.useState<boolean | null>(null);
+
+  const setPageTitle = userTitle((state) => state.setpageTitle);
+  const setHeaderTitle = userTitle((state) => state.setHeaderTitle);
 
   const { user } = useAuth();
   const { isTabActive } = useTabActive();
@@ -201,43 +203,39 @@ export const Profile = () => {
     }
   }, [errorUpdateProfile, errorUpdateUserPassword, customToast]);
 
+  React.useEffect(() => {
+    if (user?.displayName) {
+      setPageTitle(user?.displayName);
+
+      setHeaderTitle('Meu perfil');
+    }
+  }, [user, setPageTitle, setHeaderTitle]);
+
   return (
     <Box>
-      <Head title={user?.displayName ?? 'Meu Perfil'} />
+      <FormProvider {...profileForm}>
+        <Flex
+          as="form"
+          align="stretch"
+          justifyContent="space-between"
+          gap="8"
+          onSubmit={handleSubmit(handleSubmitForm)}
+        >
+          <Box w="100%">
+            <Title title="Dados do perfil" />
 
-      <Container title="Meu Perfil">
-        <FormProvider {...profileForm}>
-          <Flex
-            as="form"
-            align="stretch"
-            justifyContent="space-between"
-            gap="8"
-            pt="20"
-            onSubmit={handleSubmit(handleSubmitForm)}
-          >
-            <Box
-              w="100%"
-              bg="white"
-              boxShadow="md"
-              borderRadius="8px"
-              py="8"
-              px="12"
-            >
-              <Title title="Dados do perfil" />
+            {user?.email && (
+              <Form
+                errors={errors}
+                email={user.email}
+                emailVerified={userEmailVerified}
+              />
+            )}
+          </Box>
 
-              {user?.email && (
-                <Form
-                  errors={errors}
-                  email={user.email}
-                  emailVerified={userEmailVerified}
-                />
-              )}
-            </Box>
-
-            {user && <Card user={user} emailVerified={userEmailVerified} />}
-          </Flex>
-        </FormProvider>
-      </Container>
+          {user && <Card user={user} emailVerified={userEmailVerified} />}
+        </Flex>
+      </FormProvider>
 
       <ReauthenticateUser
         isOpen={openModalConfirmPassword}

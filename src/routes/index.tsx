@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import { Loading } from '~/components/Loading';
 import { useSpinner } from '~/hooks/useSpinner';
 import { Auth } from '~/Layouts/Auth';
+import { MainLayout } from '~/Layouts/Main';
 import { WithSidebar } from '~/Layouts/WithSidebar';
 import { Editor } from '~/pages/Editor';
 import { ForgotPassword } from '~/pages/Forgot';
@@ -39,11 +40,13 @@ export const GlobalRoutes = () => {
           <Route path="/editor" element={<Editor />} />
         </Route>
 
-        <Route path="/jobs/:id" element={<DetailsJobPage />} />
-        <Route path="/jobs/new" element={<NewJobPage />} />
-        <Route path="/jobs/:id/edit" element={<EditJobPage />} />
-        <Route path="/jobs/:id/cycles" element={<EditJobReports />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route element={<MainLayout />}>
+          <Route path="/jobs/:id" element={<DetailsJobPage />} />
+          <Route path="/jobs/new" element={<NewJobPage />} />
+          <Route path="/jobs/:id/edit" element={<EditJobPage />} />
+          <Route path="/jobs/:id/cycles" element={<EditJobReports />} />
+          <Route path="/profile" element={<Profile />} />
+        </Route>
       </Route>
     </Routes>
   );

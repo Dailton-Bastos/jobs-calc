@@ -2,7 +2,13 @@ import { useFormContext } from 'react-hook-form';
 import { RiSave3Line, RiCloseCircleLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 
-import { Flex, Text, HStack, Button } from '@chakra-ui/react';
+import {
+  Flex,
+  Text,
+  HStack,
+  Button,
+  useColorModeValue,
+} from '@chakra-ui/react';
 
 import { useCyclesContext } from '~/hooks/useCyclesContext';
 
@@ -29,13 +35,13 @@ export const JobEstimate = () => {
       direction="column"
       alignItems="center"
       justifyContent="center"
-      bg="gray.100"
+      bg={useColorModeValue('white', 'gray.200')}
       boxShadow="md"
       borderRadius="8px"
       p="8"
       h="260px"
     >
-      <Text as="time" fontSize="6xl" color="purple.700">
+      <Text as="time" fontSize="6xl" color="black">
         {`${hourEstimate}h:${minutesEstimate}m`}
       </Text>
 
@@ -52,25 +58,33 @@ export const JobEstimate = () => {
       <HStack mt={4} w="100%">
         <Button
           type="submit"
-          colorScheme="green"
-          leftIcon={<RiSave3Line size={28} />}
-          isLoading={isSubmitting}
-          disabled={disableSubmitButton}
+          color="white"
+          bg="#36B236"
           w="100%"
           fontSize="lg"
           boxShadow="md"
+          _hover={{
+            bg: '#3CC73C',
+          }}
+          leftIcon={<RiSave3Line size={28} />}
+          isLoading={isSubmitting}
+          disabled={disableSubmitButton}
         >
           Salvar
         </Button>
 
         <Button
-          colorScheme="red"
-          leftIcon={<RiCloseCircleLine size={28} />}
-          onClick={() => navigate('/jobs')}
-          disabled={isSubmitting}
+          color="white"
+          bg="#EB3B35"
           w="100%"
           fontSize="lg"
           boxShadow="md"
+          _hover={{
+            bg: '#FA3F38',
+          }}
+          leftIcon={<RiCloseCircleLine size={28} />}
+          onClick={() => navigate('/jobs')}
+          disabled={isSubmitting}
         >
           Cancelar
         </Button>

@@ -21,7 +21,8 @@ import { signInFormSchema } from '~/schemas/signInFormSchema';
 
 export const SignIn = () => {
   const { register, handleSubmit, formState } = useForm<SignInFormData>({
-    mode: 'all',
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
     resolver: yupResolver(signInFormSchema),
   });
 
@@ -38,11 +39,17 @@ export const SignIn = () => {
 
   return (
     <Flex direction="column" align="center">
-      <Heading mb="6" fontFamily="Inter" fontWeight="semibold" size="xl">
+      <Heading
+        mb="6"
+        fontFamily="Inter"
+        fontWeight="semibold"
+        size="xl"
+        color="variant"
+      >
         Bem-vindo de volta
       </Heading>
 
-      <Text>Digite seu e-mail e senha para começar</Text>
+      <Text color="variant">Digite seu e-mail e senha para começar</Text>
 
       <Flex
         as="form"

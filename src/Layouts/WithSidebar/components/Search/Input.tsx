@@ -8,6 +8,7 @@ import {
   InputGroup,
   Icon,
   Spinner,
+  useColorModeValue,
 } from '@chakra-ui/react';
 
 import { searchJobByQuery } from '~/helpers/fakeApiCall';
@@ -57,10 +58,13 @@ export const Input = ({ inputFocus }: Props) => {
           placeholder="Buscar"
           variant="flushed"
           border="none"
-          focusBorderColor="white"
+          focusBorderColor="none"
           value={value}
           onChange={onQueryChange}
           ref={inputFocus}
+          _placeholder={{
+            color: useColorModeValue('primary.dark', 'secondary.light'),
+          }}
         />
 
         <InputLeftElement pointerEvents="none">

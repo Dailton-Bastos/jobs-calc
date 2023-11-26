@@ -8,6 +8,7 @@ import {
   PopoverContent,
   PopoverHeader,
   PopoverBody,
+  useColorModeValue,
 } from '@chakra-ui/react';
 
 import { useSearchContext } from '~/hooks/useSearchContext';
@@ -22,6 +23,9 @@ export const Search = () => {
 
   const { results, cleanResults } = useSearchContext();
 
+  const bg = useColorModeValue('secondary.light', 'secondary.dark');
+  const bgHover = useColorModeValue('transparent', 'whiteAlpha.300');
+
   return (
     <Popover
       initialFocusRef={inputFocus}
@@ -31,23 +35,24 @@ export const Search = () => {
     >
       <PopoverTrigger>
         <Button
-          variant="outline"
-          bg="gray.50"
+          variant={useColorModeValue('outline', 'solid')}
           leftIcon={<GoSearch />}
           maxW="100%"
           w="360px"
-          h="8"
-          fontWeight="normal"
+          colorScheme="gray"
+          fontWeight="semibold"
+          boxShadow="base"
+          size="md"
           _hover={{
-            bg: 'gray.50',
+            bg: bgHover,
           }}
         >
           Buscar Job
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent w="600px" boxShadow="none">
-        <PopoverHeader px="0" py="1" border="none">
+      <PopoverContent w="600px" boxShadow="none" bg={bg}>
+        <PopoverHeader px="0" py="1">
           <Input inputFocus={inputFocus} />
         </PopoverHeader>
 

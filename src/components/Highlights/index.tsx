@@ -14,6 +14,7 @@ import {
   Thead,
   Tooltip,
   Tr,
+  useColorModeValue,
 } from '@chakra-ui/react';
 
 import { STATUS_COLORS } from '~/helpers/utils';
@@ -27,6 +28,9 @@ export const Highlights = () => {
   const [currentPage, setCurrentPage] = React.useState(1);
 
   const { jobs: data } = useCyclesContext();
+
+  const tableBg = useColorModeValue('secondary.light', 'whiteAlpha.400');
+  const trBg = useColorModeValue('blackAlpha.900', 'secondary.dark');
 
   const totalCount = React.useMemo(() => {
     return data?.filter((job) => job?.isHighlight)?.length;
@@ -54,13 +58,13 @@ export const Highlights = () => {
       <TableContainer mt="6">
         <Table
           colorScheme="blackAlpha"
-          bg="white"
+          bg={tableBg}
           borderRadius="lg"
           overflow="hidden"
           boxShadow="base"
         >
           <Thead>
-            <Tr bg="purple.700">
+            <Tr bg={trBg}>
               <Th textTransform="capitalize" fontSize="md" color="white">
                 Título
               </Th>
@@ -78,7 +82,7 @@ export const Highlights = () => {
           <Tbody>
             {jobsHighlights?.map((job) => (
               <Tr key={job?.id}>
-                <Td fontWeight="bold" color="black">
+                <Td fontWeight="bold" color="variant">
                   <Tooltip label={job?.title?.fullTitle} placement="top-start">
                     <LinkChakra as={Link} to={`/jobs/${job?.id}`}>
                       {job?.title?.shortTitle}
@@ -86,9 +90,9 @@ export const Highlights = () => {
                   </Tooltip>
                 </Td>
 
-                <Td color="black">{job?.estimatedTime?.total}</Td>
+                <Td color="variant">{job?.estimatedTime?.total}</Td>
 
-                <Td color="black">
+                <Td color="variant">
                   <Text
                     fontSize="md"
                     color={STATUS_COLORS[job?.usedTime?.statusColor]}
@@ -97,7 +101,7 @@ export const Highlights = () => {
                   </Text>
                 </Td>
 
-                <Td color="black">
+                <Td color="variant">
                   <Flex gap="2" align="center" justify="flex-start">
                     <Box
                       w="8px"

@@ -6,7 +6,6 @@ import { MdClose } from 'react-icons/md';
 
 import {
   Box,
-  Container,
   Heading,
   Accordion,
   AccordionItem,
@@ -19,7 +18,6 @@ import pt from 'date-fns/locale/pt-BR';
 
 import type { CycleApiData } from '~/@types/cycles';
 import { Calendar } from '~/components/Calendar';
-import { Head } from '~/components/Head';
 import { useCyclesContext } from '~/hooks/useCyclesContext';
 
 import { Cycles } from './Cycles';
@@ -77,60 +75,54 @@ export const ReportsPage = () => {
   }, [date]);
 
   return (
-    <>
-      <Head title="Meus Apontamentos" />
+    <Box w="100%" my="10">
+      <Heading size="lg" textAlign="center" fontWeight="bold" color="variant">
+        Meus Apontamentos
+      </Heading>
 
-      <Container maxW="1312px" centerContent>
-        <Box w="100%" my="10">
-          <Heading size="lg" textAlign="center" fontWeight="bold" color="black">
-            Meus Apontamentos
-          </Heading>
+      <Accordion defaultIndex={[0]} allowToggle mt="5">
+        <AccordionItem border="none">
+          {({ isExpanded }) => (
+            <>
+              <AccordionButton
+                _hover={{
+                  bg: 'transparent',
+                }}
+                cursor="default"
+                justifyContent="flex-end"
+                px="0"
+              >
+                {isExpanded ? (
+                  <MdClose size={24} cursor="pointer" />
+                ) : (
+                  <FiMenu size={24} cursor="pointer" />
+                )}
+              </AccordionButton>
 
-          <Accordion defaultIndex={[0]} allowToggle mt="5">
-            <AccordionItem border="none">
-              {({ isExpanded }) => (
-                <>
-                  <AccordionButton
-                    _hover={{
-                      bg: 'transparent',
-                    }}
-                    cursor="default"
-                    justifyContent="flex-end"
-                    px="0"
-                  >
-                    {isExpanded ? (
-                      <MdClose size={24} cursor="pointer" />
-                    ) : (
-                      <FiMenu size={24} cursor="pointer" />
-                    )}
-                  </AccordionButton>
+              <AccordionPanel
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                px="0"
+              >
+                <Calendar ranges={date} onChange={handleOnChange} />
+              </AccordionPanel>
+            </>
+          )}
+        </AccordionItem>
+      </Accordion>
 
-                  <AccordionPanel
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    px="0"
-                  >
-                    <Calendar ranges={date} onChange={handleOnChange} />
-                  </AccordionPanel>
-                </>
-              )}
-            </AccordionItem>
-          </Accordion>
+      <Text
+        align="center"
+        fontWeight="semibold"
+        fontSize="large"
+        color="variant"
+        mt="6"
+      >
+        {interval}
+      </Text>
 
-          <Text
-            align="center"
-            fontWeight="semibold"
-            fontSize="large"
-            color="black"
-            mt="6"
-          >
-            {interval}
-          </Text>
-
-          <Cycles cyclesData={cyclesByDate} />
-        </Box>
-      </Container>
-    </>
+      <Cycles cyclesData={cyclesByDate} />
+    </Box>
   );
 };

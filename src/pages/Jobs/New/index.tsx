@@ -8,8 +8,6 @@ import { ref, push, ThenableReference } from 'firebase/database';
 import * as yup from 'yup';
 
 import { JobData, JobType } from '~/@types/job';
-import { Container } from '~/components/Container';
-import { Head } from '~/components/Head';
 import { JobEstimate } from '~/components/Job/Estimate';
 import { Title } from '~/components/Title';
 import { db } from '~/config/firebase';
@@ -40,8 +38,6 @@ export type NewJobFormDataProps = NewJobFormData & {
 };
 
 export const NewJobPage = () => {
-  const [isHighlight, setIsHighlight] = React.useState(false);
-
   const [jobTypeState, dispatch] = React.useReducer(
     jobTypeReducer,
     JOB_TYPE_INITIAL_STATE,
@@ -154,10 +150,6 @@ export const NewJobPage = () => {
     [resetField],
   );
 
-  const handleChangeHighlight = React.useCallback(() => {
-    setIsHighlight((prev) => !prev);
-  }, []);
-
   React.useEffect(() => {
     jobTypeActions(type);
   }, [type, jobTypeActions]);
@@ -185,56 +177,39 @@ export const NewJobPage = () => {
         hourEstimate,
         minutesEstimate,
         totalSecondsRemaining: totalSecondsAmount,
-        isHighlight,
+        isHighlight: data?.isHighlight ?? false,
         createdAt: dateInTimestamp,
         updatedAt: dateInTimestamp,
       });
 
       reset();
     },
-    [createNewJob, reset, isHighlight, userId],
+    [createNewJob, reset, userId],
   );
 
   return (
-    <>
-      <Head title="Novo Job" />
+    <FormProvider {...newJobForm}>
+      <Box w="100%" as="form" onSubmit={handleSubmit(handleCreateNewJob)}>
+        <Title title="Informações do Job" />
 
-      <Container title="Adicionar Novo Job">
-        <FormProvider {...newJobForm}>
-          <Box w="100%" as="form" onSubmit={handleSubmit(handleCreateNewJob)}>
-            <Title title="Informações do Job" />
+        <Flex mt="8" alignItems="start" justifyContent="space-between" gap="8">
+          <input type="hidden" value="development" {...register('status')} />
 
-            <Flex
-              mt="8"
-              alignItems="start"
-              justifyContent="space-between"
-              gap="8"
-            >
-              <input
-                type="hidden"
-                value="development"
-                {...register('status')}
-              />
+          <Form
+            errors={errors}
+            isDisableEstimateField={isDisableEstimateField}
+            isDisableJobberIdField={isDisableJobberIdField}
+          />
 
-              <Form
-                errors={errors}
-                isDisableEstimateField={isDisableEstimateField}
-                isDisableJobberIdField={isDisableJobberIdField}
-                isHighlight={isHighlight}
-                handleChangeHighlight={handleChangeHighlight}
-              />
+          <Box maxW="420px" w="100%">
+            <Text fontWeight="bold" textAlign="center" mb={4} fontSize="md">
+              Estimativa de horas
+            </Text>
 
-              <Box maxW="420px" w="100%">
-                <Text fontWeight="bold" textAlign="center" mb={4}>
-                  Estimativa de horas
-                </Text>
-
-                <JobEstimate />
-              </Box>
-            </Flex>
+            <JobEstimate />
           </Box>
-        </FormProvider>
-      </Container>
-    </>
+        </Flex>
+      </Box>
+    </FormProvider>
   );
 };

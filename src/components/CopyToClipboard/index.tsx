@@ -34,7 +34,7 @@ export const CopyToClipboard = ({ text, callBack }: Props) => {
         display="flex"
         alignItems="center"
         justifyContent="center"
-        icon={<AiOutlineCopy size={24} color="#333" />}
+        icon={<AiOutlineCopy size={24} />}
         size="xs"
         onClick={handleClickCopy}
       />

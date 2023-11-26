@@ -3,9 +3,9 @@ import MdEditor, { Plugins } from 'react-markdown-editor-lite';
 import { Box, Spinner, Flex } from '@chakra-ui/react';
 import MarkdownIt from 'markdown-it';
 
+import { useEditorContext } from '~/hooks/useEditorContext';
 import 'react-markdown-editor-lite/lib/index.css';
 import './styles.css';
-import { useEditorContext } from '~/hooks/useEditorContext';
 
 const mdParser = new MarkdownIt();
 

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Flex, Box, Text } from '@chakra-ui/react';
+import { Flex, Box, Text, useColorModeValue } from '@chakra-ui/react';
 import ProgressBar from '@ramonak/react-progress-bar';
 
 import { TimeExceeded } from './TimeExceeded';
@@ -18,6 +18,8 @@ export const Timer = ({ percentage, countdownText }: Props) => {
   const [isVisible, setIsVisible] = React.useState(true);
 
   const color = percentage <= 0 ? 'red.500' : 'blackAlpha.800';
+
+  const countColor = useColorModeValue(color, 'white');
 
   React.useEffect(() => {
     if (percentage > 0) {
@@ -37,7 +39,7 @@ export const Timer = ({ percentage, countdownText }: Props) => {
 
       <Flex align="baseline" justify="center" pb="2">
         <Box>
-          <Text fontSize="5xl" color={color}>
+          <Text fontSize="5xl" color={countColor}>
             {countdownText.hours}
             <Text as="span" fontSize="3xl" color="orange.400">
               h
@@ -46,7 +48,7 @@ export const Timer = ({ percentage, countdownText }: Props) => {
         </Box>
 
         <Box>
-          <Text fontSize="5xl" color={color}>
+          <Text fontSize="5xl" color={countColor}>
             {countdownText.minutes}
             <Text as="span" fontSize="3xl" color="orange.400">
               m
@@ -55,7 +57,7 @@ export const Timer = ({ percentage, countdownText }: Props) => {
         </Box>
 
         <Box>
-          <Text fontSize="5xl" color={color}>
+          <Text fontSize="5xl" color={countColor}>
             {countdownText.seconds}
             <Text as="span" fontSize="3xl" color="orange.400">
               s

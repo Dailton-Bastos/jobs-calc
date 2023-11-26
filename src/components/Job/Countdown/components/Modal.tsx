@@ -12,6 +12,7 @@ import {
   Textarea,
   Switch,
   Flex,
+  useColorModeValue,
 } from '@chakra-ui/react';
 
 type Props = {
@@ -35,6 +36,8 @@ export const Modal = ({
   changeCycleDescription,
   isLoading,
 }: Props) => {
+  const bg = useColorModeValue('white', 'black');
+
   return (
     <ChakraModal
       isOpen={isOpen}
@@ -44,7 +47,7 @@ export const Modal = ({
       motionPreset="slideInBottom"
     >
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent bg={bg}>
         <ModalHeader textAlign="center">Salvar Apontamento</ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={6}>
@@ -75,7 +78,9 @@ export const Modal = ({
 
         <ModalFooter>
           <Button
-            colorScheme="green"
+            variant="unstyled"
+            color="white"
+            bg="green.500"
             mr={3}
             onClick={handleFinishCurrentCycle}
             w="100%"
@@ -86,7 +91,9 @@ export const Modal = ({
           </Button>
 
           <Button
-            colorScheme="red"
+            variant="unstyled"
+            color="white"
+            bg="red.500"
             onClick={onClose}
             w="100%"
             disabled={isLoading}

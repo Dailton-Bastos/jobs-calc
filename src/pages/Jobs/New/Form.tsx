@@ -1,5 +1,5 @@
 import React from 'react';
-import { FieldErrorsImpl } from 'react-hook-form';
+import { FieldErrorsImpl, useFormContext } from 'react-hook-form';
 
 import {
   FormControl,
@@ -13,6 +13,7 @@ import {
 import { Input } from '~/components/Form/Input';
 import { RadioGroup } from '~/components/Form/RadioGroup';
 import { Textarea } from '~/components/Form/Textarea';
+import { jobTypeOptions } from '~/helpers/utils';
 
 import type { NewJobFormDataProps } from '.';
 
@@ -20,37 +21,16 @@ type Props = {
   errors: FieldErrorsImpl<NewJobFormDataProps>;
   isDisableEstimateField: boolean;
   isDisableJobberIdField: boolean;
-  isHighlight: boolean;
-  handleChangeHighlight: () => void;
 };
 
 export const Form = ({
   errors,
   isDisableEstimateField,
   isDisableJobberIdField,
-  isHighlight,
-  handleChangeHighlight,
 }: Props) => {
-  const jobTypeOptions = React.useMemo(
-    () => [
-      {
-        name: 'Interno',
-        value: 'other',
-        statusColor: 'orange' as const,
-      },
-      {
-        name: 'Orçamento',
-        value: 'budget',
-        statusColor: 'orange' as const,
-      },
-      {
-        name: 'Desenvolvimento',
-        value: 'development',
-        statusColor: 'orange' as const,
-      },
-    ],
-    [],
-  );
+  const { watch, register } = useFormContext<NewJobFormDataProps>();
+
+  const isHighlight = watch('isHighlight');
 
   return (
     <VStack spacing="6" align="flex-start" flex="1" pr="8">
@@ -101,10 +81,10 @@ export const Form = ({
           Destaque?
         </FormLabel>
         <Switch
+          {...register('isHighlight')}
           id="highlight"
           colorScheme="green"
           isChecked={isHighlight}
-          onChange={handleChangeHighlight}
         />
       </FormControl>
     </VStack>
