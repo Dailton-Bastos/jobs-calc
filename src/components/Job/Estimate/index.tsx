@@ -10,11 +10,13 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 
+import { useAuth } from '~/hooks/useAuth';
 import { useCyclesContext } from '~/hooks/useCyclesContext';
 
 export const JobEstimate = () => {
   const { formState, watch } = useFormContext();
   const { activeJob } = useCyclesContext();
+  const { userEmailVerified } = useAuth();
 
   const { isSubmitting } = formState;
 
@@ -68,7 +70,7 @@ export const JobEstimate = () => {
           }}
           leftIcon={<RiSave3Line size={28} />}
           isLoading={isSubmitting}
-          disabled={disableSubmitButton}
+          disabled={disableSubmitButton || !userEmailVerified}
         >
           Salvar
         </Button>
@@ -84,7 +86,7 @@ export const JobEstimate = () => {
           }}
           leftIcon={<RiCloseCircleLine size={28} />}
           onClick={() => navigate('/jobs')}
-          disabled={isSubmitting}
+          disabled={isSubmitting || !userEmailVerified}
         >
           Cancelar
         </Button>

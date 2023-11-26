@@ -26,6 +26,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const isAuthenticated = !!user;
 
+  const userEmailVerified = user?.emailVerified ?? false;
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -85,8 +87,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       isAuthenticated,
       logout,
       signUp,
+      userEmailVerified,
     }),
-    [signIn, user, isAuthenticated, logout, signUp],
+    [signIn, user, isAuthenticated, logout, signUp, userEmailVerified],
   );
 
   React.useEffect(() => {

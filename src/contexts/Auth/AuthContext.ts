@@ -10,6 +10,7 @@ type AuthContextData = {
   logout: () => void;
   user: User | null;
   isAuthenticated: boolean;
+  userEmailVerified: boolean;
 };
 
 export const AuthContext = React.createContext({} as AuthContextData);

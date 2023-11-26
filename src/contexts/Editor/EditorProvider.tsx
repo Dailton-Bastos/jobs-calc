@@ -41,13 +41,13 @@ export const EditorProvider = ({ children }: Props) => {
 
   const debounceRef = React.useRef<NodeJS.Timeout>();
 
-  const { user } = useAuth();
+  const { user, userEmailVerified } = useAuth();
 
   const userId = user?.uid;
 
   const saveEditorValueOnDb = React.useCallback(
     async (value: string) => {
-      if (!userId) return;
+      if (!userId || !userEmailVerified) return;
 
       try {
         await set(ref(db, `notes/${userId}`), { userId, value });
@@ -57,7 +57,7 @@ export const EditorProvider = ({ children }: Props) => {
         throw new Error('Error to save note');
       }
     },
-    [userId],
+    [userId, userEmailVerified],
   );
 
   const handleEditorChange = React.useCallback(

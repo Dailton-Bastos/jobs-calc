@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Heading, Flex, CircularProgress, Button } from '@chakra-ui/react';
 
 import { Head } from '~/components/Head';
+import { useAuth } from '~/hooks/useAuth';
 import { useCyclesContext } from '~/hooks/useCyclesContext';
 
 const Jobs = React.lazy(() => import('./ListJobs'));
@@ -13,6 +14,9 @@ export const AllJobsPage = () => {
   const navite = useNavigate();
 
   const { activeCycle } = useCyclesContext();
+  const { userEmailVerified } = useAuth();
+
+  const disableNewJobButton = !!activeCycle || !userEmailVerified;
 
   return (
     <>
@@ -41,7 +45,7 @@ export const AllJobsPage = () => {
             pl="8"
             minW="260px"
             h="12"
-            disabled={!!activeCycle}
+            disabled={disableNewJobButton}
             _hover={{
               bg: 'orange.300',
               color: 'white',
