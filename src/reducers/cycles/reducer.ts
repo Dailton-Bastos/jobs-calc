@@ -1,18 +1,16 @@
 import { produce } from 'immer';
 
-import type { Cycle, CycleApiData } from '~/@types/cycles';
+import type { CycleApiData } from '~/@types/cycles';
 
 import { CycleActions, ActionTypes } from './actions';
 
 interface CyclesState {
   cyclesData: CycleApiData[];
-  cyclesByUser: Cycle[];
   activeCycle: CycleApiData | null;
 }
 
 export const initialCyclesState: CyclesState = {
   cyclesData: [],
-  cyclesByUser: [],
   activeCycle: null,
 };
 
@@ -42,11 +40,11 @@ export const CyclesReducer = (state: CyclesState, action: CycleActions) => {
 
     case ActionTypes.DELETE_CYCLE: {
       return produce(state, (draft) => {
-        const index = draft.cyclesByUser?.findIndex(
+        const index = draft.cyclesData?.findIndex(
           (cycle) => cycle?.id === payload?.id,
         );
 
-        if (index !== -1) draft.cyclesByUser.splice(index, 1);
+        if (index !== -1) draft.cyclesData.splice(index, 1);
       });
     }
 

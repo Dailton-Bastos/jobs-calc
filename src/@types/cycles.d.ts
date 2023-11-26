@@ -30,15 +30,6 @@ export interface CreateNewCycleJobData {
   jobId: string;
 }
 
-export interface Cycle {
-  id: string | null;
-  jobId: string;
-  userId: string;
-  isActive: boolean;
-  startDate: number;
-  fineshedDate?: number;
-}
-
 interface FormattedJobCycle {
   id: string | null;
   date: string;
