@@ -5,6 +5,7 @@ export enum ActionTypes {
   CREATE_INITIAL_STATE = 'CREATE_INITIAL_STATE',
   FINISH_CURRENT_CYCLE = 'FINISH_CURRENT_CYCLE',
   DELETE_CYCLE = 'DELETE_CYCLE',
+  UPDATE_CYCLE = 'UPDATE_CYCLE',
 }
 
 export type CycleActions =
@@ -22,6 +23,12 @@ export type CycleActions =
       type: ActionTypes.DELETE_CYCLE;
       payload: {
         id: string;
+      };
+    }
+  | {
+      type: ActionTypes.UPDATE_CYCLE;
+      payload: {
+        cycle: CycleApiData;
       };
     }
   | {
@@ -47,6 +54,13 @@ export const deleteCycleActions = (id: string) => {
   return {
     type: ActionTypes.DELETE_CYCLE as const,
     payload: { id },
+  };
+};
+
+export const updateCycleActions = (cycle: CycleApiData) => {
+  return {
+    type: ActionTypes.UPDATE_CYCLE as const,
+    payload: { cycle },
   };
 };
 

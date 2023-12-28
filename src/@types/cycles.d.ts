@@ -89,6 +89,7 @@ export interface CyclesContextData {
   cycleDispatch: (value: CycleActions) => void;
   activeCycle: CycleApiData | null;
   activeJob: JobFormatted | null;
+  updateCycle: (cycle: CycleApiData) => void;
   // activeCycle: Cycle | undefined;
   // createNewCycleJob: (data: CreateNewCycleJobData) => void;
   // activeCycleCurrentSeconds: number;

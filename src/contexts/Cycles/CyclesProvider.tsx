@@ -1,10 +1,11 @@
 import React from 'react';
 
-import type { CyclesProviderProps } from '~/@types/cycles';
+import type { CyclesProviderProps, CycleApiData } from '~/@types/cycles';
 import { useAuth } from '~/hooks/useAuth';
 import { useInitialCyclesState } from '~/hooks/useInitialCyclesState';
 import { useJobs } from '~/hooks/useJobs';
 import { useJobsContext } from '~/hooks/useJobsContext';
+import { updateCycleActions } from '~/reducers/cycles/actions';
 
 import { CyclesContext } from './CyclesContext';
 
@@ -36,6 +37,13 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     return formatJob(job, cycles);
   }, [jobsData, activeCycle, cyclesData, formatJob]);
 
+  const updateCycle = React.useCallback(
+    (cycle: CycleApiData) => {
+      dispatch(updateCycleActions(cycle));
+    },
+    [dispatch],
+  );
+
   React.useEffect(() => {
     if (!user) return;
 
@@ -49,8 +57,9 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       cycleDispatch: dispatch,
       activeCycle,
       activeJob,
+      updateCycle,
     }),
-    [cyclesData, jobs, dispatch, activeCycle, activeJob],
+    [cyclesData, jobs, dispatch, activeCycle, activeJob, updateCycle],
   );
 
   return (

@@ -38,6 +38,18 @@ export const CyclesReducer = (state: CyclesState, action: CycleActions) => {
       });
     }
 
+    case ActionTypes.UPDATE_CYCLE: {
+      const currentCycleIndex = state.cyclesData.findIndex((cycle) => {
+        return cycle.id === payload.cycle.id;
+      });
+
+      if (currentCycleIndex < 0) return state;
+
+      return produce(state, (draft) => {
+        draft.cyclesData[currentCycleIndex] = payload.cycle;
+      });
+    }
+
     case ActionTypes.DELETE_CYCLE: {
       return produce(state, (draft) => {
         const index = draft.cyclesData?.findIndex(
