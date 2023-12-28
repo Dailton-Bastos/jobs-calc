@@ -8,6 +8,8 @@ import { JobFormatted } from '~/@types/job';
 import { secondsToTime } from '~/helpers/utils';
 import { useCyclesContext } from '~/hooks/useCyclesContext';
 import { useJobsContext } from '~/hooks/useJobsContext';
+import { useTabActive } from '~/hooks/useTabActive';
+import { userTitle } from '~/Layouts/Main/hooks/useTitle';
 
 import { Control } from './components/Control';
 import { Timer } from './components/Timer';
@@ -25,6 +27,8 @@ export const Countdown = ({ job }: Props) => {
 
   const { jobsData } = useJobsContext();
   const { activeCycle, activeJob } = useCyclesContext();
+  const { isTabActive } = useTabActive();
+  const setPageTitle = userTitle((state) => state.setpageTitle);
 
   const [amountSecondsPassed, setAmountSecondsPassed] = React.useState(() => {
     if (activeCycle?.startDate) {
@@ -92,6 +96,18 @@ export const Countdown = ({ job }: Props) => {
   React.useEffect(() => {
     countdownValue();
   }, [countdownValue]);
+
+  React.useEffect(() => {
+    if (!isTabActive && isActiveJob) {
+      setPageTitle(
+        `${countdownText?.hours}:${countdownText?.minutes}:${countdownText.seconds} - ${job?.title.fullTitle}`,
+      );
+
+      return;
+    }
+
+    setPageTitle(job?.title.fullTitle);
+  }, [isTabActive, countdownText, job, setPageTitle, isActiveJob]);
 
   return (
     <Flex
