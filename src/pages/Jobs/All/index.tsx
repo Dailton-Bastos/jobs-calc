@@ -1,35 +1,81 @@
-import { Box, Container, Grid, GridItem } from '@chakra-ui/react';
+import React from 'react';
+import { FiPlus } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
+
+import { Box, Heading, Flex, CircularProgress, Button } from '@chakra-ui/react';
 
 import { Head } from '~/components/Head';
-import { Sidebar } from '~/components/Sidebar';
+import { useAuth } from '~/hooks/useAuth';
+import { useCyclesContext } from '~/hooks/useCyclesContext';
 
-import { ListJobs } from './ListJobs';
+const Jobs = React.lazy(() => import('./ListJobs'));
 
 export const AllJobsPage = () => {
+  const navite = useNavigate();
+
+  const { activeCycle } = useCyclesContext();
+  const { userEmailVerified } = useAuth();
+
+  const disableNewJobButton = !!activeCycle || !userEmailVerified;
+
   return (
     <>
       <Head title="Meus Jobs" />
 
-      <Box as="section" w="100%">
-        <Grid
-          templateAreas={`"sidebar main"
-        "sidebar main"`}
-          gridTemplateColumns={'200px 1fr'}
-        >
-          <GridItem area={'sidebar'}>
-            <Box position="fixed" h="100%">
-              <Sidebar />
-            </Box>
-          </GridItem>
+      <Box w="100%" py="8">
+        <Flex justify="space-between" align="center">
+          <Heading
+            size="lg"
+            textAlign="center"
+            fontWeight="bold"
+            variant="primary"
+          >
+            Meus Jobs
+          </Heading>
 
-          <GridItem area={'main'}>
-            <Container as="main" maxW="1440px" centerContent px="16">
-              <Container maxW="1120px" centerContent>
-                <ListJobs />
-              </Container>
-            </Container>
-          </GridItem>
-        </Grid>
+          <Button
+            variant="solid"
+            bg="orange.400"
+            color="white"
+            fontSize="sm"
+            fontWeight="bold"
+            fontFamily="heading"
+            position="relative"
+            p="3"
+            pl="8"
+            minW="260px"
+            h="12"
+            disabled={disableNewJobButton}
+            _hover={{
+              bg: 'orange.300',
+              color: 'white',
+              boxShadow: 'md',
+            }}
+            onClick={() => navite('/jobs/new')}
+          >
+            <Flex
+              align="center"
+              justify="center"
+              w="28px"
+              height="28px"
+              bg="whiteAlpha.300"
+              borderRadius="5px"
+              position="absolute"
+              left="8px"
+            >
+              <FiPlus color="#fff" size={22} />
+            </Flex>
+            ADICIONAR NOVO JOB
+          </Button>
+        </Flex>
+
+        <React.Suspense
+          fallback={
+            <CircularProgress value={30} color="orange.400" thickness="12px" />
+          }
+        >
+          <Jobs />
+        </React.Suspense>
       </Box>
     </>
   );

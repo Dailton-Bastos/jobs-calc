@@ -1,27 +1,23 @@
-import { Cycle } from '~/@types/cycles';
+import { CycleApiData } from '~/@types/cycles';
 
 export enum ActionTypes {
-  ADD_NEW_CYCLE_JOB = 'ADD_NEW_CYCLE_JOB',
+  START_NEW_CYCLE = 'START_NEW_CYCLE',
   CREATE_INITIAL_STATE = 'CREATE_INITIAL_STATE',
   FINISH_CURRENT_CYCLE = 'FINISH_CURRENT_CYCLE',
   DELETE_CYCLE = 'DELETE_CYCLE',
+  UPDATE_CYCLE = 'UPDATE_CYCLE',
 }
 
-interface InitialStateData {
-  cyclesByUser: Cycle[];
-  activeCycle: Cycle | undefined;
-}
-
-export type Action =
+export type CycleActions =
   | {
-      type: ActionTypes.ADD_NEW_CYCLE_JOB;
+      type: ActionTypes.START_NEW_CYCLE;
       payload: {
-        newCycle: Cycle;
+        cycle: CycleApiData;
       };
     }
   | {
       type: ActionTypes.FINISH_CURRENT_CYCLE;
-      payload: null;
+      payload: { cycle: CycleApiData };
     }
   | {
       type: ActionTypes.DELETE_CYCLE;
@@ -30,23 +26,27 @@ export type Action =
       };
     }
   | {
+      type: ActionTypes.UPDATE_CYCLE;
+      payload: {
+        cycle: CycleApiData;
+      };
+    }
+  | {
       type: ActionTypes.CREATE_INITIAL_STATE;
-      payload: InitialStateData;
+      payload: { cycles: CycleApiData[]; activeCycle: CycleApiData | null };
     };
 
-export const addNewCycleJobActions = (newCycle: Cycle) => {
+export const startNewCycleAction = (cycle: CycleApiData) => {
   return {
-    type: ActionTypes.ADD_NEW_CYCLE_JOB as const,
-    payload: {
-      newCycle,
-    },
+    type: ActionTypes.START_NEW_CYCLE as const,
+    payload: { cycle },
   };
 };
 
-export const finishCurrentCycleActions = () => {
+export const finishCurrentCycleAction = (cycle: CycleApiData) => {
   return {
     type: ActionTypes.FINISH_CURRENT_CYCLE as const,
-    payload: null,
+    payload: { cycle },
   };
 };
 
@@ -57,9 +57,19 @@ export const deleteCycleActions = (id: string) => {
   };
 };
 
-export const createInitialStateActions = (data: InitialStateData) => {
+export const updateCycleActions = (cycle: CycleApiData) => {
+  return {
+    type: ActionTypes.UPDATE_CYCLE as const,
+    payload: { cycle },
+  };
+};
+
+export const createInitialStateActions = (
+  cycles: CycleApiData[],
+  activeCycle: CycleApiData | null,
+) => {
   return {
     type: ActionTypes.CREATE_INITIAL_STATE as const,
-    payload: data,
+    payload: { cycles, activeCycle },
   };
 };

@@ -1,5 +1,5 @@
 import { IconType } from 'react-icons';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import {
   ListItem,
@@ -7,6 +7,7 @@ import {
   Link as ChakraLink,
   Icon,
   Text,
+  Box,
 } from '@chakra-ui/react';
 
 type Props = {
@@ -16,22 +17,32 @@ type Props = {
 };
 
 export const NavLink = ({ children, url, icon }: Props) => {
+  const location = useLocation();
+
+  const { pathname } = location;
+
+  const isActive = pathname === url;
+
   return (
-    <ListItem>
+    <ListItem display="flex" px="8" position="relative" transition="all">
+      {isActive && (
+        <Box h="100%" w="2px" bg="white" position="absolute" left="0" />
+      )}
+
       <ChakraLink
         as={Link}
         to={url}
         w="100%"
-        px="2"
         display="inline-block"
-        color="gray.500"
+        fontSize="md"
+        color={isActive ? 'white' : 'gray.500'}
         _hover={{
           textDecor: 'none',
           color: 'white',
         }}
       >
         <Flex gap="1.5" align="center">
-          <Icon as={icon} />
+          <Icon as={icon} w="28px" h="28px" />
           <Text as="span">{children}</Text>
         </Flex>
       </ChakraLink>

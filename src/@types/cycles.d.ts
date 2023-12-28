@@ -1,4 +1,26 @@
-import { JobInfo } from './job';
+import { CycleActions } from '~/reducers/cycles/actions';
+
+import { JobFormatted } from './job';
+
+interface CycleCommon {
+  jobId: string;
+  isActive: boolean;
+  description?: string;
+}
+
+export interface CycleApiData extends CycleCommon {
+  id: string;
+  userId: string;
+  startDate: number;
+  fineshedDate?: number;
+}
+
+export interface CycleFormatted extends CycleCommon {
+  id: string;
+  startHour: string;
+  finishedHour: string;
+  total: string;
+}
 
 export interface CyclesProviderProps {
   children: React.ReactNode;
@@ -6,15 +28,6 @@ export interface CyclesProviderProps {
 
 export interface CreateNewCycleJobData {
   jobId: string;
-}
-
-export interface Cycle {
-  id: string | null;
-  jobId: string;
-  userId: string;
-  isActive: boolean;
-  startDate: number;
-  fineshedDate?: number;
 }
 
 interface FormattedJobCycle {
@@ -71,22 +84,20 @@ interface FilteredCycles {
 }
 
 export interface CyclesContextData {
-  activeCycle: Cycle | undefined;
-  createNewCycleJob: (data: CreateNewCycleJobData) => void;
-  activeCycleCurrentSeconds: number;
-  activeCycleTotalSeconds: number;
-  finishCurrentCycle: (cycle: Cycle) => void;
-  jobTotalHoursUsed: number;
-  jobCycles: JobCycles[];
-  cycles: FilteredCycles[];
-  cyclesByUser: Cycle[];
-  countdownText: string;
-  activeCycleInfo: ActiveCycleInfo | null;
-  jobInfo: JobInfo | undefined;
+  cyclesData: CycleApiData[];
+  jobs: JobFormatted[];
+  cycleDispatch: (value: CycleActions) => void;
+  activeCycle: CycleApiData | null;
+  activeJob: JobFormatted | null;
+  updateCycle: (cycle: CycleApiData) => void;
+  // activeCycle: Cycle | undefined;
+  // createNewCycleJob: (data: CreateNewCycleJobData) => void;
+  // activeCycleCurrentSeconds: number;
+  // activeCycleTotalSeconds: number;
+  // finishCurrentCycle: (cycle: Cycle) => void;
+  // jobTotalHoursUsed: number;
+  // jobCycles: JobCycles[];
+  // cyclesByUser: Cycle[];
+  // countdownText: string;
   deleteCycle: (id: string) => void;
-}
-
-export interface CyclesState {
-  cyclesByUser: Cycle[];
-  activeCycleId: string | null;
 }

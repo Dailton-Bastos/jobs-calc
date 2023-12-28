@@ -1,81 +1,107 @@
-import { RiDeleteBin2Line, RiEdit2Line, RiEyeLine } from 'react-icons/ri';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import {
+  RiDeleteBin2Line,
+  RiEdit2Line,
+  RiPushpinLine,
+  RiUnpinLine,
+} from 'react-icons/ri';
+import { useNavigate } from 'react-router-dom';
 
 import {
-  Link as LinkChakra,
   HStack,
   Tooltip,
   useDisclosure,
   IconButton,
+  useColorModeValue,
 } from '@chakra-ui/react';
 
-import { ModalDelete } from './Modal';
+import type { JobFormatted } from '~/@types/job';
+import { useCyclesContext } from '~/hooks/useCyclesContext';
+import { useJobs } from '~/hooks/useJobs';
+import { useJobsContext } from '~/hooks/useJobsContext';
+
+import { DeleteJob } from './DeleteJob';
 
 interface Props {
-  id: string;
+  job: JobFormatted;
 }
 
-export const Actions = ({ id }: Props) => {
+export const Actions = ({ job }: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const id = job?.id;
+
+  const navigate = useNavigate();
+
+  const { updateJob } = useJobs();
+  const { jobsData } = useJobsContext();
+  const { activeJob } = useCyclesContext();
+
+  const iconColor = useColorModeValue('#4A5568', '#fff');
+
+  const jobApiData = jobsData.find((item) => item.id === id);
+
+  const disableButton = !!activeJob && activeJob.id === id;
+
+  const handleIsHighlight = React.useCallback(
+    async (isHighlight: boolean) => {
+      if (jobApiData) {
+        await updateJob({
+          ...jobApiData,
+          isHighlight,
+        });
+      }
+    },
+    [updateJob, jobApiData],
+  );
 
   return (
     <>
       <HStack spacing="5px">
-        <Tooltip
-          label="Visualizar"
-          hasArrow
-          arrowSize={15}
-          aria-label="Visualizar Job"
-        >
-          <LinkChakra
-            as={Link}
-            to={`/jobs/${id}`}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            p="2"
-            borderRadius="md"
-            _hover={{
-              bg: 'gray.200',
-            }}
-          >
-            <RiEyeLine size={22} />
-          </LinkChakra>
+        {job?.isHighlight ? (
+          <Tooltip label="Remover Destaque" hasArrow arrowSize={15}>
+            <IconButton
+              aria-label="Remover Destaque"
+              icon={<RiUnpinLine size={22} color={iconColor} />}
+              bg="transparent"
+              onClick={() => handleIsHighlight(false)}
+              disabled={disableButton}
+            />
+          </Tooltip>
+        ) : (
+          <Tooltip label="Marcar como Destaque" hasArrow arrowSize={15}>
+            <IconButton
+              aria-label="Destacar Job"
+              icon={<RiPushpinLine size={22} color={iconColor} />}
+              bg="transparent"
+              onClick={() => handleIsHighlight(true)}
+              disabled={disableButton}
+            />
+          </Tooltip>
+        )}
+
+        <Tooltip label="Editar" hasArrow arrowSize={15}>
+          <IconButton
+            aria-label="Editar Job"
+            icon={<RiEdit2Line size={22} color={iconColor} />}
+            bg="transparent"
+            onClick={() => navigate(`/jobs/${id}/edit`)}
+            disabled={disableButton}
+          />
         </Tooltip>
 
-        <Tooltip label="Editar" hasArrow arrowSize={15} aria-label="Editar Job">
-          <LinkChakra
-            as={Link}
-            to={`/jobs/${id}/edit`}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            p="2"
-            borderRadius="md"
-            _hover={{
-              bg: 'gray.200',
-            }}
-          >
-            <RiEdit2Line size={22} />
-          </LinkChakra>
-        </Tooltip>
-
-        <Tooltip
-          label="Deletar"
-          hasArrow
-          arrowSize={15}
-          aria-label="Deletar Job"
-        >
+        <Tooltip label="Deletar" hasArrow arrowSize={15}>
           <IconButton
             aria-label="Deletar Job"
-            icon={<RiDeleteBin2Line size={22} />}
+            icon={<RiDeleteBin2Line size={22} color={iconColor} />}
             bg="transparent"
             onClick={onOpen}
+            disabled={disableButton}
           />
         </Tooltip>
       </HStack>
 
-      <ModalDelete isOpen={isOpen} onClose={onClose} id={id} />
+      <DeleteJob job={job} isOpen={isOpen} onClose={onClose} />
     </>
   );
 };

@@ -1,249 +1,106 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
-import { UseToastOptions, useToast } from '@chakra-ui/react';
-import {
-  ref,
-  push,
-  child,
-  get,
-  set,
-  query,
-  orderByChild,
-  equalTo,
-  onValue,
-  ThenableReference,
-} from 'firebase/database';
+// import { ref, push, set, onValue, ThenableReference } from 'firebase/database';
 
-import { Cycle } from '~/@types/cycles';
-import {
-  CreateNewJobData,
-  Job,
-  JobResum,
-  JobType,
+// import { Cycle } from '~/@types/cycles';
+import type {
   JobsProviderProps,
+  // JobData,
+  // JobFormatted,
+  // Job,
 } from '~/@types/job';
-import { db } from '~/config/firebase';
-import { getJobStatus, getJobType, secondsToTime } from '~/helpers/utils';
+// import { db } from '~/config/firebase';
 import { useAuth } from '~/hooks/useAuth';
-import {
-  addNewJobActions,
-  createInitialStateActions,
-  deleteJobActions,
-  setActiveJobActions,
-  updateJobActions,
-} from '~/reducers/jobs/actions';
-import { initialJobsState, jobsReducer } from '~/reducers/jobs/reducer';
+import { useInitialJobsState } from '~/hooks/useInitialJobsState';
+// import { useJobs } from '~/hooks/useJobs';
+import { deleteJobActions } from '~/reducers/jobs/actions';
 
 import { JobsContext } from './JobsContext';
 
 export const JobsProvider = ({ children }: JobsProviderProps) => {
-  const [jobsState, dispatch] = React.useReducer(jobsReducer, initialJobsState);
-  const [newCycle, setNewCycle] = React.useState<Cycle | null>(null);
-  const [myJobs, setMyJobs] = React.useState<JobResum[]>([]);
+  // const [activeJob, setActiveJob] = React.useState<JobFormatted | undefined>(
+  //   undefined,
+  // );
+  // const [newCycle, setNewCycle] = React.useState<Cycle | null>(null);
 
-  const { jobs, activeJob } = jobsState;
+  const { state, dispatch, createInitialState } = useInitialJobsState();
+
+  const { jobsData } = state;
 
   const { user } = useAuth();
-  const userId = user?.uid;
+  // const userId = user?.uid;
 
-  const navigate = useNavigate();
-  const toast = useToast();
+  // const navigate = useNavigate();
 
-  const showToast = React.useCallback(
-    (options: UseToastOptions) => {
-      const id = 'customToast';
+  // const fetchJob = React.useCallback((key: string) => {
+  //   if (!key) return;
 
-      if (!toast.isActive(id)) {
-        return toast({
-          ...options,
-          variant: 'left-accent',
-          position: 'bottom-left',
-          isClosable: true,
-        });
-      }
+  //   onValue(ref(db, `jobs/${key}`), (snapshot) => {
+  //     if (snapshot && snapshot.exists()) {
+  //       // const val: Job = snapshot.val();
+
+  //       if (!snapshot.key) return;
+
+  //       // dispatch(setActiveJobActions({ ...val, id: snapshot.key }));
+  //     }
+  //   });
+  // }, []);
+
+  // const updateActiveJob = React.useCallback((job: JobFormatted) => {
+  //   // dispatch(setActiveJobActions(job));
+  //   return;
+  //   job;
+  // }, []);
+
+  const deleteJob = React.useCallback(
+    (id: string) => {
+      dispatch(deleteJobActions(id));
     },
-    [toast],
+    [dispatch],
   );
-
-  const createNewJob = React.useCallback(
-    (data: CreateNewJobData) => {
-      if (!userId) return;
-
-      const dateInTimestamp = new Date().getTime();
-
-      const newJob: Job = {
-        id: null,
-        jobberId: data.jobberId,
-        userId,
-        type: data.type as JobType,
-        title: data.title,
-        status: 'developing',
-        hourEstimate: data.hourEstimate,
-        minutesEstimate: data.minutesEstimate,
-        totalSecondsAmount: data.totalSecondsAmount,
-        totalSecondsRemaining: data.totalSecondsAmount,
-        description: data.description,
-        isHighlight: data?.isHighlight,
-        createdAt: dateInTimestamp,
-        updatedAt: dateInTimestamp,
-      };
-
-      const { key: jobKey }: ThenableReference = push(ref(db, 'jobs'), newJob);
-
-      if (!jobKey) return;
-
-      dispatch(
-        addNewJobActions({
-          ...newJob,
-          id: jobKey,
-          createdAt: dateInTimestamp,
-          updatedAt: dateInTimestamp,
-        }),
-      );
-
-      const cycle: Cycle = {
-        id: null,
-        jobId: jobKey,
-        userId: userId,
-        isActive: true,
-        startDate: dateInTimestamp,
-      };
-
-      const { key: cycleKey } = push(ref(db, 'cycles'), cycle);
-
-      if (cycleKey) {
-        setNewCycle({
-          ...cycle,
-          id: cycleKey,
-          startDate: dateInTimestamp,
-        });
-      }
-
-      navigate(`/jobs/${jobKey}`);
-    },
-    [userId, navigate],
-  );
-
-  const updateJob = React.useCallback(
-    async (job: Job) => {
-      if (!job.id) return;
-
-      try {
-        const jobData = {
-          ...job,
-          updatedAt: new Date().getTime(),
-        };
-
-        await set(ref(db, `jobs/${job.id}`), jobData);
-
-        dispatch(updateJobActions(jobData));
-        showToast({
-          title: 'Job atualizado',
-          description: 'Informações salvas com sucesso.',
-          status: 'success',
-        });
-      } catch (error) {
-        showToast({
-          title: 'Ocorreu um erro',
-          description: 'Tente novamente, por favor.',
-          status: 'error',
-        });
-
-        throw new Error('Erro to update job');
-      }
-    },
-    [showToast],
-  );
-
-  const createInitialState = React.useCallback(async () => {
-    if (!userId) return;
-
-    const snapshot = await get(
-      query(child(ref(db), 'jobs'), orderByChild('userId'), equalTo(userId)),
-    );
-
-    const jobsList: Job[] = [];
-
-    if (snapshot && snapshot.exists()) {
-      const data = snapshot.val();
-
-      for (const property in data) {
-        jobsList.push({ id: property, ...data[property] });
-      }
-    }
-
-    dispatch(createInitialStateActions(jobsList));
-  }, [userId]);
-
-  const fetchJob = React.useCallback((key: string) => {
-    if (!key) return;
-
-    onValue(ref(db, `jobs/${key}`), (snapshot) => {
-      if (snapshot && snapshot.exists()) {
-        const data: Job = snapshot.val();
-
-        if (!snapshot.key) return;
-
-        dispatch(setActiveJobActions({ ...data, id: snapshot.key }));
-      }
-    });
-  }, []);
-
-  const updateActiveJob = React.useCallback((job: Job) => {
-    dispatch(setActiveJobActions(job));
-  }, []);
-
-  const deleteJob = React.useCallback((id: string) => {
-    dispatch(deleteJobActions(id));
-  }, []);
 
   React.useEffect(() => {
-    const jobsReums: JobResum[] = [...jobs]
-      .sort((a, b) => b?.createdAt - a?.createdAt)
-      .map((job) => {
-        const { hours, minutes } = secondsToTime(job.totalSecondsAmount);
+    if (!user) return;
 
-        return {
-          id: job?.id ?? '',
-          title: job.title,
-          estimatedTime: `${hours}h:${minutes}m`,
-          type: getJobType(job.type),
-          status: getJobStatus(job.status),
-        };
-      });
+    createInitialState(user?.uid);
+  }, [createInitialState, user]);
 
-    setMyJobs(jobsReums);
-  }, [jobs]);
+  // // Set Active Job
+  // React.useEffect(() => {
+  //   if (activeJobData) {
+  //     const job = formatJob(activeJobData, cyclesData);
 
-  React.useEffect(() => {
-    createInitialState();
-  }, [createInitialState]);
+  //     setActiveJob(job);
+  //   }
+  // }, [activeJobData, formatJob, cyclesData]);
 
   const values = React.useMemo(
     () => ({
-      jobs,
-      createNewJob,
-      newCycle,
-      fetchJob,
-      activeJob,
-      updateActiveJob,
-      updateJob,
-      myJobs,
+      jobsData,
+      jobDispatch: dispatch,
+      // cyclesData,
+      // createNewJob,
+      // newCycle,
+      // fetchJob,
+      // activeJob,
+      // updateActiveJob,
+      // updateJob,
       deleteJob,
-      showToast,
+      // showToast,
     }),
     [
-      jobs,
-      createNewJob,
-      newCycle,
-      fetchJob,
-      activeJob,
-      updateActiveJob,
-      updateJob,
-      myJobs,
+      jobsData,
+      dispatch,
+      // cyclesData,
+      // createNewJob,
+      // newCycle,
+      // fetchJob,
+      // activeJob,
+      // updateActiveJob,
+      // updateJob,
       deleteJob,
-      showToast,
+      // showToast,
     ],
   );
 

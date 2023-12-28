@@ -14,21 +14,11 @@ import {
   Thead,
   Tooltip,
   Tr,
+  useColorModeValue,
 } from '@chakra-ui/react';
 
-import { Cycle } from '~/@types/cycles';
-import { Highlight } from '~/@types/job';
-import {
-  STATUS_COLORS,
-  formatTime,
-  getJobStatus,
-  getJobType,
-  secondsToTime,
-  truncateString,
-} from '~/helpers/utils';
-import { useCycle } from '~/hooks/useCycle';
+import { STATUS_COLORS } from '~/helpers/utils';
 import { useCyclesContext } from '~/hooks/useCyclesContext';
-import { useJobsContext } from '~/hooks/useJobsContext';
 
 import { Pagination } from '../Pagination';
 
@@ -36,142 +26,108 @@ const PageSize = 10;
 
 export const Highlights = () => {
   const [currentPage, setCurrentPage] = React.useState(1);
-  const [jobsHighlights, setJobsHighlights] = React.useState<Highlight[]>([]);
 
-  const { jobs } = useJobsContext();
-  const { cyclesByUser } = useCyclesContext();
-  const { getTotalHoursUsedActiveCycleJob } = useCycle();
+  const { jobs: data } = useCyclesContext();
 
-  const jobsFiltered = React.useMemo(() => {
-    return jobs?.filter((job) => job?.isHighlight);
-  }, [jobs]);
+  const tableBg = useColorModeValue('secondary.light', 'whiteAlpha.400');
+  const trBg = useColorModeValue('blackAlpha.900', 'secondary.dark');
 
-  const getJobTotalHoursUsed = React.useCallback(
-    (cycles: Cycle[]) => {
-      const { totalHoursUsedActiveCycleJob } =
-        getTotalHoursUsedActiveCycleJob(cycles);
+  const totalCount = React.useMemo(() => {
+    return data?.filter((job) => job?.isHighlight)?.length;
+  }, [data]);
 
-      const totalHoursUsed = totalHoursUsedActiveCycleJob;
-
-      const { hours, minutes } = secondsToTime(totalHoursUsed);
-
-      return { hours, minutes, totalHoursUsed };
-    },
-    [getTotalHoursUsedActiveCycleJob],
-  );
-
-  const getJobsHighlights = React.useCallback(() => {
-    const highlights = [...jobsFiltered]?.map((job) => {
-      const cycles = cyclesByUser?.filter((cycle) => cycle?.jobId === job?.id);
-
-      const { hours, minutes, totalHoursUsed } = getJobTotalHoursUsed(cycles);
-
-      const hourEstimate = job?.hourEstimate ?? 0;
-      const totalSecondsAmount = job?.totalSecondsAmount ?? 0;
-      const minutesEstimate = job?.minutesEstimate ?? 0;
-      const estimatedTime = formatTime(hourEstimate, minutesEstimate);
-
-      const status = getJobStatus(job?.status);
-      const type = getJobType(job?.type);
-      const statusColor =
-        totalHoursUsed > totalSecondsAmount
-          ? ('red' as const)
-          : ('gray' as const);
-
-      return {
-        id: job?.id ?? '',
-        title: job?.title,
-        status,
-        type,
-        estimatedTime,
-        usedTime: {
-          time: `${hours}h:${minutes}m`,
-          statusColor,
-        },
-      };
-    });
-
-    return { highlights };
-  }, [cyclesByUser, jobsFiltered, getJobTotalHoursUsed]);
-
-  React.useEffect(() => {
+  const jobsHighlights = React.useMemo(() => {
     const firstPageIndex = (currentPage - 1) * PageSize;
     const lastPageIndex = firstPageIndex + PageSize;
 
-    const { highlights } = getJobsHighlights();
+    return data
+      ?.filter((job) => job?.isHighlight)
+      .slice(firstPageIndex, lastPageIndex);
+  }, [data, currentPage]);
 
-    const highlightsSlice = highlights?.slice(firstPageIndex, lastPageIndex);
-
-    setJobsHighlights(highlightsSlice);
-  }, [getJobsHighlights, currentPage]);
+  if (totalCount < 1) {
+    return (
+      <Text textAlign="center" fontSize="large" mt="10">
+        Nenhum resultado encontrado
+      </Text>
+    );
+  }
 
   return (
     <>
-      {!jobsHighlights.length ? (
-        <Text textAlign="center" fontSize="large" mt="10">
-          Nenhum resultado encontrado
-        </Text>
-      ) : (
-        <TableContainer>
-          <Table colorScheme="blackAlpha">
-            <Thead>
-              <Tr>
-                <Th>Título</Th>
-                <Th>Tempo Estimado</Th>
-                <Th>Tempo Utilizado</Th>
-                <Th>Status</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {jobsHighlights?.map((job) => (
-                <Tr key={job?.id}>
-                  <Td>
-                    <Tooltip label={job?.title} placement="top-start">
-                      <LinkChakra as={Link} to={`/jobs/${job?.id}`}>
-                        {truncateString(job?.title, 55)}
-                      </LinkChakra>
-                    </Tooltip>
-                  </Td>
+      <TableContainer mt="6">
+        <Table
+          colorScheme="blackAlpha"
+          bg={tableBg}
+          borderRadius="lg"
+          overflow="hidden"
+          boxShadow="base"
+        >
+          <Thead>
+            <Tr bg={trBg}>
+              <Th textTransform="capitalize" fontSize="md" color="white">
+                Título
+              </Th>
+              <Th textTransform="capitalize" fontSize="md" color="white">
+                Tempo Estimado
+              </Th>
+              <Th textTransform="capitalize" fontSize="md" color="white">
+                Tempo Utilizado
+              </Th>
+              <Th textTransform="capitalize" fontSize="md" color="white">
+                Status
+              </Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {jobsHighlights?.map((job) => (
+              <Tr key={job?.id}>
+                <Td fontWeight="bold" color="variant">
+                  <Tooltip label={job?.title?.fullTitle} placement="top-start">
+                    <LinkChakra as={Link} to={`/jobs/${job?.id}`}>
+                      {job?.title?.shortTitle}
+                    </LinkChakra>
+                  </Tooltip>
+                </Td>
 
-                  <Td>{job?.estimatedTime}</Td>
+                <Td color="variant">{job?.estimatedTime?.total}</Td>
 
-                  <Td>
+                <Td color="variant">
+                  <Text
+                    fontSize="md"
+                    color={STATUS_COLORS[job?.usedTime?.statusColor]}
+                  >
+                    {job?.usedTime?.total}
+                  </Text>
+                </Td>
+
+                <Td color="variant">
+                  <Flex gap="2" align="center" justify="flex-start">
+                    <Box
+                      w="8px"
+                      h="8px"
+                      borderRadius="50%"
+                      bg={STATUS_COLORS[job.status.statusColor]}
+                    />
+
                     <Text
                       fontSize="md"
-                      color={STATUS_COLORS[job?.usedTime?.statusColor]}
+                      color={STATUS_COLORS[job.status.statusColor]}
                     >
-                      {job?.usedTime?.time}
+                      {job.status.title}
                     </Text>
-                  </Td>
-
-                  <Td>
-                    <Flex gap="2" align="center" justify="flex-start">
-                      <Box
-                        w="8px"
-                        h="8px"
-                        borderRadius="50%"
-                        bg={STATUS_COLORS[job.status.statusColor]}
-                      />
-
-                      <Text
-                        fontSize="md"
-                        color={STATUS_COLORS[job.status.statusColor]}
-                      >
-                        {job.status.type}
-                      </Text>
-                    </Flex>
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </TableContainer>
-      )}
+                  </Flex>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </TableContainer>
 
       <Box mt="5">
         <Pagination
           currentPage={currentPage}
-          totalCount={jobsFiltered?.length}
+          totalCount={totalCount}
           pageSize={PageSize}
           siblingCount={1}
           onPageChange={(page) => setCurrentPage(page)}

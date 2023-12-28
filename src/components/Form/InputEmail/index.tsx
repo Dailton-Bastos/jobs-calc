@@ -10,6 +10,7 @@ import {
   InputLeftElement,
   InputRightElement,
   FormErrorMessage,
+  useColorModeValue,
 } from '@chakra-ui/react';
 
 import { Label } from '~/components/Form/Label';
@@ -24,6 +25,8 @@ const InputEmailBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
   { label, error = null, isValidEmail = false, ...rest },
   ref,
 ) => {
+  const inputBg = useColorModeValue('gray.50', 'white');
+
   return (
     <FormControl isInvalid={!!error}>
       {!!label && <Label>{label}</Label>}
@@ -35,16 +38,13 @@ const InputEmailBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
 
         <Input
           type="email"
-          variant="filled"
-          focusBorderColor="orange.300"
+          variant="outline"
+          bg={inputBg}
+          color="black"
+          focusBorderColor="orange.500"
           height="12"
-          _hover={{
-            bg: 'gray.100',
-            borderColor: 'orange.300',
-          }}
-          _focusVisible={{
-            bg: 'white',
-            borderColor: 'orange.300',
+          _placeholder={{
+            color: '#787880',
           }}
           ref={ref}
           {...rest}

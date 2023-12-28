@@ -5,7 +5,6 @@ import {
   signInWithEmailAndPassword,
   signOut,
   createUserWithEmailAndPassword,
-  updateProfile,
 } from 'firebase/auth';
 
 import { SignInFormData } from '~/@types/signIn';
@@ -26,6 +25,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = React.useState<User | null>(null);
 
   const isAuthenticated = !!user;
+
+  const userEmailVerified = user?.emailVerified ?? false;
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -54,26 +55,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, [navigate]);
 
   const signUp = React.useCallback(
-    async ({ email, password, displayName }: SignUpFormData) => {
+    async ({ email, password }: SignUpFormData) => {
       try {
-        const userCredential = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password,
-        );
+        await createUserWithEmailAndPassword(auth, email, password);
 
-        if (userCredential) {
-          await updateProfile(userCredential.user, {
-            displayName,
-          });
+        // if (userCredential) {
+        //   await updateProfile(userCredential.user, {
+        //     displayName,
+        //   });
 
-          const { currentUser } = auth;
+        //   const { currentUser } = auth;
 
-          if (currentUser) {
-            setUser({ ...currentUser, displayName });
-            navigate('/dashboard');
-          }
-        }
+        //   if (currentUser) {
+        //     setUser({ ...currentUser, displayName });
+        //     navigate('/dashboard');
+        //   }
+        // }
+
+        navigate('/dashboard');
       } catch (error) {
         throw new Error('Failed to create user');
       }
@@ -88,8 +87,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       isAuthenticated,
       logout,
       signUp,
+      userEmailVerified,
     }),
-    [signIn, user, isAuthenticated, logout, signUp],
+    [signIn, user, isAuthenticated, logout, signUp, userEmailVerified],
   );
 
   React.useEffect(() => {

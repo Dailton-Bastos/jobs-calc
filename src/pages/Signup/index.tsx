@@ -1,6 +1,5 @@
 import React from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { RiUserLine } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 
 import {
@@ -14,7 +13,6 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { SignUpFormData } from '~/@types/signUp';
-import { Input } from '~/components/Form/Input';
 import { InputEmail } from '~/components/Form/InputEmail';
 import { InputPassword } from '~/components/Form/InputPassword';
 import { SubmitButton } from '~/components/Form/SubmitButton';
@@ -23,7 +21,8 @@ import { signUpFormSchema } from '~/schemas/signUpFormSchema';
 
 export const SignUp = () => {
   const { register, handleSubmit, formState } = useForm<SignUpFormData>({
-    mode: 'all',
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
     resolver: yupResolver(signUpFormSchema),
   });
 
@@ -40,11 +39,17 @@ export const SignUp = () => {
 
   return (
     <Flex direction="column" align="center">
-      <Heading mb="6" fontFamily="Inter" fontWeight="semibold" size="xl">
+      <Heading
+        mb="6"
+        fontFamily="Inter"
+        fontWeight="semibold"
+        size="xl"
+        color="variant"
+      >
         Crie sua conta
       </Heading>
 
-      <Text>Preencha os campos abaixo para começar</Text>
+      <Text color="variant">Preencha os campos abaixo para começar</Text>
 
       <Flex
         as="form"
@@ -61,14 +66,6 @@ export const SignUp = () => {
             placeholder="Seu e-mail"
             error={errors?.email}
             isValidEmail={!!dirtyFields?.email && !errors.email?.message}
-          />
-
-          <Input
-            registerName="displayName"
-            placeholder="Seu nome"
-            leftIcon={RiUserLine}
-            error={errors?.displayName}
-            isValid={!!dirtyFields?.displayName && !errors.displayName?.message}
           />
 
           <InputPassword

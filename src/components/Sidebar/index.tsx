@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   RiDashboardLine,
   RiTodoLine,
@@ -14,20 +15,14 @@ import { useAuth } from '~/hooks/useAuth';
 
 import { NavLink } from './NavLink';
 
-export const Sidebar = () => {
+const SidebarMemo = () => {
   const { logout } = useAuth();
 
   return (
-    <Flex
-      direction="column"
-      bg="black"
-      pt="12"
-      pb="8"
-      px="8"
-      h="100%"
-      minW="200px"
-    >
-      <Logo />
+    <Flex direction="column" bg="black" pt="12" pb="8" h="100%" minW="200px">
+      <Box px="8">
+        <Logo />
+      </Box>
 
       <List spacing={6} mt="14">
         <NavLink icon={RiDashboardLine} url="/dashboard">
@@ -51,10 +46,11 @@ export const Sidebar = () => {
         </NavLink>
       </List>
 
-      <Box mt="auto">
+      <Box mt="auto" px="8">
         <Button
-          leftIcon={<RiLogoutBoxRLine />}
+          leftIcon={<RiLogoutBoxRLine size={28} />}
           variant="solid"
+          fontSize="md"
           bg="black"
           _hover={{
             bg: 'black',
@@ -68,3 +64,5 @@ export const Sidebar = () => {
     </Flex>
   );
 };
+
+export const Sidebar = React.memo(SidebarMemo);

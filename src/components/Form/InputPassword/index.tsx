@@ -10,8 +10,8 @@ import {
   InputLeftElement,
   InputRightElement,
   FormErrorMessage,
-  Button,
-  Icon,
+  IconButton,
+  useColorModeValue,
 } from '@chakra-ui/react';
 
 import { Label } from '~/components/Form/Label';
@@ -19,50 +19,63 @@ import { Label } from '~/components/Form/Label';
 type Props = InputProps & {
   label?: string;
   error?: FieldError;
-  isValidPassword: boolean;
+  isValidPassword?: boolean;
+  showLeftIcon?: boolean;
 };
 
 const InputPasswordBase: ForwardRefRenderFunction<HTMLInputElement, Props> = (
-  { label, error = null, isValidPassword = false, ...rest },
+  {
+    label,
+    error = null,
+    isValidPassword = false,
+    showLeftIcon = true,
+    ...rest
+  },
   ref,
 ) => {
   const [showPassword, setShowPassword] = React.useState(false);
+
+  const inputBg = useColorModeValue('gray.50', 'white');
 
   return (
     <FormControl isInvalid={!!error}>
       {!!label && <Label>{label}</Label>}
 
       <InputGroup>
-        <InputLeftElement pointerEvents="none" height="12">
-          <RiLock2Line color={`${isValidPassword ? '#F1972C' : '#787880'}`} />
-        </InputLeftElement>
+        {showLeftIcon && (
+          <InputLeftElement pointerEvents="none" height="12">
+            <RiLock2Line color={`${isValidPassword ? '#F1972C' : '#787880'}`} />
+          </InputLeftElement>
+        )}
 
         <Input
           type={showPassword ? 'text' : 'password'}
-          variant="filled"
-          focusBorderColor="orange.300"
+          variant="outline"
+          bg={inputBg}
           height="12"
-          _hover={{
-            bg: 'gray.100',
-            borderColor: 'orange.300',
-          }}
-          _focusVisible={{
-            bg: 'white',
-            borderColor: 'orange.300',
+          color="black"
+          focusBorderColor="orange.500"
+          _placeholder={{
+            color: '#787880',
           }}
           ref={ref}
           {...rest}
         />
 
         <InputRightElement height="12" mr="2">
-          <Button
-            _hover={{
-              bg: 'gray.50',
-            }}
+          <IconButton
+            aria-label="Password"
+            variant="link"
+            size="sm"
+            icon={
+              showPassword ? (
+                <RiEyeLine color="#787880" />
+              ) : (
+                <RiEyeOffLine color="#787880" />
+              )
+            }
             onClick={() => setShowPassword((prev) => !prev)}
-          >
-            <Icon as={showPassword ? RiEyeLine : RiEyeOffLine} />
-          </Button>
+          />
         </InputRightElement>
       </InputGroup>
 

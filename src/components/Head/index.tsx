@@ -6,7 +6,11 @@ interface Props {
 
 export const Head = ({ title }: Props) => {
   React.useEffect(() => {
-    document.title = `${title} | Jobs Calc`;
+    document.title = 'Jobs Calc';
+
+    if (title) {
+      document.title = `${title} | Jobs Calc`;
+    }
   }, [title]);
 
   return <></>;

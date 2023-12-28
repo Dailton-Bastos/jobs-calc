@@ -1,5 +1,6 @@
 .dateRangePickerContainer {
   justify-content: space-between;
+  gap: 30px;
   width: 100%;
 }
 
@@ -9,4 +10,28 @@
 
 .dateRangePickerContainer .rdrDayToday .rdrDayNumber span::after {
   background: #F1972C;
+}
+
+.rdrDefinedRangesWrapper {
+  border-radius: 8px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.rdrDateRangeWrapper {
+  border-radius: 8px;
+}
+
+.rdrStaticRange:hover .rdrStaticRangeLabel {
+  background: #F1972C;
+  color: #fff;
+}
+
+.dateRangePickerContainer.dark .rdrStaticRange,
+.dateRangePickerContainer.dark .rdrInputRanges {
+  color: #222;
+}
+
+.dateRangePickerContainer.dark .rdrInputRanges .rdrInputRangeInput {
+  background: #fff;
 }

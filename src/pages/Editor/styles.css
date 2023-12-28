@@ -1,0 +1,12 @@
+.rc-md-editor .editor-container .section-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.rc-md-editor .editor-container .section-container::-webkit-scrollbar-track {
+  width: 6px;
+}
+
+.rc-md-editor .editor-container .section-container::-webkit-scrollbar-thumb {
+  background: #787880;
+  border-radius: 24px;
+}

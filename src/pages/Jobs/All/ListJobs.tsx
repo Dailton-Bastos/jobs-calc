@@ -3,9 +3,7 @@ import { Link } from 'react-router-dom';
 
 import {
   Box,
-  Heading,
   Flex,
-  Link as LinkChakra,
   Text,
   TableContainer,
   Table,
@@ -16,171 +14,146 @@ import {
   Th,
   Td,
   Tooltip,
+  Link as LinkChakra,
+  useColorModeValue,
 } from '@chakra-ui/react';
 
-import { JobResum } from '~/@types/job';
-import { Search } from '~/components/Job/Search';
 import { Pagination } from '~/components/Pagination';
-import { STATUS_COLORS, truncateString } from '~/helpers/utils';
-import { useDebounce } from '~/hooks/useDebounce';
-import { useJobsContext } from '~/hooks/useJobsContext';
+import { STATUS_COLORS } from '~/helpers/utils';
+import { useCyclesContext } from '~/hooks/useCyclesContext';
 
 import { Actions } from './Actions';
 
-const PageSize = 8;
+const PageSize = 10;
 
-export const ListJobs = () => {
-  const [jobs, setJobs] = React.useState<JobResum[]>([]);
+const ListJobs = () => {
   const [currentPage, setCurrentPage] = React.useState(1);
-  const [value, setValue] = React.useState('');
 
-  const { myJobs } = useJobsContext();
+  const { jobs: data } = useCyclesContext();
 
-  const { debounceVal } = useDebounce({ val: value, delay: 500 });
+  const totalCount = React.useMemo(() => data?.length, [data]);
 
-  const handleChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setValue(event.target.value);
-    },
-    [],
-  );
+  const tableBg = useColorModeValue('secondary.light', 'whiteAlpha.400');
+  const trBg = useColorModeValue('blackAlpha.900', 'secondary.dark');
 
-  const handleCleanInput = React.useCallback(() => {
-    setValue('');
-  }, []);
-
-  React.useEffect(() => {
+  const jobs = React.useMemo(() => {
     const firstPageIndex = (currentPage - 1) * PageSize;
     const lastPageIndex = firstPageIndex + PageSize;
 
-    const jobsSlice = myJobs?.slice(firstPageIndex, lastPageIndex);
+    return data.slice(firstPageIndex, lastPageIndex);
+  }, [data, currentPage]);
 
-    const jobsFiltered = myJobs?.filter((job) => {
-      return job?.title.toLowerCase().includes(debounceVal.toLowerCase());
-    });
-
-    if (debounceVal) {
-      setJobs(jobsFiltered);
-    } else {
-      setJobs(jobsSlice);
-    }
-  }, [myJobs, currentPage, debounceVal]);
+  if (!jobs.length) {
+    return (
+      <Text textAlign="center" fontSize="large" mt="10">
+        Nenhum job encontrado
+      </Text>
+    );
+  }
 
   return (
-    <Box w="100%" my="10">
-      <Heading size="md" textAlign="center">
-        Meus Jobs
-      </Heading>
-
-      <Flex justify="space-between" align="center" mt="2" px="4">
-        <Search
-          value={value}
-          handleChange={handleChange}
-          cleanInput={handleCleanInput}
-        />
-
-        <LinkChakra
-          as={Link}
-          to="/jobs/new"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          position="relative"
-          borderWidth="1px"
-          borderColor="orange.300"
-          borderStyle="solid"
-          borderRadius="md"
-          color="orange.300"
-          p="3"
-          h="40px"
-          w="220px"
-          _hover={{
-            textDecoration: 'none',
-            bg: 'orange.300',
-            color: 'white',
-          }}
+    <>
+      <TableContainer mt="6">
+        <Table
+          colorScheme="blackAlpha"
+          bg={tableBg}
+          borderRadius="lg"
+          overflow="hidden"
+          boxShadow="base"
         >
-          <Text fontWeight="bold">Novo Job</Text>
-        </LinkChakra>
-      </Flex>
+          <TableCaption>
+            <Flex gap="2" align="center" justify="flex-end">
+              <Text fontWeight="bold">Total de jobs:</Text>
+              <Text>{totalCount}</Text>
+            </Flex>
+          </TableCaption>
 
-      {!jobs.length ? (
-        <Text textAlign="center" fontSize="large" mt="10">
-          Nenhum resultado encontrado
-        </Text>
-      ) : (
-        <TableContainer mt="10">
-          <Table variant="simple">
-            {!debounceVal && (
-              <TableCaption>
-                <Flex gap="2" align="center" justify="flex-end">
-                  <Text fontWeight="bold">Total de jobs:</Text>
-                  <Text>{myJobs?.length}</Text>
-                </Flex>
-              </TableCaption>
-            )}
+          <Thead>
+            <Tr bg={trBg}>
+              <Th textTransform="capitalize" fontSize="md" color="white">
+                Título
+              </Th>
+              <Th textTransform="capitalize" fontSize="md" color="white">
+                Tipo
+              </Th>
+              <Th textTransform="capitalize" fontSize="md" color="white">
+                Tempo Estimado
+              </Th>
+              <Th textTransform="capitalize" fontSize="md" color="white">
+                Tempo Utilizado
+              </Th>
+              <Th textTransform="capitalize" fontSize="md" color="white">
+                Status
+              </Th>
+              <Th textTransform="capitalize" fontSize="md" color="white">
+                Ações
+              </Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {jobs?.map((job) => (
+              <Tr key={job.id}>
+                <Td fontWeight="bold" pt="2" pb="2" color="variant">
+                  <Tooltip label={job?.title?.fullTitle} placement="top-start">
+                    <LinkChakra as={Link} to={`/jobs/${job?.id}`}>
+                      {job?.title?.shortTitle}
+                    </LinkChakra>
+                  </Tooltip>
+                </Td>
 
-            <Thead>
-              <Tr>
-                <Th>Título</Th>
-                <Th>Tipo</Th>
-                <Th>Tempo Estimado</Th>
-                <Th>Status</Th>
-                <Th>Ações</Th>
+                <Td pt="2" pb="2" color="variant">
+                  {job.type}
+                </Td>
+
+                <Td pt="2" pb="2" color="variant">
+                  <Text>{job.estimatedTime?.total}</Text>
+                </Td>
+
+                <Td pt="2" pb="2" color="variant">
+                  <Text
+                    fontSize="md"
+                    color={STATUS_COLORS[job?.usedTime?.statusColor]}
+                  >
+                    {job?.usedTime?.total}
+                  </Text>
+                </Td>
+
+                <Td pt="2" pb="2" color="variant">
+                  <Flex gap="2" align="center" justify="flex-start">
+                    <Box
+                      w="8px"
+                      h="8px"
+                      borderRadius="50%"
+                      bg={STATUS_COLORS[job.status.statusColor]}
+                    />
+
+                    <Text
+                      fontSize="md"
+                      color={STATUS_COLORS[job.status.statusColor]}
+                    >
+                      {job.status.title}
+                    </Text>
+                  </Flex>
+                </Td>
+
+                <Td pt="2" pb="2" color="variant">
+                  <Actions job={job} />
+                </Td>
               </Tr>
-            </Thead>
-            <Tbody>
-              {jobs?.map((job) => (
-                <Tr key={job.id}>
-                  <Td>
-                    <Tooltip label={job.title} placement="top-start">
-                      {truncateString(job.title, 40)}
-                    </Tooltip>
-                  </Td>
+            ))}
+          </Tbody>
+        </Table>
+      </TableContainer>
 
-                  <Td>{job.type}</Td>
-
-                  <Td>
-                    <Text>{job.estimatedTime}</Text>
-                  </Td>
-
-                  <Td>
-                    <Flex gap="2" align="center" justify="flex-start">
-                      <Box
-                        w="8px"
-                        h="8px"
-                        borderRadius="50%"
-                        bg={STATUS_COLORS[job.status.statusColor]}
-                      />
-
-                      <Text
-                        fontSize="md"
-                        color={STATUS_COLORS[job.status.statusColor]}
-                      >
-                        {job.status.type}
-                      </Text>
-                    </Flex>
-                  </Td>
-
-                  <Td>
-                    <Actions id={job?.id} />
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </TableContainer>
-      )}
-
-      {!debounceVal && (
-        <Pagination
-          currentPage={currentPage}
-          totalCount={myJobs?.length}
-          pageSize={PageSize}
-          siblingCount={1}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
-      )}
-    </Box>
+      <Pagination
+        currentPage={currentPage}
+        totalCount={totalCount}
+        pageSize={PageSize}
+        siblingCount={1}
+        onPageChange={(page) => setCurrentPage(page)}
+      />
+    </>
   );
 };
+
+export default ListJobs;

@@ -8,6 +8,7 @@ import {
   InputGroup,
   InputLeftElement,
   FormErrorMessage,
+  useColorModeValue,
 } from '@chakra-ui/react';
 
 import { Label } from '~/components/Form/Label';
@@ -29,9 +30,12 @@ export const Input = ({
   ...rest
 }: Props) => {
   const { register } = useFormContext();
+
+  const inputBg = useColorModeValue('gray.50', 'gray.200');
+
   return (
     <FormControl isInvalid={!!error}>
-      {!!label && <Label>{label}</Label>}
+      {!!label && <Label fontWeight="bold">{label}</Label>}
 
       <InputGroup>
         {!!LeftIcon && (
@@ -40,18 +44,10 @@ export const Input = ({
           </InputLeftElement>
         )}
         <ChackraInput
-          bg="white"
+          bg={inputBg}
           height="12"
-          variant="filled"
-          focusBorderColor="orange.300"
-          _hover={{
-            bg: 'gray.100',
-            borderColor: 'orange.300',
-          }}
-          _focusVisible={{
-            bg: 'white',
-            borderColor: 'orange.300',
-          }}
+          color="black"
+          focusBorderColor="orange.500"
           {...register(registerName)}
           {...rest}
         />

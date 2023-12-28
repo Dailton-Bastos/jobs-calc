@@ -1,72 +1,127 @@
 import React from 'react';
-import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 
 import { Flex } from '@chakra-ui/react';
+import { differenceInSeconds } from 'date-fns';
 
 import 'react-circular-progressbar/dist/styles.css';
+import { JobFormatted } from '~/@types/job';
+import { secondsToTime } from '~/helpers/utils';
 import { useCyclesContext } from '~/hooks/useCyclesContext';
 import { useJobsContext } from '~/hooks/useJobsContext';
+import { useTabActive } from '~/hooks/useTabActive';
+import { userTitle } from '~/Layouts/Main/hooks/useTitle';
 
 import { Control } from './components/Control';
+import { Timer } from './components/Timer';
 
-export const Countdown = () => {
+type Props = {
+  job: JobFormatted;
+};
+
+export const Countdown = ({ job }: Props) => {
+  const [countdownText, setCountdownText] = React.useState({
+    hours: '00',
+    minutes: '00',
+    seconds: '00',
+  });
+
+  const { jobsData } = useJobsContext();
+  const { activeCycle, activeJob } = useCyclesContext();
+  const { isTabActive } = useTabActive();
+  const setPageTitle = userTitle((state) => state.setpageTitle);
+
+  const [amountSecondsPassed, setAmountSecondsPassed] = React.useState(() => {
+    if (activeCycle?.startDate) {
+      return differenceInSeconds(new Date(), new Date(activeCycle?.startDate));
+    }
+
+    return 0;
+  });
+
+  const jobApiData = React.useMemo(() => {
+    return jobsData.find((item) => item.id === job.id);
+  }, [jobsData, job]);
+
   const {
-    activeCycleCurrentSeconds,
-    countdownText,
-    activeCycleInfo,
-    activeCycleTotalSeconds,
-  } = useCyclesContext();
+    totalSecondsAmount,
+    usedTime: { totalUsed },
+  } = job;
 
-  const { activeJob } = useJobsContext();
+  const isActiveJob = Boolean(activeJob && activeJob.id === job.id);
 
-  const totalSecondsAmount = activeJob ? activeJob.totalSecondsAmount : 0;
+  const totalSecondsRemaining = totalSecondsAmount - totalUsed;
 
-  const currentPercentage =
-    activeCycleInfo && activeCycleInfo.jobId !== activeJob?.id
-      ? (activeCycleTotalSeconds / totalSecondsAmount) * 100
-      : (activeCycleCurrentSeconds / totalSecondsAmount) * 100;
+  const currentTime = isActiveJob
+    ? totalSecondsRemaining - amountSecondsPassed
+    : totalSecondsRemaining;
 
-  const percentage = Math.round(currentPercentage);
+  const countdownValue = React.useCallback(() => {
+    const amountSeconds = isActiveJob
+      ? totalUsed + amountSecondsPassed
+      : totalUsed;
 
-  const countdownStyles = React.useMemo(() => {
-    const redColor = '#EB3B35';
-    const greenColor = '#36B336';
-    const grayColor = '#5A5A66';
-    const grayLigthColor = '#E1E3E5';
+    const totalCount = currentTime >= 1 ? currentTime : amountSeconds;
 
-    return {
-      textColor: percentage <= 0 ? redColor : grayColor,
-      pathColor: percentage >= 30 ? greenColor : redColor,
-      trailColor: percentage <= 0 ? redColor : grayLigthColor,
-      textSize: 16,
-    };
-  }, [percentage]);
+    const { hours, minutes, seconds } = secondsToTime(totalCount);
 
-  const hideCountdownControl =
-    activeJob?.status === 'done' ||
-    (activeCycleInfo && activeCycleInfo.jobId !== activeJob?.id);
+    setCountdownText({
+      hours,
+      minutes,
+      seconds,
+    });
+  }, [amountSecondsPassed, currentTime, totalUsed, isActiveJob]);
+
+  const percentage = Math.ceil((currentTime / totalSecondsAmount) * 100);
+
+  // Start Countdown
+  React.useEffect(() => {
+    if (!activeCycle) {
+      setAmountSecondsPassed(0);
+
+      return;
+    }
+
+    const interval = setInterval(() => {
+      const secondsDifference = differenceInSeconds(
+        new Date(),
+        new Date(activeCycle.startDate),
+      );
+
+      setAmountSecondsPassed(secondsDifference);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [activeCycle]);
+
+  React.useEffect(() => {
+    countdownValue();
+  }, [countdownValue]);
+
+  React.useEffect(() => {
+    if (!isTabActive && isActiveJob) {
+      setPageTitle(
+        `${countdownText?.hours}:${countdownText?.minutes}:${countdownText.seconds} - ${job?.title.fullTitle}`,
+      );
+
+      return;
+    }
+
+    setPageTitle(job?.title.fullTitle);
+  }, [isTabActive, countdownText, job, setPageTitle, isActiveJob]);
 
   return (
     <Flex
       direction="column"
       alignItems="center"
       justifyContent="center"
-      bg="white"
-      boxShadow="lg"
-      borderRadius="5px"
-      py="6"
-      px="12"
       w="100%"
       maxW="352px"
     >
-      <CircularProgressbar
-        value={percentage}
-        text={countdownText}
-        strokeWidth={5}
-        styles={buildStyles(countdownStyles)}
-      />
+      <Timer percentage={percentage} countdownText={countdownText} />
 
-      {!hideCountdownControl && <Control />}
+      {jobApiData && (
+        <Control jobApiData={jobApiData} isActiveJob={isActiveJob} />
+      )}
     </Flex>
   );
 };

@@ -1,23 +1,88 @@
-import { ToastId, UseToastOptions } from '@chakra-ui/react';
+// import { ToastId, UseToastOptions } from '@chakra-ui/react';
 
 import { STATUS_COLORS } from '~/helpers/utils';
+import { JobActions } from '~/reducers/jobs/actions';
 
-import { Cycle } from './cycles';
+import { CycleFormatted } from './cycles';
 
 export type JobStatus = 'opened' | 'developing' | 'done' | 'paused';
 export type JobType = 'other' | 'budget' | 'development';
 
 type DateType = number;
 
-export interface CreateNewJobData {
+interface Date {
+  title: string;
+  label: string;
+  datetime: string;
+  timestamp: number;
+}
+
+interface ReportCommon {
+  id: string;
+  jobId: string;
+  date: Date;
+}
+
+export interface FormattedReportCommon extends ReportCommon {
+  startDate: number;
+  fineshedDate?: number;
+  isActive: boolean;
+}
+
+interface Report extends ReportCommon {
+  cycles: CycleFormatted[];
+  totalUsedTime: string;
+}
+
+interface JobCommon {
+  userId: string;
   jobberId?: string;
+  description?: string;
+  isHighlight: boolean;
+  totalSecondsAmount: number;
+  totalSecondsRemaining: number;
+}
+
+export interface JobFormatted extends JobCommon {
+  id: string;
+  title: {
+    shortTitle: string;
+    fullTitle: string;
+  };
+  estimatedTime: {
+    hours: number;
+    minutes: number;
+    total: string;
+  };
+  usedTime: {
+    hours: string;
+    minutes: string;
+    total: string;
+    totalUsed: number;
+    statusColor: keyof typeof STATUS_COLORS;
+  };
+  type: string;
+  status: {
+    type: JobStatus;
+    title: string;
+    statusColor: keyof typeof STATUS_COLORS;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface JobData extends JobCommon {
   type: JobType;
+  status: JobStatus;
   title: string;
   hourEstimate: number;
   minutesEstimate: number;
-  totalSecondsAmount: number;
-  description?: string;
-  isHighlight?: boolean;
+  createdAt: number;
+  updatedAt: number;
+}
+
+interface JobApiData extends JobData {
+  id: string;
 }
 
 export interface Job {
@@ -50,7 +115,7 @@ interface CycleData {
 interface Time {
   title: string;
   label: string;
-  dateTime: string;
+  datetime: string;
 }
 
 interface CycleDataByCreatedAt {
@@ -88,35 +153,18 @@ export interface JobInfo {
   updatedAt: Time;
 }
 
-interface JobResum {
-  id: string;
-  title: string;
-  type: string;
-  estimatedTime: string;
-  status: {
-    type: string;
-    statusColor: keyof typeof STATUS_COLORS;
-  };
-}
-
-interface Highlight extends JobResum {
-  usedTime: {
-    time: string;
-    statusColor: keyof typeof STATUS_COLORS;
-  };
-}
-
 export interface JobsContextProps {
-  jobs: Job[];
-  myJobs: JobResum[];
-  createNewJob: (data: CreateNewJobData) => void;
-  fetchJob: (id: string) => void;
-  activeJob: Job | null;
-  updateActiveJob: (job: Job) => void;
-  newCycle: Cycle | null;
-  updateJob: (job: Job) => void;
+  jobsData: JobApiData[];
+  jobDispatch: (value: JobActions) => void;
+  // cyclesData: CycleApiData[];
+  // createNewJob: (data: JobData) => void;
+  // fetchJob: (id: string) => void;
+  // activeJob: JobFormatted | undefined;
+  // updateActiveJob: (job: JobFormatted) => void;
+  // newCycle: CycleData | null;
+  // updateJob: (job: Job) => void;
   deleteJob: (id: string) => void;
-  showToast: (options: UseToastOptions) => ToastId | undefined;
+  // showToast: (options: UseToastOptions) => ToastId | undefined;
 }
 
 export interface JobsProviderProps {
