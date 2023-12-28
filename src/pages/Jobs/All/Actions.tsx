@@ -20,7 +20,7 @@ import { useCyclesContext } from '~/hooks/useCyclesContext';
 import { useJobs } from '~/hooks/useJobs';
 import { useJobsContext } from '~/hooks/useJobsContext';
 
-import { ModalDelete } from './Modal';
+import { DeleteJob } from './DeleteJob';
 
 interface Props {
   job: JobFormatted;
@@ -101,7 +101,7 @@ export const Actions = ({ job }: Props) => {
         </Tooltip>
       </HStack>
 
-      {id && <ModalDelete isOpen={isOpen} onClose={onClose} id={id} />}
+      <DeleteJob job={job} isOpen={isOpen} onClose={onClose} />
     </>
   );
 };

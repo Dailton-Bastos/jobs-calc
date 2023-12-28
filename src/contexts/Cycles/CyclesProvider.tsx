@@ -5,7 +5,10 @@ import { useAuth } from '~/hooks/useAuth';
 import { useInitialCyclesState } from '~/hooks/useInitialCyclesState';
 import { useJobs } from '~/hooks/useJobs';
 import { useJobsContext } from '~/hooks/useJobsContext';
-import { updateCycleActions } from '~/reducers/cycles/actions';
+import {
+  deleteCycleActions,
+  updateCycleActions,
+} from '~/reducers/cycles/actions';
 
 import { CyclesContext } from './CyclesContext';
 
@@ -44,6 +47,13 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
     [dispatch],
   );
 
+  const deleteCycle = React.useCallback(
+    (id: string) => {
+      dispatch(deleteCycleActions(id));
+    },
+    [dispatch],
+  );
+
   React.useEffect(() => {
     if (!user) return;
 
@@ -58,8 +68,17 @@ export const CyclesProvider = ({ children }: CyclesProviderProps) => {
       activeCycle,
       activeJob,
       updateCycle,
+      deleteCycle,
     }),
-    [cyclesData, jobs, dispatch, activeCycle, activeJob, updateCycle],
+    [
+      cyclesData,
+      jobs,
+      dispatch,
+      activeCycle,
+      activeJob,
+      updateCycle,
+      deleteCycle,
+    ],
   );
 
   return (

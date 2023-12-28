@@ -99,5 +99,5 @@ export interface CyclesContextData {
   // jobCycles: JobCycles[];
   // cyclesByUser: Cycle[];
   // countdownText: string;
-  // deleteCycle: (id: string) => void;
+  deleteCycle: (id: string) => void;
 }
