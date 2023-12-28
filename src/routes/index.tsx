@@ -5,6 +5,7 @@ import { useSpinner } from '~/hooks/useSpinner';
 import { Auth } from '~/Layouts/Auth';
 import { MainLayout } from '~/Layouts/Main';
 import { WithSidebar } from '~/Layouts/WithSidebar';
+import { Cycle } from '~/pages/Cycle';
 import { Editor } from '~/pages/Editor';
 import { ForgotPassword } from '~/pages/Forgot';
 import { Home } from '~/pages/Home';
@@ -45,6 +46,7 @@ export const GlobalRoutes = () => {
           <Route path="/jobs/new" element={<NewJobPage />} />
           <Route path="/jobs/:id/edit" element={<EditJobPage />} />
           <Route path="/jobs/:id/cycles" element={<EditJobReports />} />
+          <Route path="/cycles/:id" element={<Cycle />} />
           <Route path="/profile" element={<Profile />} />
         </Route>
       </Route>

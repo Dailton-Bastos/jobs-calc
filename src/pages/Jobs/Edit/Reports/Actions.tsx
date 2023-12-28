@@ -82,7 +82,7 @@ export const Actions = ({ cycle }: Props) => {
             aria-label="Editar Apontamento"
             icon={<RiEdit2Line size={22} color={iconColor} />}
             bg="transparent"
-            onClick={() => navigate(`/cycles/${cycle.id}/edit`)}
+            onClick={() => navigate(`/cycles/${cycle.id}`)}
             disabled={cycle.isActive}
           />
         </Tooltip>
