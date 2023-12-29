@@ -164,6 +164,7 @@ export interface JobInfo {
 
 export interface JobsContextProps {
   jobsData: JobApiData[];
+  data: JobApiData[];
   jobDispatch: (value: JobActions) => void;
   // cyclesData: CycleApiData[];
   // createNewJob: (data: JobData) => void;
