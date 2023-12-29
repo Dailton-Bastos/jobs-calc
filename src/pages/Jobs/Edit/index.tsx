@@ -31,8 +31,6 @@ type EditJobFormData = yup.InferType<typeof jobFormValidationSchema>;
 export const EditJobPage = () => {
   const { id } = useParams();
 
-  const [isHighlight, setIsHighlight] = React.useState(false);
-
   const { jobsData } = useJobsContext();
   const { updateJob } = useJobs();
 
@@ -89,14 +87,13 @@ export const EditJobPage = () => {
           minutesEstimate: jobMinutesEstimate,
           totalSecondsAmount,
           status,
-          isHighlight,
         });
 
         navigate(`/jobs/${jobApiData.id}`);
       }
     },
 
-    [status, isHighlight, jobApiData, updateJob, navigate, type],
+    [jobApiData, updateJob, navigate, type, status],
   );
 
   const jobTypeBudget = React.useCallback(() => {
@@ -141,12 +138,6 @@ export const EditJobPage = () => {
   React.useEffect(() => {
     jobTypeActions(type);
   }, [type, jobTypeActions]);
-
-  React.useEffect(() => {
-    if (jobApiData) {
-      setIsHighlight(jobApiData.isHighlight);
-    }
-  }, [jobApiData]);
 
   React.useEffect(() => {
     setPageTitle(`Editar ${jobApiData?.title}`);
