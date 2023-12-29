@@ -6,6 +6,7 @@ import React from 'react';
 // import { Cycle } from '~/@types/cycles';
 import type {
   JobsProviderProps,
+  OrderBy,
   // JobData,
   // JobFormatted,
   // Job,
@@ -14,11 +15,12 @@ import type {
 import { useAuth } from '~/hooks/useAuth';
 import { useInitialJobsState } from '~/hooks/useInitialJobsState';
 // import { useJobs } from '~/hooks/useJobs';
-import { deleteJobActions } from '~/reducers/jobs/actions';
+import { deleteJobActions, orderByJobActions } from '~/reducers/jobs/actions';
 
 import { JobsContext } from './JobsContext';
 
 export const JobsProvider = ({ children }: JobsProviderProps) => {
+  const [selectedOrder, setSelectedOrder] = React.useState('Todos');
   // const [activeJob, setActiveJob] = React.useState<JobFormatted | undefined>(
   //   undefined,
   // );
@@ -52,6 +54,17 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
   //   return;
   //   job;
   // }, []);
+
+  const orderBy = React.useCallback(
+    (value: OrderBy) => {
+      dispatch(orderByJobActions(value));
+    },
+    [dispatch],
+  );
+
+  const handleSelectedOrder = React.useCallback((value: string) => {
+    setSelectedOrder(value);
+  }, []);
 
   const deleteJob = React.useCallback(
     (id: string) => {
@@ -87,6 +100,9 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       // updateActiveJob,
       // updateJob,
       deleteJob,
+      orderBy,
+      selectedOrder,
+      handleSelectedOrder,
       // showToast,
     }),
     [
@@ -100,6 +116,9 @@ export const JobsProvider = ({ children }: JobsProviderProps) => {
       // updateActiveJob,
       // updateJob,
       deleteJob,
+      orderBy,
+      selectedOrder,
+      handleSelectedOrder,
       // showToast,
     ],
   );
