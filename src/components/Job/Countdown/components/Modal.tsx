@@ -59,6 +59,8 @@ export const Modal = ({
               onChange={(e) => changeCycleDescription(e.target.value)}
               focusBorderColor="orange.400"
               size="lg"
+              fontSize="md"
+              fontWeight="normal"
             />
 
             <Flex align="center" mt={4}>

@@ -30,7 +30,7 @@ export const Top = () => {
             />
           </Tooltip>
 
-          <CopyToClipboard text={data?.html} />
+          <CopyToClipboard text={data?.html} isPlainText={false} />
         </React.Fragment>
       )}
     </HStack>

@@ -7,10 +7,15 @@ import { useCopyToClipboard } from '~/hooks/useCopyToClipboard';
 
 type Props = {
   text: string;
+  isPlainText: boolean;
   callBack?: () => void;
 };
 
-export const CopyToClipboard = ({ text, callBack }: Props) => {
+export const CopyToClipboard = ({
+  text,
+  isPlainText = true,
+  callBack,
+}: Props) => {
   const [copyToClipboard, copyResult] = useCopyToClipboard();
 
   const label =
@@ -21,10 +26,10 @@ export const CopyToClipboard = ({ text, callBack }: Props) => {
       : 'Copiar';
 
   const handleClickCopy = React.useCallback(() => {
-    copyToClipboard(text);
+    copyToClipboard({ text, isPlainText });
 
     callBack && callBack();
-  }, [copyToClipboard, text, callBack]);
+  }, [copyToClipboard, text, isPlainText, callBack]);
 
   return (
     <Tooltip label={label} aria-label="Copy" closeOnClick={false}>
