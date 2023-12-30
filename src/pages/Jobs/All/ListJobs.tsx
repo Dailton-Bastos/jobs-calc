@@ -24,7 +24,7 @@ import { useCyclesContext } from '~/hooks/useCyclesContext';
 
 import { Actions } from './Actions';
 
-const PageSize = 10;
+const PageSize = 9;
 
 const ListJobs = () => {
   const [currentPage, setCurrentPage] = React.useState(1);
