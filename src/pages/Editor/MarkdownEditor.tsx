@@ -1,13 +1,26 @@
 import MdEditor, { Plugins } from 'react-markdown-editor-lite';
 
 import { Box, Spinner, Flex } from '@chakra-ui/react';
+import hljs from 'highlight.js';
 import MarkdownIt from 'markdown-it';
 
 import { useEditorContext } from '~/hooks/useEditorContext';
+import 'highlight.js/styles/atom-one-light.css';
 import 'react-markdown-editor-lite/lib/index.css';
 import './styles.css';
 
-const mdParser = new MarkdownIt();
+const mdParser = new MarkdownIt({
+  highlight: function (str, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return hljs.highlight(lang, str).value;
+      } catch (e) {
+        throw new Error('highlight');
+      }
+    }
+    return '';
+  },
+});
 
 MdEditor.use(Plugins.TabInsert, { tabMapValue: 2 });
 
