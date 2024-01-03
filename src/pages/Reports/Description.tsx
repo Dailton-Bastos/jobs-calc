@@ -37,7 +37,7 @@ export const Description = ({ description }: Props) => {
           <PopoverArrow />
 
           <Box position="absolute" right="2" top="2">
-            <CopyToClipboard text={description} />
+            <CopyToClipboard text={description} isPlainText />
           </Box>
 
           <PopoverBody pt="8">{description}</PopoverBody>

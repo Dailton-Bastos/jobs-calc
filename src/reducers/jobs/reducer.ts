@@ -7,12 +7,14 @@ import { JobActions, ActionTypes } from './actions';
 
 interface JobsState {
   jobsData: JobApiData[];
+  data: JobApiData[];
   // cyclesData: CycleApiData[];
   // activeJobData: JobApiData | undefined;
 }
 
 export const initialJobsState: JobsState = {
   jobsData: [],
+  data: [],
   // cyclesData: [],
   // activeJobData: undefined,
 };
@@ -27,6 +29,7 @@ export const jobsReducer = (
     case ActionTypes.CREATE_INITIAL_STATE:
       return produce(state, (draft) => {
         draft.jobsData = payload.jobs;
+        draft.data = payload.data;
         // draft.cyclesData = payload.cycles;
         // draft.activeJobData = payload.activeJob;
       });
@@ -62,6 +65,29 @@ export const jobsReducer = (
         );
 
         if (index !== -1) draft.jobsData.splice(index, 1);
+      });
+    }
+
+    case ActionTypes.ORDER_BY: {
+      return produce(state, (draft) => {
+        // const { data, value } = payload;
+        if (
+          payload === 'budget' ||
+          payload === 'other' ||
+          payload === 'development'
+        ) {
+          draft.jobsData = draft.data.filter((job) => job.type === payload);
+
+          return;
+        }
+
+        if (payload === 'all') {
+          draft.jobsData = draft.data;
+
+          return;
+        }
+
+        draft.jobsData = draft.data.filter((job) => job.status === payload);
       });
     }
 

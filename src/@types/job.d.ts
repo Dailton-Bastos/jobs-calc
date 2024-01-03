@@ -7,6 +7,15 @@ import { CycleFormatted } from './cycles';
 
 export type JobStatus = 'opened' | 'developing' | 'done' | 'paused';
 export type JobType = 'other' | 'budget' | 'development';
+export type OrderBy =
+  | 'opened'
+  | 'developing'
+  | 'done'
+  | 'paused'
+  | 'other'
+  | 'budget'
+  | 'development'
+  | 'all';
 
 type DateType = number;
 
@@ -155,6 +164,7 @@ export interface JobInfo {
 
 export interface JobsContextProps {
   jobsData: JobApiData[];
+  data: JobApiData[];
   jobDispatch: (value: JobActions) => void;
   // cyclesData: CycleApiData[];
   // createNewJob: (data: JobData) => void;
@@ -164,6 +174,9 @@ export interface JobsContextProps {
   // newCycle: CycleData | null;
   // updateJob: (job: Job) => void;
   deleteJob: (id: string) => void;
+  orderBy: (orderBy: OrderBy) => void;
+  selectedOrder: string;
+  handleSelectedOrder: (value: string) => void;
   // showToast: (options: UseToastOptions) => ToastId | undefined;
 }
 

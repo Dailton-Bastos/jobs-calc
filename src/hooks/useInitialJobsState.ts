@@ -48,11 +48,13 @@ export const useInitialJobsState = () => {
         }
       }
 
-      const jobs = jobData?.sort((a, b) => {
+      const data = jobData?.sort((a, b) => {
         return b?.createdAt - a?.createdAt;
       });
 
-      dispatch(createInitialStateActions(jobs));
+      const jobs = data;
+
+      dispatch(createInitialStateActions(jobs, data));
     },
     [snapshotJobs],
   );

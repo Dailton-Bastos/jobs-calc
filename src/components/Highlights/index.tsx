@@ -1,4 +1,5 @@
 import React from 'react';
+import { RiUnpinLine } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 
 import {
@@ -14,36 +15,73 @@ import {
   Thead,
   Tooltip,
   Tr,
+  IconButton,
   useColorModeValue,
 } from '@chakra-ui/react';
 
 import { STATUS_COLORS } from '~/helpers/utils';
 import { useCyclesContext } from '~/hooks/useCyclesContext';
+import { useJobs } from '~/hooks/useJobs';
+import { useJobsContext } from '~/hooks/useJobsContext';
 
 import { Pagination } from '../Pagination';
 
 const PageSize = 10;
 
 export const Highlights = () => {
+  const [isLoading, setIsLoading] = React.useState(false);
   const [currentPage, setCurrentPage] = React.useState(1);
 
-  const { jobs: data } = useCyclesContext();
+  const { cyclesData } = useCyclesContext();
+  const { updateJob, formatJob } = useJobs();
+  const { jobsData, data } = useJobsContext();
 
   const tableBg = useColorModeValue('secondary.light', 'whiteAlpha.400');
   const trBg = useColorModeValue('blackAlpha.900', 'secondary.dark');
+  const iconColor = useColorModeValue('#4A5568', '#fff');
+
+  const highlights = React.useMemo(() => {
+    return data.map((job) => {
+      const cycles = cyclesData?.filter((cycle) => cycle?.jobId === job.id);
+
+      return formatJob(job, cycles);
+    });
+  }, [data, formatJob, cyclesData]);
 
   const totalCount = React.useMemo(() => {
-    return data?.filter((job) => job?.isHighlight)?.length;
-  }, [data]);
+    return highlights?.filter((job) => job?.isHighlight)?.length;
+  }, [highlights]);
 
   const jobsHighlights = React.useMemo(() => {
     const firstPageIndex = (currentPage - 1) * PageSize;
     const lastPageIndex = firstPageIndex + PageSize;
 
-    return data
+    return highlights
       ?.filter((job) => job?.isHighlight)
       .slice(firstPageIndex, lastPageIndex);
-  }, [data, currentPage]);
+  }, [highlights, currentPage]);
+
+  const handleRemoveHighlight = React.useCallback(
+    async (id: string) => {
+      const job = jobsData?.find((item) => item.id === id);
+
+      if (!job) return;
+
+      try {
+        setIsLoading(true);
+
+        await updateJob({
+          ...job,
+          isHighlight: false,
+        });
+      } catch (error) {
+        setIsLoading(false);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [updateJob, jobsData],
+  );
 
   if (totalCount < 1) {
     return (
@@ -76,6 +114,9 @@ export const Highlights = () => {
               </Th>
               <Th textTransform="capitalize" fontSize="md" color="white">
                 Status
+              </Th>
+              <Th textTransform="capitalize" fontSize="md" color="white">
+                Ações
               </Th>
             </Tr>
           </Thead>
@@ -117,6 +158,18 @@ export const Highlights = () => {
                       {job.status.title}
                     </Text>
                   </Flex>
+                </Td>
+
+                <Td pt="2" pb="2" color="variant">
+                  <Tooltip label="Remover Destaque" hasArrow arrowSize={15}>
+                    <IconButton
+                      aria-label="Remover Destaque"
+                      icon={<RiUnpinLine size={22} color={iconColor} />}
+                      bg="transparent"
+                      onClick={() => handleRemoveHighlight(job.id)}
+                      disabled={isLoading}
+                    />
+                  </Tooltip>
                 </Td>
               </Tr>
             ))}

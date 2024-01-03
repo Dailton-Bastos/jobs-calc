@@ -35,6 +35,6 @@ export const jobFormValidationSchema = yup
       .integer('Digite apenas número'),
     description: yup.string(),
     status: yup.string().required('Campo obrigatório'),
-    isHighlight: yup.boolean().notRequired(),
+    isHighlight: yup.boolean().required(),
   })
   .required();

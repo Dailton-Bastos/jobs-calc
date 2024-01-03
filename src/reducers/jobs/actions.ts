@@ -1,5 +1,5 @@
 // import { CycleApiData } from '~/@types/cycles';
-import { JobApiData } from '~/@types/job';
+import type { JobApiData, OrderBy } from '~/@types/job';
 
 export enum ActionTypes {
   ADD_NEW_JOB = 'ADD_NEW_JOB',
@@ -7,6 +7,7 @@ export enum ActionTypes {
   SET_ACTIVE_JOB = 'SET_ACTIVE_JOB',
   UPDATE_JOB = 'UPDATE_JOB',
   DELETE_JOB = 'DELETE_JOB',
+  ORDER_BY = 'ORDER_BY',
 }
 
 export type JobActions =
@@ -14,6 +15,7 @@ export type JobActions =
       type: ActionTypes.CREATE_INITIAL_STATE;
       payload: {
         jobs: JobApiData[];
+        data: JobApiData[];
         // cycles: CycleApiData[];
         // activeJob: JobApiData | undefined;
       };
@@ -41,10 +43,15 @@ export type JobActions =
       payload: {
         id: string;
       };
+    }
+  | {
+      type: ActionTypes.ORDER_BY;
+      payload: OrderBy;
     };
 
 export const createInitialStateActions = (
   jobs: JobApiData[],
+  data: JobApiData[],
   // cycles: CycleApiData[],
   // activeJob: JobApiData | undefined,
 ) => {
@@ -52,6 +59,7 @@ export const createInitialStateActions = (
     type: ActionTypes.CREATE_INITIAL_STATE as const,
     payload: {
       jobs,
+      data,
       // cycles,
       // activeJob,
     },
@@ -85,5 +93,12 @@ export const deleteJobActions = (id: string) => {
   return {
     type: ActionTypes.DELETE_JOB as const,
     payload: { id },
+  };
+};
+
+export const orderByJobActions = (value: OrderBy) => {
+  return {
+    type: ActionTypes.ORDER_BY as const,
+    payload: value,
   };
 };
