@@ -19,10 +19,15 @@ import {
 } from '@chakra-ui/react';
 
 import { Pagination } from '~/components/Pagination';
-import { STATUS_COLORS } from '~/helpers/utils';
+import {
+  STATUS_COLORS,
+  orderItemsStatus,
+  orderItemsType,
+} from '~/helpers/utils';
 import { useCyclesContext } from '~/hooks/useCyclesContext';
 
 import { Actions } from './Actions';
+import { OrderBy } from './OrderBy';
 
 const PageSize = 9;
 
@@ -43,16 +48,8 @@ const ListJobs = () => {
     return data.slice(firstPageIndex, lastPageIndex);
   }, [data, currentPage]);
 
-  if (!jobs.length) {
-    return (
-      <Text textAlign="center" fontSize="large" mt="10">
-        Nenhum job encontrado
-      </Text>
-    );
-  }
-
   return (
-    <>
+    <React.Fragment>
       <TableContainer mt="6">
         <Table
           colorScheme="blackAlpha"
@@ -70,22 +67,42 @@ const ListJobs = () => {
 
           <Thead>
             <Tr bg={trBg}>
-              <Th textTransform="capitalize" fontSize="md" color="white">
+              <Th
+                textTransform="capitalize"
+                fontSize="md"
+                color="white"
+                w={'30%'}
+              >
                 Título
               </Th>
-              <Th textTransform="capitalize" fontSize="md" color="white">
-                Tipo
+              <Th textTransform="capitalize" fontSize="md" w={'20%'}>
+                <OrderBy orderItems={orderItemsType}>Tipo</OrderBy>
               </Th>
-              <Th textTransform="capitalize" fontSize="md" color="white">
+              <Th
+                textTransform="capitalize"
+                fontSize="md"
+                color="white"
+                w={'10%'}
+              >
                 Tempo Estimado
               </Th>
-              <Th textTransform="capitalize" fontSize="md" color="white">
+              <Th
+                textTransform="capitalize"
+                fontSize="md"
+                color="white"
+                w={'10%'}
+              >
                 Tempo Utilizado
               </Th>
-              <Th textTransform="capitalize" fontSize="md" color="white">
-                Status
+              <Th textTransform="capitalize" fontSize="md" w={'20%'}>
+                <OrderBy orderItems={orderItemsStatus}>Status</OrderBy>
               </Th>
-              <Th textTransform="capitalize" fontSize="md" color="white">
+              <Th
+                textTransform="capitalize"
+                fontSize="md"
+                color="white"
+                w={'10%'}
+              >
                 Ações
               </Th>
             </Tr>
@@ -145,6 +162,12 @@ const ListJobs = () => {
         </Table>
       </TableContainer>
 
+      {!jobs.length && (
+        <Text textAlign="center" fontSize="large" mt="10">
+          Nenhum job encontrado
+        </Text>
+      )}
+
       <Pagination
         currentPage={currentPage}
         totalCount={totalCount}
@@ -152,7 +175,7 @@ const ListJobs = () => {
         siblingCount={1}
         onPageChange={(page) => setCurrentPage(page)}
       />
-    </>
+    </React.Fragment>
   );
 };
 

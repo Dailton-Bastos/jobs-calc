@@ -8,7 +8,6 @@ import { Head } from '~/components/Head';
 import { useAuth } from '~/hooks/useAuth';
 import { useCyclesContext } from '~/hooks/useCyclesContext';
 
-import { OrderBy } from './OrderBy';
 const Jobs = React.lazy(() => import('./ListJobs'));
 
 export const AllJobsPage = () => {
@@ -24,16 +23,16 @@ export const AllJobsPage = () => {
       <Head title="Meus Jobs" />
 
       <Box w="100%" py="8">
-        <Heading
-          size="lg"
-          textAlign="center"
-          fontWeight="bold"
-          variant="primary"
-        >
-          Meus Jobs
-        </Heading>
-
         <Flex justify="space-between" align="center">
+          <Heading
+            size="lg"
+            textAlign="center"
+            fontWeight="bold"
+            variant="primary"
+          >
+            Meus Jobs
+          </Heading>
+
           <Button
             variant="solid"
             bg="orange.400"
@@ -68,8 +67,6 @@ export const AllJobsPage = () => {
             </Flex>
             ADICIONAR NOVO JOB
           </Button>
-
-          <OrderBy />
         </Flex>
 
         <React.Suspense

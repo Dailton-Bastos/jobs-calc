@@ -380,3 +380,45 @@ export const editorMockup = `
 
 -
 `;
+
+export const orderItemsStatus = [
+  {
+    title: 'Todos',
+    type: 'all' as const,
+  },
+  {
+    title: 'Em andamento',
+    type: 'developing' as const,
+  },
+  {
+    title: 'Em aberto',
+    type: 'opened' as const,
+  },
+  {
+    title: 'Em espera',
+    type: 'paused' as const,
+  },
+  {
+    title: 'Concluído',
+    type: 'done' as const,
+  },
+];
+
+export const orderItemsType = [
+  {
+    title: 'Todos',
+    type: 'all' as const,
+  },
+  {
+    title: 'Desenvolvimento',
+    type: 'development' as const,
+  },
+  {
+    title: 'Orçamento',
+    type: 'budget' as const,
+  },
+  {
+    title: 'Interno',
+    type: 'other' as const,
+  },
+];
