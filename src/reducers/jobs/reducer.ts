@@ -37,6 +37,7 @@ export const jobsReducer = (
     case ActionTypes.ADD_NEW_JOB:
       return produce(state, (draft) => {
         draft.jobsData.unshift(payload.job);
+        draft.data.unshift(payload.job);
         // draft.activeJobData = payload.job;
       });
 
@@ -50,11 +51,15 @@ export const jobsReducer = (
       const currentJobIndex = state.jobsData.findIndex((job) => {
         return job.id === payload.job.id;
       });
+      const currentJobDataIndex = state.data.findIndex((job) => {
+        return job.id === payload.job.id;
+      });
 
-      if (currentJobIndex < 0) return state;
+      if (currentJobIndex < 0 || currentJobDataIndex < 0) return state;
 
       return produce(state, (draft) => {
         draft.jobsData[currentJobIndex] = payload.job;
+        draft.data[currentJobDataIndex] = payload.job;
       });
     }
 
@@ -64,7 +69,12 @@ export const jobsReducer = (
           (job) => job?.id === payload?.id,
         );
 
+        const indexData = draft.data?.findIndex(
+          (job) => job?.id === payload?.id,
+        );
+
         if (index !== -1) draft.jobsData.splice(index, 1);
+        if (indexData !== -1) draft.data.splice(indexData, 1);
       });
     }
 
