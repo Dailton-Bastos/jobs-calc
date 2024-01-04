@@ -21,7 +21,7 @@ export const Menu = () => {
   const bg = useColorModeValue('secondary.light', 'primary.dark');
 
   return (
-    <ChakraMenu gutter={16}>
+    <ChakraMenu gutter={16} autoSelect={false}>
       {({ isOpen }) => (
         <>
           <MenuButton

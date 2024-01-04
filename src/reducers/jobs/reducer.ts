@@ -1,6 +1,5 @@
 import { produce } from 'immer';
 
-// import { CycleApiData } from '~/@types/cycles';
 import { JobApiData } from '~/@types/job';
 
 import { JobActions, ActionTypes } from './actions';
@@ -8,15 +7,11 @@ import { JobActions, ActionTypes } from './actions';
 interface JobsState {
   jobsData: JobApiData[];
   data: JobApiData[];
-  // cyclesData: CycleApiData[];
-  // activeJobData: JobApiData | undefined;
 }
 
 export const initialJobsState: JobsState = {
   jobsData: [],
   data: [],
-  // cyclesData: [],
-  // activeJobData: undefined,
 };
 
 export const jobsReducer = (
@@ -30,31 +25,32 @@ export const jobsReducer = (
       return produce(state, (draft) => {
         draft.jobsData = payload.jobs;
         draft.data = payload.data;
-        // draft.cyclesData = payload.cycles;
-        // draft.activeJobData = payload.activeJob;
       });
 
     case ActionTypes.ADD_NEW_JOB:
       return produce(state, (draft) => {
         draft.jobsData.unshift(payload.job);
-        // draft.activeJobData = payload.job;
+        draft.data.unshift(payload.job);
       });
 
     case ActionTypes.SET_ACTIVE_JOB:
       return produce(state, (draft) => {
         return draft;
-        // draft.activeJobData = payload.activeJob;
       });
 
     case ActionTypes.UPDATE_JOB: {
       const currentJobIndex = state.jobsData.findIndex((job) => {
         return job.id === payload.job.id;
       });
+      const currentJobDataIndex = state.data.findIndex((job) => {
+        return job.id === payload.job.id;
+      });
 
-      if (currentJobIndex < 0) return state;
+      if (currentJobIndex < 0 || currentJobDataIndex < 0) return state;
 
       return produce(state, (draft) => {
         draft.jobsData[currentJobIndex] = payload.job;
+        draft.data[currentJobDataIndex] = payload.job;
       });
     }
 
@@ -64,13 +60,17 @@ export const jobsReducer = (
           (job) => job?.id === payload?.id,
         );
 
+        const indexData = draft.data?.findIndex(
+          (job) => job?.id === payload?.id,
+        );
+
         if (index !== -1) draft.jobsData.splice(index, 1);
+        if (indexData !== -1) draft.data.splice(indexData, 1);
       });
     }
 
     case ActionTypes.ORDER_BY: {
       return produce(state, (draft) => {
-        // const { data, value } = payload;
         if (
           payload === 'budget' ||
           payload === 'other' ||

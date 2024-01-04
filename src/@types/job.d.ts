@@ -1,5 +1,3 @@
-// import { ToastId, UseToastOptions } from '@chakra-ui/react';
-
 import { STATUS_COLORS } from '~/helpers/utils';
 import { JobActions } from '~/reducers/jobs/actions';
 
@@ -16,8 +14,6 @@ export type OrderBy =
   | 'budget'
   | 'development'
   | 'all';
-
-type DateType = number;
 
 interface Date {
   title: string;
@@ -94,90 +90,14 @@ interface JobApiData extends JobData {
   id: string;
 }
 
-export interface Job {
-  id: string | null;
-  jobberId?: string;
-  userId: string;
-  type: JobType;
-  title: string;
-  description?: string;
-  status: JobStatus;
-  hourEstimate: number;
-  minutesEstimate: number;
-  totalSecondsAmount: number;
-  totalSecondsRemaining: number;
-  isHighlight?: boolean;
-  createdAt: DateType;
-  updatedAt: DateType;
-}
-
-interface CycleData {
-  id: string;
-  isActive: boolean;
-  startHour: string;
-  fineshedHour: string;
-  total: string;
-  totalCycleInSeconds: number;
-  createdAt: string;
-}
-
-interface Time {
-  title: string;
-  label: string;
-  datetime: string;
-}
-
-interface CycleDataByCreatedAt {
-  id: string;
-  time: Time;
-  createdAt: string;
-}
-
-export interface JobByDate {
-  [date: string]: CycleDataByCreatedAt[];
-}
-
-interface CyclesByDate extends CycleDataByCreatedAt {
-  cycles: CycleData[];
-  cycleTotalTime: string;
-}
-
-export interface JobInfo {
-  id: string;
-  jobberId?: string;
-  title: string;
-  description?: string;
-  estimatedTime: string;
-  usedTime: {
-    time: string;
-    statusColor: keyof typeof STATUS_COLORS;
-  };
-  type: string;
-  status: {
-    type: string;
-    statusColor: keyof typeof STATUS_COLORS;
-  };
-  cyclesByDate: CyclesByDate[];
-  createdAt: Time;
-  updatedAt: Time;
-}
-
 export interface JobsContextProps {
   jobsData: JobApiData[];
   data: JobApiData[];
   jobDispatch: (value: JobActions) => void;
-  // cyclesData: CycleApiData[];
-  // createNewJob: (data: JobData) => void;
-  // fetchJob: (id: string) => void;
-  // activeJob: JobFormatted | undefined;
-  // updateActiveJob: (job: JobFormatted) => void;
-  // newCycle: CycleData | null;
-  // updateJob: (job: Job) => void;
   deleteJob: (id: string) => void;
   orderBy: (orderBy: OrderBy) => void;
   selectedOrder: string;
   handleSelectedOrder: (value: string) => void;
-  // showToast: (options: UseToastOptions) => ToastId | undefined;
 }
 
 export interface JobsProviderProps {

@@ -80,9 +80,8 @@ export const Modal = ({
 
         <ModalFooter>
           <Button
-            variant="unstyled"
-            color="white"
-            bg="green.500"
+            variant="solid"
+            colorScheme="green"
             mr={3}
             onClick={handleFinishCurrentCycle}
             w="100%"
@@ -93,9 +92,8 @@ export const Modal = ({
           </Button>
 
           <Button
-            variant="unstyled"
-            color="white"
-            bg="red.500"
+            variant="solid"
+            colorScheme="red"
             onClick={onClose}
             w="100%"
             disabled={isLoading}

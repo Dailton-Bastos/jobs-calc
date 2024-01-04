@@ -1,4 +1,3 @@
-// import { CycleApiData } from '~/@types/cycles';
 import type { JobApiData, OrderBy } from '~/@types/job';
 
 export enum ActionTypes {
@@ -16,8 +15,6 @@ export type JobActions =
       payload: {
         jobs: JobApiData[];
         data: JobApiData[];
-        // cycles: CycleApiData[];
-        // activeJob: JobApiData | undefined;
       };
     }
   | {
@@ -52,16 +49,12 @@ export type JobActions =
 export const createInitialStateActions = (
   jobs: JobApiData[],
   data: JobApiData[],
-  // cycles: CycleApiData[],
-  // activeJob: JobApiData | undefined,
 ) => {
   return {
     type: ActionTypes.CREATE_INITIAL_STATE as const,
     payload: {
       jobs,
       data,
-      // cycles,
-      // activeJob,
     },
   };
 };

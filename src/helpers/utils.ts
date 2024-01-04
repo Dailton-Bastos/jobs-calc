@@ -3,14 +3,8 @@
 import { differenceInSeconds, format } from 'date-fns';
 import pt from 'date-fns/locale/pt-BR';
 
+import type { CycleApiData, CycleFormatted } from '~/@types/cycles';
 import type {
-  FormattedJobCycle,
-  JobCycles,
-  JobCyclesByDate,
-  CycleApiData,
-  CycleFormatted,
-} from '~/@types/cycles';
-import {
   JobStatus,
   JobType,
   Report,
@@ -94,38 +88,6 @@ export function secondsToTime(totalInSeconds: number) {
   const formattedTime = `${hours}:${minutes}:${seconds}`;
 
   return { hours, minutes, seconds, formattedTime };
-}
-
-export function formatJobCyclesByDate(cyclesByDate: JobCyclesByDate) {
-  const data: JobCycles[] = Object.keys(cyclesByDate)?.map((key: string) => {
-    const totalCyleDate = cyclesByDate[key]?.reduce(
-      (acc: number, cycle: FormattedJobCycle) => {
-        acc += cycle?.totalCycleInSeconds;
-        return acc;
-      },
-      0,
-    );
-
-    const { hours, minutes } = secondsToTime(totalCyleDate);
-
-    return {
-      id: uuid(),
-      date: cyclesByDate[key][0]?.date,
-      totalHoursByDate: `${hours}h:${minutes}m`,
-      totalCycleInSeconds: totalCyleDate,
-      cycles: cyclesByDate[key]?.map((cycle) => {
-        return {
-          id: uuid(),
-          startDate: cycle?.startDate,
-          fineshedDate: cycle?.fineshedDate,
-          totalCycle: cycle?.totalCycle,
-          isActive: cycle?.isActive,
-        };
-      }),
-    };
-  });
-
-  return { data };
 }
 
 export function getJobType(type: JobType) {
