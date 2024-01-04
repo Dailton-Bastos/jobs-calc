@@ -59,19 +59,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       try {
         await createUserWithEmailAndPassword(auth, email, password);
 
-        // if (userCredential) {
-        //   await updateProfile(userCredential.user, {
-        //     displayName,
-        //   });
-
-        //   const { currentUser } = auth;
-
-        //   if (currentUser) {
-        //     setUser({ ...currentUser, displayName });
-        //     navigate('/dashboard');
-        //   }
-        // }
-
         navigate('/dashboard');
       } catch (error) {
         throw new Error('Failed to create user');
