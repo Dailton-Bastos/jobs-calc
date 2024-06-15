@@ -45,7 +45,7 @@ export const Profile = () => {
   const setPageTitle = userTitle((state) => state.setpageTitle);
   const setHeaderTitle = userTitle((state) => state.setHeaderTitle);
 
-  const { user } = useAuth();
+  const { user, jobber, updateJobberInfo } = useAuth();
   const { isTabActive } = useTabActive();
   const { customToast } = useCustomToast();
   const [updateProfile, errorUpdateProfile] = useUpdateProfile(user);
@@ -60,10 +60,7 @@ export const Profile = () => {
       updatePassword: false,
       password: '',
       passwordConfirmation: '',
-      jobber: {
-        accessToken: '',
-        internalId: '',
-      },
+      jobber,
     },
     resolver: yupResolver(profileFormSchema),
   });
@@ -114,12 +111,7 @@ export const Profile = () => {
 
   const handleSubmitForm = React.useCallback(
     async (data: ProfileFormData) => {
-      const {
-        displayName,
-        photoURL,
-        updatePassword,
-        jobber: { accessToken, internalId },
-      } = data;
+      const { displayName, photoURL, updatePassword } = data;
 
       if (updatePassword) {
         setOpenModalConfirmPassword(true);
@@ -137,13 +129,20 @@ export const Profile = () => {
         description: 'Informações salvas com sucesso',
       });
 
-      await set(ref(db, `jobber/${userId}`), {
-        accessToken,
-        internalId,
-        userId,
-      });
+      if (data?.jobber) {
+        await set(ref(db, `jobber/${userId}`), {
+          accessToken: data.jobber.accessToken,
+          internalId: data.jobber.internalId,
+          userId,
+        });
+
+        updateJobberInfo({
+          accessToken: data.jobber.accessToken ?? '',
+          internalId: data.jobber.internalId ?? '',
+        });
+      }
     },
-    [updateProfile, customToast, userId],
+    [updateProfile, customToast, userId, updateJobberInfo],
   );
 
   React.useEffect(() => {
