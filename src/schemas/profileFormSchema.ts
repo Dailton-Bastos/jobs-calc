@@ -18,5 +18,12 @@ export const profileFormSchema = yup
         .oneOf([yup.ref('password'), null], 'As senhas não conferem'),
       otherwise: yup.string().notRequired(),
     }),
+    jobber: yup.object({
+      accessToken: yup.string().trim().optional(),
+      internalId: yup
+        .string()
+        .matches(/^\d+$/, { message: 'ID inválido' })
+        .optional(),
+    }),
   })
   .required();
