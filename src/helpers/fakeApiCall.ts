@@ -1,14 +1,13 @@
-import { JobFormatted } from '~/@types/job';
+import type { FuseResult } from 'fuse.js';
 
-export const searchJobByQuery = async (query: string, data: JobFormatted[]) => {
+import type { JobFormatted } from '~/@types/job';
+
+export const searchJobByQuery = async (data: FuseResult<JobFormatted>[]) => {
   const results = await new Promise<JobFormatted[]>((resolve) => {
     setTimeout(() => {
-      const jobs = data?.filter((job) => {
-        return job?.title?.fullTitle
-          .toLowerCase()
-          .includes(query.toLowerCase());
-      });
-      resolve(jobs);
+      const searchResults = data.map((fuseResult) => fuseResult.item);
+
+      resolve(searchResults);
     }, 1000);
   });
 
