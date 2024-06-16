@@ -33,7 +33,7 @@ export const Control = ({ jobApiData, isActiveJob }: Props) => {
   const { jobDispatch } = useJobsContext();
   const { updateJob } = useJobs();
   const { customToast } = useCustomToast();
-  const { user } = useAuth();
+  const { user, jobber } = useAuth();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -66,6 +66,42 @@ export const Control = ({ jobApiData, isActiveJob }: Props) => {
     );
   }, [jobApiData, cycleDispatch, user]);
 
+  const saveJobberNote = React.useCallback(
+    async (start: Date, finish: Date, description: string) => {
+      if (!jobber || !jobber.accessToken) return;
+
+      const baseUrl = import.meta.env.VITE_APP_JOBBER_API;
+
+      const job = activeJob?.jobberId || jobber.internalId;
+
+      if (!job) return;
+
+      try {
+        await fetch(`${baseUrl}/notes`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            Authorization: `Bearer ${jobber.accessToken}`,
+          },
+          body: JSON.stringify({
+            description,
+            job,
+            start,
+            finish,
+          }),
+        });
+      } catch {
+        customToast({
+          status: 'error',
+          title: 'Ocorreu um erro!',
+          description: 'Error ao salvar apontamento no jobber',
+        });
+      }
+    },
+    [jobber, activeJob, customToast],
+  );
+
   const handleFinishCurrentCycle = React.useCallback(async () => {
     if (!activeCycle) return;
 
@@ -87,6 +123,7 @@ export const Control = ({ jobApiData, isActiveJob }: Props) => {
         await updateJob({
           ...jobApiData,
           status: 'done',
+          isHighlight: false,
         });
 
         jobDispatch(
@@ -103,6 +140,12 @@ export const Control = ({ jobApiData, isActiveJob }: Props) => {
       seIsLoading(false);
 
       setCycleDescription('');
+
+      await saveJobberNote(
+        new Date(cycle.startDate),
+        new Date(cycle.fineshedDate),
+        cycleDescription,
+      );
 
       onClose();
     } catch (error) {
@@ -124,6 +167,7 @@ export const Control = ({ jobApiData, isActiveJob }: Props) => {
     markJobAsDone,
     activeCycle,
     customToast,
+    saveJobberNote,
   ]);
 
   const changeCycleDescription = React.useCallback((value: string) => {

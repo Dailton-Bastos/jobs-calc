@@ -6,11 +6,19 @@ import {
   signOut,
   createUserWithEmailAndPassword,
 } from 'firebase/auth';
+import {
+  ref,
+  get,
+  query,
+  child,
+  orderByChild,
+  equalTo,
+} from 'firebase/database';
 
 import { SignInFormData } from '~/@types/signIn';
 import { SignUpFormData } from '~/@types/signUp';
 import { User } from '~/@types/user';
-import { auth, onAuthStateChanged } from '~/config/firebase';
+import { auth, onAuthStateChanged, db } from '~/config/firebase';
 import { AuthContext } from '~/contexts/Auth/AuthContext';
 
 type AuthProviderProps = {
@@ -23,6 +31,10 @@ type propState = {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = React.useState<User | null>(null);
+  const [jobber, setJobber] = React.useState<null | {
+    accessToken: string;
+    internalId: string;
+  }>(null);
 
   const isAuthenticated = !!user;
 
@@ -67,6 +79,44 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     [navigate],
   );
 
+  const getUserJobberInfo = React.useCallback(async () => {
+    if (!user) return;
+
+    try {
+      const snapshot = await get(
+        query(
+          child(ref(db), 'jobber'),
+          orderByChild('userId'),
+          equalTo(user.uid),
+        ),
+      );
+
+      if (snapshot && snapshot.exists()) {
+        const { accessToken, internalId } = Object.values<{
+          accessToken: string;
+          internalId: string;
+        }>(snapshot.val())[0];
+
+        setJobber({ accessToken, internalId });
+        return;
+      }
+    } catch {
+      throw new Error('Error to get user jobber info');
+    }
+  }, [user]);
+
+  const updateJobberInfo = React.useCallback(
+    (
+      data: null | {
+        accessToken: string;
+        internalId: string;
+      },
+    ) => {
+      setJobber(data);
+    },
+    [],
+  );
+
   const contextValue = React.useMemo(
     () => ({
       signIn,
@@ -75,8 +125,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       logout,
       signUp,
       userEmailVerified,
+      jobber,
+      updateJobberInfo,
     }),
-    [signIn, user, isAuthenticated, logout, signUp, userEmailVerified],
+    [
+      signIn,
+      user,
+      isAuthenticated,
+      logout,
+      signUp,
+      userEmailVerified,
+      jobber,
+      updateJobberInfo,
+    ],
   );
 
   React.useEffect(() => {
@@ -86,6 +147,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     return () => unsubscribe();
   }, []);
+
+  React.useEffect(() => {
+    getUserJobberInfo();
+  }, [getUserJobberInfo]);
 
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>

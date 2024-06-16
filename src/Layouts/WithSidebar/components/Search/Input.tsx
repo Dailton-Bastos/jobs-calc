@@ -10,7 +10,10 @@ import {
   Spinner,
   useColorModeValue,
 } from '@chakra-ui/react';
+import Fuse from 'fuse.js';
+import type { IFuseOptions } from 'fuse.js';
 
+import type { JobFormatted } from '~/@types/job';
 import { searchJobByQuery } from '~/helpers/fakeApiCall';
 import { useCyclesContext } from '~/hooks/useCyclesContext';
 import { useSearchContext } from '~/hooks/useSearchContext';
@@ -24,7 +27,21 @@ export const Input = ({ inputFocus }: Props) => {
 
   const { isLoading, startSearch, cleanResults, finishSearch, value } =
     useSearchContext();
+
   const { jobs } = useCyclesContext();
+
+  const fuse = React.useMemo(() => {
+    const options: IFuseOptions<JobFormatted> = {
+      isCaseSensitive: false,
+      distance: 100,
+      location: 0,
+      shouldSort: true,
+      threshold: 0.6,
+      keys: ['title.fullTitle', 'description'],
+    };
+
+    return new Fuse<JobFormatted>(jobs, options);
+  }, [jobs]);
 
   const onQueryChange = React.useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,12 +60,14 @@ export const Input = ({ inputFocus }: Props) => {
           return;
         }
 
-        const data = await searchJobByQuery(inputValue, jobs);
+        const searchResults = fuse.search(inputValue);
+
+        const data = await searchJobByQuery(searchResults);
 
         finishSearch(data);
       }, 300);
     },
-    [startSearch, cleanResults, jobs, finishSearch],
+    [startSearch, cleanResults, finishSearch, fuse],
   );
 
   return (

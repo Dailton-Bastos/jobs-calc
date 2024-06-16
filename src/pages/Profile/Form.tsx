@@ -1,4 +1,4 @@
-import { FieldErrorsImpl, useFormContext } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import { LuAlertCircle } from 'react-icons/lu';
 
 import {
@@ -18,17 +18,21 @@ import {
 import { Input } from '~/components/Form/Input';
 import { InputPassword } from '~/components/Form/InputPassword';
 import { Label } from '~/components/Form/Label';
+import { Title } from '~/components/Title';
 
 import type { ProfileFormData } from '.';
 
 type Props = {
   emailVerified: boolean;
   email: string;
-  errors: FieldErrorsImpl<ProfileFormData>;
 };
 
-export const Form = ({ emailVerified, email, errors }: Props) => {
-  const { register, watch } = useFormContext<ProfileFormData>();
+export const Form = ({ emailVerified, email }: Props) => {
+  const {
+    register,
+    watch,
+    formState: { errors },
+  } = useFormContext<ProfileFormData>();
 
   const updatePassword = watch('updatePassword');
 
@@ -105,6 +109,24 @@ export const Form = ({ emailVerified, email, errors }: Props) => {
           />
         </Grid>
       </Collapse>
+
+      <Box w="100%">
+        <Title title="Jobber" />
+
+        <Grid gap="6" templateColumns="1fr 180px" w="100%" pt="6">
+          <InputPassword
+            label="Token de acesso"
+            {...register('jobber.accessToken')}
+          />
+
+          <InputPassword
+            label="ID atividade interna"
+            showLeftIcon={false}
+            {...register('jobber.internalId')}
+            error={errors.jobber?.internalId}
+          />
+        </Grid>
+      </Box>
     </VStack>
   );
 };

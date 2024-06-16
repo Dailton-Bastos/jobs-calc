@@ -1,18 +1,17 @@
 import React from 'react';
-import {
-  RiDeleteBin2Line,
-  RiEdit2Line,
-  RiPushpinLine,
-  RiUnpinLine,
-} from 'react-icons/ri';
+import { HiOutlineDotsVertical } from 'react-icons/hi';
+import { MdDownloadDone } from 'react-icons/md';
+import { RiDeleteBin2Line, RiLinksLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 
 import {
   HStack,
-  Tooltip,
   useDisclosure,
   IconButton,
-  useColorModeValue,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from '@chakra-ui/react';
 
 import type { JobFormatted } from '~/@types/job';
@@ -37,68 +36,57 @@ export const Actions = ({ job }: Props) => {
   const { jobsData } = useJobsContext();
   const { activeJob } = useCyclesContext();
 
-  const iconColor = useColorModeValue('#4A5568', '#fff');
-
   const jobApiData = jobsData.find((item) => item.id === id);
 
   const disableButton = !!activeJob && activeJob.id === id;
 
-  const handleIsHighlight = React.useCallback(
-    async (isHighlight: boolean) => {
-      if (jobApiData) {
-        await updateJob({
-          ...jobApiData,
-          isHighlight,
-        });
-      }
-    },
-    [updateJob, jobApiData],
-  );
+  const markJobAsDone = React.useCallback(async () => {
+    if (jobApiData) {
+      await updateJob({
+        ...jobApiData,
+        status: 'done',
+        isHighlight: false,
+      });
+    }
+  }, [updateJob, jobApiData]);
 
   return (
     <>
       <HStack spacing="5px">
-        {job?.isHighlight ? (
-          <Tooltip label="Remover Destaque" hasArrow arrowSize={15}>
-            <IconButton
-              aria-label="Remover Destaque"
-              icon={<RiUnpinLine size={22} color={iconColor} />}
-              bg="transparent"
-              onClick={() => handleIsHighlight(false)}
-              disabled={disableButton}
-            />
-          </Tooltip>
-        ) : (
-          <Tooltip label="Marcar como Destaque" hasArrow arrowSize={15}>
-            <IconButton
-              aria-label="Destacar Job"
-              icon={<RiPushpinLine size={22} color={iconColor} />}
-              bg="transparent"
-              onClick={() => handleIsHighlight(true)}
-              disabled={disableButton}
-            />
-          </Tooltip>
-        )}
-
-        <Tooltip label="Editar" hasArrow arrowSize={15}>
-          <IconButton
-            aria-label="Editar Job"
-            icon={<RiEdit2Line size={22} color={iconColor} />}
-            bg="transparent"
-            onClick={() => navigate(`/jobs/${id}/edit`)}
-            disabled={disableButton}
+        <Menu autoSelect={false} placement="right">
+          <MenuButton
+            as={IconButton}
+            icon={<HiOutlineDotsVertical />}
+            variant="outline"
           />
-        </Tooltip>
 
-        <Tooltip label="Deletar" hasArrow arrowSize={15}>
-          <IconButton
-            aria-label="Deletar Job"
-            icon={<RiDeleteBin2Line size={22} color={iconColor} />}
-            bg="transparent"
-            onClick={onOpen}
-            disabled={disableButton}
-          />
-        </Tooltip>
+          <MenuList>
+            {job.status.type !== 'done' && (
+              <MenuItem
+                icon={<MdDownloadDone size={18} />}
+                isDisabled={disableButton}
+                onClick={markJobAsDone}
+              >
+                Concluir
+              </MenuItem>
+            )}
+
+            <MenuItem
+              icon={<RiDeleteBin2Line size={18} />}
+              isDisabled={disableButton}
+              onClick={onOpen}
+            >
+              Excluir
+            </MenuItem>
+
+            <MenuItem
+              icon={<RiLinksLine size={18} />}
+              onClick={() => navigate(`/jobs/${id}`)}
+            >
+              Ver mais
+            </MenuItem>
+          </MenuList>
+        </Menu>
       </HStack>
 
       <DeleteJob job={job} isOpen={isOpen} onClose={onClose} />

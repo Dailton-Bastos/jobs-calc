@@ -3,10 +3,11 @@ import { FormProvider, useForm } from 'react-hook-form';
 
 import { Box, Flex } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { ref, set } from 'firebase/database';
 import * as yup from 'yup';
 
 import { Title } from '~/components/Title';
-import { auth } from '~/config/firebase';
+import { auth, db } from '~/config/firebase';
 import { useAuth } from '~/hooks/useAuth';
 import { useCustomToast } from '~/hooks/useCustomToast';
 import { useTabActive } from '~/hooks/useTabActive';
@@ -44,7 +45,7 @@ export const Profile = () => {
   const setPageTitle = userTitle((state) => state.setpageTitle);
   const setHeaderTitle = userTitle((state) => state.setHeaderTitle);
 
-  const { user } = useAuth();
+  const { user, jobber, updateJobberInfo } = useAuth();
   const { isTabActive } = useTabActive();
   const { customToast } = useCustomToast();
   const [updateProfile, errorUpdateProfile] = useUpdateProfile(user);
@@ -59,13 +60,14 @@ export const Profile = () => {
       updatePassword: false,
       password: '',
       passwordConfirmation: '',
+      jobber,
     },
     resolver: yupResolver(profileFormSchema),
   });
 
-  const { formState, handleSubmit, reset, watch } = profileForm;
+  const { handleSubmit, reset, watch } = profileForm;
 
-  const { errors } = formState;
+  const userId = user?.uid;
 
   const updateUserInfo = React.useCallback(async () => {
     const displayName = watch('displayName');
@@ -126,8 +128,21 @@ export const Profile = () => {
         title: 'Perfil atualizado',
         description: 'Informações salvas com sucesso',
       });
+
+      if (data?.jobber) {
+        await set(ref(db, `jobber/${userId}`), {
+          accessToken: data.jobber.accessToken,
+          internalId: data.jobber.internalId,
+          userId,
+        });
+
+        updateJobberInfo({
+          accessToken: data.jobber.accessToken ?? '',
+          internalId: data.jobber.internalId ?? '',
+        });
+      }
     },
-    [updateProfile, customToast],
+    [updateProfile, customToast, userId, updateJobberInfo],
   );
 
   React.useEffect(() => {
@@ -225,11 +240,7 @@ export const Profile = () => {
             <Title title="Dados do perfil" />
 
             {user?.email && (
-              <Form
-                errors={errors}
-                email={user.email}
-                emailVerified={userEmailVerified}
-              />
+              <Form email={user.email} emailVerified={userEmailVerified} />
             )}
           </Box>
 

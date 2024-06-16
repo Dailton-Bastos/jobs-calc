@@ -102,9 +102,7 @@ const ListJobs = () => {
                 fontSize="md"
                 color="white"
                 w={'10%'}
-              >
-                Ações
-              </Th>
+              />
             </Tr>
           </Thead>
           <Tbody>
