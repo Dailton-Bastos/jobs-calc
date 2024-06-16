@@ -1,7 +1,7 @@
 import React from 'react';
 import { HiOutlineDotsVertical } from 'react-icons/hi';
 import { MdDownloadDone } from 'react-icons/md';
-import { RiDeleteBin2Line, RiPushpinLine, RiUnpinLine } from 'react-icons/ri';
+import { RiDeleteBin2Line, RiLinksLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -12,7 +12,6 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  Button,
 } from '@chakra-ui/react';
 
 import type { JobFormatted } from '~/@types/job';
@@ -41,18 +40,6 @@ export const Actions = ({ job }: Props) => {
 
   const disableButton = !!activeJob && activeJob.id === id;
 
-  const handleIsHighlight = React.useCallback(
-    async (isHighlight: boolean) => {
-      if (jobApiData) {
-        await updateJob({
-          ...jobApiData,
-          isHighlight,
-        });
-      }
-    },
-    [updateJob, jobApiData],
-  );
-
   const markJobAsDone = React.useCallback(async () => {
     if (jobApiData) {
       await updateJob({
@@ -74,56 +61,29 @@ export const Actions = ({ job }: Props) => {
           />
 
           <MenuList>
-            <MenuItem _hover={{ bg: 'transparent' }}>
-              <Button
-                leftIcon={job.isHighlight ? <RiUnpinLine /> : <RiPushpinLine />}
-                variant="solid"
-                colorScheme="blue"
-                w="full"
-                disabled={disableButton}
-                onClick={() => handleIsHighlight(!job.isHighlight)}
-              >
-                {job.isHighlight ? 'Remover destaque' : 'Destacar'}
-              </Button>
-            </MenuItem>
-
             {job.status.type !== 'done' && (
-              <MenuItem _hover={{ bg: 'transparent' }}>
-                <Button
-                  leftIcon={<MdDownloadDone />}
-                  variant="solid"
-                  colorScheme="green"
-                  w="full"
-                  onClick={markJobAsDone}
-                  disabled={disableButton}
-                >
-                  Concluir
-                </Button>
+              <MenuItem
+                icon={<MdDownloadDone size={18} />}
+                isDisabled={disableButton}
+                onClick={markJobAsDone}
+              >
+                Concluir
               </MenuItem>
             )}
 
-            <MenuItem _hover={{ bg: 'transparent' }}>
-              <Button
-                leftIcon={<RiDeleteBin2Line />}
-                variant="solid"
-                colorScheme="red"
-                onClick={onOpen}
-                w="full"
-                disabled={disableButton}
-              >
-                Excluir
-              </Button>
+            <MenuItem
+              icon={<RiDeleteBin2Line size={18} />}
+              isDisabled={disableButton}
+              onClick={onOpen}
+            >
+              Excluir
             </MenuItem>
 
-            <MenuItem _hover={{ bg: 'transparent' }}>
-              <Button
-                variant="link"
-                colorScheme="blue"
-                onClick={() => navigate(`/jobs/${id}`)}
-                w="full"
-              >
-                Ver mais
-              </Button>
+            <MenuItem
+              icon={<RiLinksLine size={18} />}
+              onClick={() => navigate(`/jobs/${id}`)}
+            >
+              Ver mais
             </MenuItem>
           </MenuList>
         </Menu>
