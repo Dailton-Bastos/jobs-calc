@@ -8,6 +8,7 @@ interface ImportMetaEnv {
   readonly VITE_APP_DATABASE_URL: string;
   readonly VITE_APP_MESSAGING_SENDER_ID: string;
   readonly VITE_APP_APP_ID: string;
+  readonly VITE_APP_JOBBER_API: string;
 }
 
 interface ImportMeta {
